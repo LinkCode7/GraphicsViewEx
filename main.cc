@@ -40,6 +40,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     g_pScene->addLine(0, SCENE_LENGTH, 0, -SCENE_LENGTH, pen);
 #undef SCENE_LENGTH
 
-    sindy::addChipToScene();
-    // sindy::addTestEntity();
+    // sindy::addChipToScene();
+    sindy::addTestEntity();
 }

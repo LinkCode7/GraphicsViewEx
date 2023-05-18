@@ -33,7 +33,8 @@ void GraphicsView::wheelEvent(QWheelEvent *e)
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::RightButton) {
+    setStyleSheet("QGraphicsView::rubberBand {background-color::transparent;}");
+    if (event->button() == Qt::MidButton) {
         // m_handCursor.setShape(Qt::OpenHandCursor);
         // QApplication::setOverrideCursor(m_handCursor);
         setDragMode(QGraphicsView::ScrollHandDrag);
@@ -41,11 +42,33 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->m_bMoveView        = true;
         this->m_ptRightMouseDown = event->pos();
     }
+    else if (event->button() == Qt::LeftButton) {
+        setDragMode(QGraphicsView::NoDrag);
+        setInteractive(false);
+
+        if (m_drag == nullptr) {
+            if (m_curNum == Qt::Key_P) {
+                m_drag     = std::make_shared<DragAction>(mapToScene(event->pos()));
+                auto pItem = m_drag->getPolyline();
+                scene()->addItem(pItem);
+            }
+            else {  // TODO:添加其他按键功能
+            }
+        }
+        else {
+            if (m_curNum == Qt::Key_P) {
+                if (m_drag->getPolyline()->checkCross(mapToScene(event->pos()))) return;
+                m_drag->onLeftClick(mapToScene(event->pos()));
+            }
+        }
+    }
 
     QGraphicsView::mousePressEvent(event);
 }
+
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
+    setStyleSheet("QGraphicsView::rubberBand {background-color::transparent;}");
     // QApplication::restoreOverrideCursor();
     if (m_bMoveView) {
         // m_handCursor.setShape(Qt::ClosedHandCursor);
@@ -54,22 +77,43 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
         QPointF dis    = mapToScene(movPos) - mapToScene(m_ptRightMouseDown);
         QGraphicsView::translate(dis.x(), dis.y());
     }
-    QGraphicsView::mouseMoveEvent(event);
 
 #ifdef _DEBUG
     auto ptTest  = event->pos();
     auto ptScene = this->mapToScene(ptTest);
     std::cout << "MousePoint(" << ptScene.x() << ", " << ptScene.y() << ")" << std::endl;
 #endif
+
+    if (m_drag) {
+        m_drag->onMove(mapToScene(event->pos()));
+    }
+
+    QGraphicsView::mouseMoveEvent(event);
 }
 
 void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
+    setStyleSheet("QGraphicsView::rubberBand {background-color::transparent;}");
     // QApplication::restoreOverrideCursor();
     setDragMode(QGraphicsView::RubberBandDrag);
     setInteractive(true);
     this->m_bMoveView = false;
+
+    if (m_drag && event->button() == Qt::RightButton) {
+        if (m_drag->getPolyline()->checkCross(mapToScene(event->pos()))) {  // 检查是否相交
+            return;
+        }
+        m_drag = nullptr;
+    }
+
     QGraphicsView::mouseReleaseEvent(event);
+}
+
+void GraphicsView::keyPressEvent(QKeyEvent *event)
+{
+    if (m_drag->keyAction(event->key(), m_curNum)) {
+        m_drag = nullptr;
+    }
 }
 
 GraphicsFrame::GraphicsFrame(const QString &name, QWidget *parent) : QFrame(parent)
