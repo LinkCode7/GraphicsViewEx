@@ -21,8 +21,11 @@ QPainterPath PolylineGraphic::shape() const
     path.addRect(boundingRect());
     return path;
 }
-void PolylineGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget)
+void PolylineGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QColor fillColor = getDrawColor(option->state);
+    painter->setPen(QPen(fillColor, 1));
+
     painter->drawPolyline(QPolygonF(m_points));
 }
 
@@ -33,17 +36,16 @@ void PolylineGraphic::addPoint(const QPointF &ptNow)
 
 void PolylineGraphic::setLastPt(const QPointF &ptNow)
 {
-    if (m_points.size() < 2)
-    {
+    auto size = m_points.size();
+    if (size == 0)
+        return;
+    else if (size == 1)
         m_points.push_back(ptNow);
-    }
     else
-    {
         m_points[m_points.size() - 1] = ptNow;
-    }
 }
 
-bool PolylineGraphic::getFirstPt(QPointF &pt)
+bool PolylineGraphic::getFirstPt(QPointF &pt) const
 {
     if (m_points.size() == 0)
         return false;

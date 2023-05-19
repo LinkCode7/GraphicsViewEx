@@ -9,11 +9,11 @@ public:
     PolylineGraphic();
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
-    void         paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget = nullptr) override;
+    void         paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
     void addPoint(const QPointF &ptNow);
     void setLastPt(const QPointF &ptNow);
-    bool getFirstPt(QPointF &pt);
+    bool getFirstPt(QPointF &pt) const;
 
     void closePolyLine(const QPointF &point);
 

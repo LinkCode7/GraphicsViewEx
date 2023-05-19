@@ -22,6 +22,7 @@ find_package(Qt5 COMPONENTS Widgets Core OpenGL REQUIRED)
 
 # 工程文件
 aux_source_directory(. SRCS)
+aux_source_directory(./control SRCS)
 aux_source_directory(./core SRCS)
 aux_source_directory(./graphics SRCS)
 

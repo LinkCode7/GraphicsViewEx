@@ -17,6 +17,7 @@ public:
     virtual void onLeftClick(const QPointF& curClick) {}
     virtual void onMove(const QPointF& curMove) {}
 
+    // 返回是否结束拖拽
     virtual bool keyAction(Qt::Key key) { return false; }
 
 public:

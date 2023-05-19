@@ -1,7 +1,7 @@
 #include "PolylineDrag.h"
 
 #include "../GraphicUtility.h"
-#include "PolylineGraphic.h"
+#include "../graphics/PolylineGraphic.h"
 #include "qgraphicsscene.h"
 
 extern QGraphicsScene* g_pScene;
@@ -37,6 +37,7 @@ bool PolylineDrag::keyAction(Qt::Key key)
     if (key == Qt::Key_Escape)
     {
         g_pScene->removeItem(m_geo);
+        return true;
     }
     else if (key == Qt::Key_C)
     {

@@ -6,6 +6,7 @@
 class BoxGraphic : public BasicGraphic
 {
 public:
+    BoxGraphic(QRectF const &rect);
     BoxGraphic(double minX, double minY, double maxX, double maxY);
 
     QRectF       boundingRect() const override;

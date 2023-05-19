@@ -2,6 +2,7 @@
 #define BASIC_GRAPHIC_H
 
 #include <QGraphicsItem>
+#include <qstyle>
 
 class BasicGraphic : public QGraphicsItem
 {
@@ -10,6 +11,10 @@ public:
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
     void         paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget = nullptr) override;
+
+    void setColor(QColor const &color) { m_color = color; }
+
+    QColor getDrawColor(QStyle::State state);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

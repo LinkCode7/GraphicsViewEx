@@ -1,7 +1,7 @@
 #ifndef POLYLINE_DRAG_H
 #define POLYLINE_DRAG_H
 
-#include "../core/DragAction.h"
+#include "DragAction.h"
 
 class PolylineDrag : public DragAction
 {

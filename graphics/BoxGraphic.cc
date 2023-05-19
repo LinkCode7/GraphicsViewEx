@@ -6,10 +6,15 @@
 
 #include "../GraphicUtility.h"
 
+BoxGraphic::BoxGraphic(QRectF const &rect) : m_rect(rect)
+{
+    // setPos(m_rect.center());
+}
+
 BoxGraphic::BoxGraphic(double minX, double minY, double maxX, double maxY)
 {
     sindy::extent2Rect(minX, minY, maxX, maxY, m_rect);
-    setPos(m_rect.center());
+    // setPos(m_rect.center());
 }
 
 QRectF BoxGraphic::boundingRect() const
@@ -28,13 +33,12 @@ void BoxGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 {
     Q_UNUSED(widget);
 
-    QColor fillColor = (option->state & QStyle::State_Selected) ? m_color.darker(150) : m_color;
-    if (option->state & QStyle::State_MouseOver) fillColor = fillColor.lighter(125);
+    QColor fillColor = getDrawColor(option->state);
 
-    QBrush b = painter->brush();
-    painter->setBrush(fillColor);
+    auto pen = painter->pen();
+    painter->setPen(fillColor);
     painter->drawRect(m_rect);
-    painter->setBrush(b);
+    painter->setPen(pen);
 }
 
 void BoxGraphic::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -45,7 +49,8 @@ void BoxGraphic::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void BoxGraphic::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (event->modifiers() & Qt::ShiftModifier) {
+    if (event->modifiers() & Qt::ShiftModifier)
+    {
         update();
         return;
     }
