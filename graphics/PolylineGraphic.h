@@ -3,19 +3,19 @@
 
 #include "BasicGraphic.h"
 
-// ªÊ÷∆∂‡∂Œœﬂ
 class PolylineGraphic : public BasicGraphic
 {
 public:
-    PolylineGraphic(double minX, double minY, double maxX, double maxY);
-    PolylineGraphic(const QPointF &ptBegin);
+    PolylineGraphic();
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
     void         paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget = nullptr) override;
-    void         addPoint(const QPointF &ptNow);
-    void         setLastPt(const QPointF &ptNow);
 
-    bool closePolyLine(const QPointF &point);
+    void addPoint(const QPointF &ptNow);
+    void setLastPt(const QPointF &ptNow);
+    bool getFirstPt(QPointF &pt);
+
+    void closePolyLine(const QPointF &point);
 
     bool checkCross(const QPointF &point);
 
@@ -27,6 +27,6 @@ public:
 
     QVector<QPointF> getPoints();
 
-protected:
+private:
     QVector<QPointF> m_points;
 };

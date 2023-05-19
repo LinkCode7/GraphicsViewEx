@@ -25,7 +25,7 @@ aux_source_directory(. SRCS)
 aux_source_directory(./core SRCS)
 aux_source_directory(./graphics SRCS)
 
-add_executable(${PROJECT_NAME} ${SRCS} "graphics/PolylineGraphic.h" "graphics/DragAction.h"  )
+add_executable(${PROJECT_NAME} ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::OpenGL)
 

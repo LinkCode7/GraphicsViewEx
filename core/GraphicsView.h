@@ -4,9 +4,6 @@
 #include <QFrame>
 #include <QGraphicsView>
 
-#include "../graphics/BoxGraphic.h"
-#include "../graphics/DragAction.h"
-
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QSlider;
@@ -14,6 +11,7 @@ class QToolButton;
 QT_END_NAMESPACE
 
 class GraphicsFrame;
+class DragAction;
 
 class GraphicsView : public QGraphicsView
 {
@@ -33,12 +31,24 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
+    enum ViewState
+    {
+        eUnknownState = 0,
+        eDragInit     = 1,
+        eDragging     = eDragInit << 1,
+    };
+    void addState(ViewState state) { m_state |= state; }
+    void removeState(ViewState state) { m_state &= (~state); }
+    bool hasState(ViewState state) const { return m_state & state; }
+
+private:
     GraphicsFrame *m_view;
     bool           m_bMoveView        = false;
     QPoint         m_ptRightMouseDown = {};
 
-    DragActionSP m_drag;
-    int          m_curNum = -1;
+    int                         m_state = 0;
+    QString                     m_strCommand;
+    std::shared_ptr<DragAction> m_drag;
 };
 
 class GraphicsFrame : public QFrame

@@ -1,5 +1,8 @@
 #include "GraphicsView.h"
 
+#include "../graphics/PolylineDrag.h"
+#include "DragAction.h"
+
 #if defined(QT_PRINTSUPPORT_LIB)
     #include <QtPrintSupport/qtprintsupportglobal.h>
     #if QT_CONFIG(printdialog)
@@ -7,25 +10,29 @@
         #include <QPrinter>
     #endif
 #endif
+
 #ifndef QT_NO_OPENGL
     #include <QtOpenGL>
 #else
     #include <QtWidgets>
 #endif
+
 #include <QtMath>
 #include <iostream>
 
 #if QT_CONFIG(wheelevent)
 void GraphicsView::wheelEvent(QWheelEvent *e)
 {
-    if (e->modifiers() & Qt::ControlModifier) {
+    if (e->modifiers() & Qt::ControlModifier)
+    {
         if (e->angleDelta().y() > 0)
             m_view->zoomIn(6);
         else
             m_view->zoomOut(6);
         e->accept();
     }
-    else {
+    else
+    {
         QGraphicsView::wheelEvent(e);
     }
 }
@@ -34,7 +41,8 @@ void GraphicsView::wheelEvent(QWheelEvent *e)
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     setStyleSheet("QGraphicsView::rubberBand {background-color::transparent;}");
-    if (event->button() == Qt::MidButton) {
+    if (event->button() == Qt::MidButton)
+    {
         // m_handCursor.setShape(Qt::OpenHandCursor);
         // QApplication::setOverrideCursor(m_handCursor);
         setDragMode(QGraphicsView::ScrollHandDrag);
@@ -42,25 +50,18 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->m_bMoveView        = true;
         this->m_ptRightMouseDown = event->pos();
     }
-    else if (event->button() == Qt::LeftButton) {
-        setDragMode(QGraphicsView::NoDrag);
-        setInteractive(false);
+    else if (event->button() == Qt::LeftButton)
+    {
+        if (hasState(eDragInit))
+        {
+            setDragMode(QGraphicsView::NoDrag);
+            setInteractive(false);
 
-        if (m_drag == nullptr) {
-            if (m_curNum == Qt::Key_P) {
-                m_drag     = std::make_shared<DragAction>(mapToScene(event->pos()));
-                auto pItem = m_drag->getPolyline();
-                scene()->addItem(pItem);
-            }
-            else {  // TODO:添加其他按键功能
-            }
+            removeState(eDragInit);
         }
-        else {
-            if (m_curNum == Qt::Key_P) {
-                if (m_drag->getPolyline()->checkCross(mapToScene(event->pos()))) return;
-                m_drag->onLeftClick(mapToScene(event->pos()));
-            }
-        }
+
+        if (m_drag)
+            m_drag->onLeftClick(mapToScene(event->pos()));
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -70,7 +71,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     setStyleSheet("QGraphicsView::rubberBand {background-color::transparent;}");
     // QApplication::restoreOverrideCursor();
-    if (m_bMoveView) {
+    if (m_bMoveView)
+    {
         // m_handCursor.setShape(Qt::ClosedHandCursor);
         // QApplication::setOverrideCursor(m_handCursor);
         QPoint  movPos = event->pos();
@@ -84,9 +86,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     std::cout << "MousePoint(" << ptScene.x() << ", " << ptScene.y() << ")" << std::endl;
 #endif
 
-    if (m_drag) {
+    if (m_drag)
         m_drag->onMove(mapToScene(event->pos()));
-    }
 
     QGraphicsView::mouseMoveEvent(event);
 }
@@ -97,13 +98,12 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     // QApplication::restoreOverrideCursor();
     setDragMode(QGraphicsView::RubberBandDrag);
     setInteractive(true);
-    this->m_bMoveView = false;
+    m_bMoveView = false;
 
-    if (m_drag && event->button() == Qt::RightButton) {
-        if (m_drag->getPolyline()->checkCross(mapToScene(event->pos()))) {  // 检查是否相交
-            return;
-        }
-        m_drag = nullptr;
+    if (m_drag && event->button() == Qt::RightButton)
+    {
+        if (m_drag->isEndDrag(mapToScene(event->pos())))
+            m_drag = nullptr;
     }
 
     QGraphicsView::mouseReleaseEvent(event);
@@ -111,8 +111,18 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
-    if (m_drag->keyAction(event->key(), m_curNum)) {
-        m_drag = nullptr;
+    if (m_drag)
+    {
+        if (m_drag->keyAction(static_cast<Qt::Key>(event->key())))
+            m_drag = nullptr;
+    }
+
+    if (event->key() == Qt::Key_P)
+    {
+        m_drag = std::make_shared<PolylineDrag>();
+
+        m_strCommand = "polyline";
+        addState(eDragInit);
     }
 }
 
@@ -227,7 +237,8 @@ void GraphicsFrame::print()
 #if defined(QT_PRINTSUPPORT_LIB) && QT_CONFIG(printdialog)
     QPrinter     printer;
     QPrintDialog dialog(&printer, this);
-    if (dialog.exec() == QDialog::Accepted) {
+    if (dialog.exec() == QDialog::Accepted)
+    {
         QPainter painter(&printer);
         m_pGraphicsView->render(&painter);
     }
