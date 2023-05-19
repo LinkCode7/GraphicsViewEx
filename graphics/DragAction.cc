@@ -38,7 +38,7 @@ bool DragAction::keyAction(int keyNum, int& curNum)
             curNum = Qt::Key_Y;
         }
         else if (keyNum == Qt::Key_S) {
-            // curNum = Qt::Key_S;
+            curNum = Qt::Key_S;
             // QList<QGraphicsItem*> itemsList = items();
             // if (itemsList.size() != 0) {
             //    for (auto& item : itemsList) {
@@ -49,12 +49,12 @@ bool DragAction::keyAction(int keyNum, int& curNum)
         }
         return false;
     }
-    else {                               // ÕýÔÚ»æÖÆÍ¼ÐÎ
-        if (keyNum == Qt::Key_Escape) {  // È¡Ïû»æÖÆ
+    else {                               // æ­£åœ¨ç»˜åˆ¶å›¾å½¢
+        if (keyNum == Qt::Key_Escape) {  // å–æ¶ˆç»˜åˆ¶
             curNum = -1;
             g_pScene->removeItem(m_ploy);
         }
-        else if (keyNum == Qt::Key_C && curNum == Qt::Key_P) {  // ±ÕºÏ¶à¶ÎÏß
+        else if (keyNum == Qt::Key_C && curNum == Qt::Key_P) {  // é—­åˆå¤šæ®µçº¿
             m_ploy->closePolyLine(m_ploy->getPoints()[0]);
             curNum = -1;
         }

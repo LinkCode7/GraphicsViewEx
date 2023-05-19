@@ -52,7 +52,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
                 auto pItem = m_drag->getPolyline();
                 scene()->addItem(pItem);
             }
-            else {  // TODO:Ìí¼ÓÆäËû°´¼ü¹¦ÄÜ
+            else {  // TODO:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
         }
         else {
@@ -81,7 +81,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 #ifdef _DEBUG
     auto ptTest  = event->pos();
     auto ptScene = this->mapToScene(ptTest);
-    std::cout << "MousePoint(" << ptScene.x() << ", " << ptScene.y() << ")" << std::endl;
+    // std::cout << "MousePoint(" << ptScene.x() << ", " << ptScene.y() << ")" << std::endl;
 #endif
 
     if (m_drag) {
@@ -100,7 +100,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     this->m_bMoveView = false;
 
     if (m_drag && event->button() == Qt::RightButton) {
-        if (m_drag->getPolyline()->checkCross(mapToScene(event->pos()))) {  // ¼ì²éÊÇ·ñÏà½»
+        if (m_drag->getPolyline()->checkCross(mapToScene(event->pos()))) {  // é—­åˆå¤šè¾¹å½¢
             return;
         }
         m_drag = nullptr;

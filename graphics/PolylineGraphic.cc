@@ -35,7 +35,7 @@ void PolylineGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *i
 
 void PolylineGraphic::addPoint(const QPointF &ptNow)
 {
-    std::cout << m_points.size() << "(" << ptNow.x() << "," << ptNow.y() << ")" << std::endl;
+    // std::cout << m_points.size() << "(" << ptNow.x() << "," << ptNow.y() << ")" << std::endl;
     m_points.push_back(ptNow);
 };
 
@@ -54,7 +54,7 @@ bool PolylineGraphic::closePolyLine(const QPointF &point)
     if (m_points.size() <= 3) {
         return false;
     }
-    else if (!checkCross(point)) {  // ¿ÉÒÔ±ÕºÏ
+    else if (!checkCross(point)) {  // å¯ä»¥é—­åˆ
         // addPoint(point);
         m_points[m_points.size() - 1] = m_points[0];
         return true;
@@ -84,7 +84,7 @@ bool PolylineGraphic::checkCross(const QPointF &point)
 };
 bool PolylineGraphic::collisionDect(const QPointF &p1, const QPointF &p2, const QPointF &p3, const QPointF &p4)
 {
-    // xyÖáÍ¶Ó°·¨
+    // xyè½´æŠ•å½±æ³•
     double x1max = std::max(p1.x(), p2.x());
     double x1min = std::min(p1.x(), p2.x());
     double y1max = std::max(p1.y(), p2.y());
@@ -107,7 +107,7 @@ bool PolylineGraphic::collisionDect(const QPointF &p1, const QPointF &p2, const 
 };
 bool PolylineGraphic::crossDect(const QPointF &p1, const QPointF &p2, const QPointF &p3, const QPointF &p4)
 {
-    // (p1p3¡Áp1p2) ¡Á (p1p4¡Áp1p2) < 0
+    // (p1p3Ã—p1p2) Ã— (p1p4Ã—p1p2) < 0
     auto   p1p3  = QPointF(p3.x() - p1.x(), p3.y() - p1.y());
     auto   p1p2  = QPointF(p2.x() - p1.x(), p2.y() - p1.y());
     auto   p1p4  = QPointF(p4.x() - p1.x(), p4.y() - p1.y());
@@ -115,7 +115,7 @@ bool PolylineGraphic::crossDect(const QPointF &p1, const QPointF &p2, const QPoi
     double right = p1p4.x() * p1p2.y() - p1p4.y() * p1p2.x();
     double res1  = left * right;
 
-    // (p3p1¡Áp3p4) ¡Á (p3p2¡Áp3p4) < 0
+    // (p3p1Ã—p3p4) Ã— (p3p2Ã—p3p4) < 0
     auto p3p1   = QPointF(p1.x() - p3.x(), p1.y() - p3.y());
     auto p3p4   = QPointF(p4.x() - p3.x(), p4.y() - p3.y());
     auto p3p2   = QPointF(p2.x() - p3.x(), p2.y() - p3.y());
@@ -123,7 +123,7 @@ bool PolylineGraphic::crossDect(const QPointF &p1, const QPointF &p2, const QPoi
     right       = p3p2.x() * p3p4.y() - p3p2.y() * p3p4.x();
     double res2 = left * right;
 
-    // Ð¡ÓÚÁã¿çÁ¢£¬´óÓÚÁã²»¿çÁ¢
+    // å°äºŽé›¶è·¨ç«‹ï¼Œå¤§äºŽé›¶ä¸è·¨ç«‹
     return (res1 < 0 && res2 < 0) ? true : false;
 };
 bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPointF &p2)
@@ -131,10 +131,10 @@ bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPoi
     auto pXpl = QPointF(p1.x() - p.x(), p1.y() - p.y());
     auto pXp2 = QPointF(p2.x() - p.x(), p2.y() - p.y());
 
-    // ÏÈ½øÐÐÓÖ»ýÔËËã
+    // å…ˆè¿›è¡Œåˆç§¯è¿ç®—
     double result = pXpl.x() * pXp2.y() - pXpl.y() * pXp2.y();
 
-    // ÔÙ¼ÆËã¸ÃµãÊÇ·ñÔÚ°üÎ§ºÐÄÚ
+    // å†è®¡ç®—è¯¥ç‚¹æ˜¯å¦åœ¨åŒ…å›´ç›’å†…
     double left   = std::min(p1.x(), p2.x());
     double right  = std::max(p1.x(), p2.x());
     double top    = std::max(p1.y(), p2.y());

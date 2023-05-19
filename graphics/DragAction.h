@@ -1,6 +1,6 @@
 #include "PolylineGraphic.h"
 
-// ÍÏ×§Àà
+// æ‹–æ‹½ç±»
 class DragAction
 {
 public:

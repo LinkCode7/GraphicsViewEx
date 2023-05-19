@@ -3,7 +3,7 @@
 
 #include "BasicGraphic.h"
 
-// »æÖÆ¶à¶ÎÏß
+// ç»˜åˆ¶å¤šè¾¹å½¢
 class PolylineGraphic : public BasicGraphic
 {
 public:
