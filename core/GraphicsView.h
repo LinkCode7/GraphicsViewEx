@@ -16,8 +16,24 @@ class DragAction;
 class GraphicsView : public QGraphicsView
 {
     Q_OBJECT
+
 public:
     GraphicsView(GraphicsFrame *v) : QGraphicsView(), m_view(v) {}
+
+    enum ViewState
+    {
+        eUnknownState = 0,
+        eDragInit     = 1,
+        eDragging     = eDragInit << 1,
+    };
+    void addState(ViewState state) { m_state |= state; }
+    void removeState(ViewState state) { m_state &= (~state); }
+    bool hasState(ViewState state) const { return m_state & state; }
+
+    std::shared_ptr<DragAction> drag() const { return m_drag; }
+    void                        setDrag(std::shared_ptr<DragAction> drag) { m_drag = drag; }
+
+    void setCommand(const QString &str) { m_strCommand = str; }
 
 protected:
 #if QT_CONFIG(wheelevent)
@@ -29,17 +45,6 @@ protected:
 
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-
-private:
-    enum ViewState
-    {
-        eUnknownState = 0,
-        eDragInit     = 1,
-        eDragging     = eDragInit << 1,
-    };
-    void addState(ViewState state) { m_state |= state; }
-    void removeState(ViewState state) { m_state &= (~state); }
-    bool hasState(ViewState state) const { return m_state & state; }
 
 private:
     GraphicsFrame *m_view;

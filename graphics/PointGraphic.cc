@@ -31,7 +31,9 @@ QPainterPath PointGraphic::shape() const
 
 void PointGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->setPen(QPen(m_color, 1));
+    QColor fillColor = getDrawColor(option->state);
+
+    painter->setPen(QPen(fillColor, 1));
     painter->drawEllipse(m_pt.x() - DOT_RADIUS * 0.5, m_pt.y() - DOT_RADIUS * 0.5, DOT_RADIUS, DOT_RADIUS);
 
     QLineF line(0 - DOT_RADIUS, 0, 0 + DOT_RADIUS, 0);

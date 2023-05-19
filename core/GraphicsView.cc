@@ -1,7 +1,8 @@
 #include "GraphicsView.h"
 
-#include "../graphics/PolylineDrag.h"
-#include "DragAction.h"
+#include "../control/DragAction.h"
+#include "../control/GraphicsControl.h"
+#include "../control/PolylineDrag.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
     #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -61,7 +62,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         }
 
         if (m_drag)
+        {
+            setInteractive(false);  // 拖拽过程中禁止移动item
             m_drag->onLeftClick(mapToScene(event->pos()));
+        }
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -111,19 +115,8 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
-    if (m_drag)
-    {
-        if (m_drag->keyAction(static_cast<Qt::Key>(event->key())))
-            m_drag = nullptr;
-    }
-
-    if (event->key() == Qt::Key_P)
-    {
-        m_drag = std::make_shared<PolylineDrag>();
-
-        m_strCommand = "polyline";
-        addState(eDragInit);
-    }
+    sindy::viewKeyDown(static_cast<Qt::Key>(event->key()), this);
+    QGraphicsView::keyPressEvent(event);
 }
 
 GraphicsFrame::GraphicsFrame(const QString &name, QWidget *parent) : QFrame(parent)

@@ -38,3 +38,11 @@ void BasicGraphic::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseReleaseEvent(event);
 }
+
+QColor BasicGraphic::getDrawColor(QStyle::State state)
+{
+    auto color = state & QStyle::State_Selected ? m_color.darker(150) : m_color;
+    // if (state & QStyle::State_MouseOver)
+    //    color = color.lighter(125);
+    return color;
+}
