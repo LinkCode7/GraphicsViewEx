@@ -4,6 +4,9 @@
 #include <QFrame>
 #include <QGraphicsView>
 
+#include "../graphics/BoxGraphic.h"
+#include "../graphics/DragAction.h"
+
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QSlider;
@@ -27,11 +30,15 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     void mouseMoveEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     GraphicsFrame *m_view;
     bool           m_bMoveView        = false;
     QPoint         m_ptRightMouseDown = {};
+
+    DragActionSP m_drag;
+    int          m_curNum = -1;
 };
 
 class GraphicsFrame : public QFrame
