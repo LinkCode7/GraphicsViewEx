@@ -23,8 +23,7 @@ QPainterPath PolylineGraphic::shape() const
 }
 void PolylineGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QColor fillColor = getDrawColor(option->state);
-    painter->setPen(QPen(fillColor, 1));
+    painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
 
     painter->drawPolyline(QPolygonF(m_points));
 }
@@ -108,10 +107,10 @@ bool PolylineGraphic::collisionDect(const QPointF &p1, const QPointF &p2, const 
     bool checkX = false;
     bool checkY = false;
 
-    if ((x1max > x2min && x1max < x2max) || (x1min > x2min && x1min < x2max) || (x2max > x1min && x2max < x1max) ||
-        (x2max > x1min && x2max < x1max))
+    if ((x1max >= x2min && x1max <= x2max) || (x1min >= x2min && x1min <= x2max) || (x2max >= x1min && x2max <= x1max) ||
+        (x2max >= x1min && x2max <= x1max))
         checkX = true;
-    if ((y1max > y2min && y1max < y2max) || (y1min > y2min && y1min < y2max) || (y2max > y1min && y2max < y1max) ||
+    if ((y1max > y2min && y1max < y2max) || (y1min >= y2min && y1min <= y2max) || (y2max >= y1min && y2max <= y1max) ||
         (y2max > y1min && y2max < y1max))
         checkY = true;
 
@@ -137,10 +136,13 @@ bool PolylineGraphic::crossDect(const QPointF &p1, const QPointF &p2, const QPoi
 }
 bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPointF &p2)
 {
-    auto pXpl = QPointF(p1.x() - p.x(), p1.y() - p.y());
-    auto pXp2 = QPointF(p2.x() - p.x(), p2.y() - p.y());
+    auto pXpl = QPointF(p1.x() - p2.x(), p1.y() - p2.y());
+    auto pXp2 = QPointF(p.x() - p2.x(), p.y() - p2.y());
 
-    double result = pXpl.x() * pXp2.y() - pXpl.y() * pXp2.y();
+    double result = pXpl.x() * pXp2.y() - pXpl.y() * pXp2.x();
+
+    auto r1 = result / sqrt(pXpl.x() * pXpl.x() + pXpl.y() * pXpl.y());
+    auto r2 = r1 / sqrt(pXp2.x() * pXp2.x() + pXp2.y() * pXp2.y());
 
     double left   = std::min(p1.x(), p2.x());
     double right  = std::max(p1.x(), p2.x());
@@ -148,9 +150,7 @@ bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPoi
     double bottom = std::min(p1.y(), p2.y());
 
     if (p.x() >= left && p.x() <= right && p.y() >= bottom && p.y() <= top)
-    {
-        return result == 0 ? true : false;
-    }
+        return r2 < 0.05 ? true : false;
     return false;
 }
 

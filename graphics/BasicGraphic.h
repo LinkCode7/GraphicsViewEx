@@ -15,6 +15,7 @@ public:
     void setColor(QColor const &color) { m_color = color; }
 
     QColor getDrawColor(QStyle::State state);
+    double getDrawWidth(QStyle::State state);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

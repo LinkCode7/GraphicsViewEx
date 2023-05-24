@@ -35,10 +35,10 @@ void BoxGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     QColor fillColor = getDrawColor(option->state);
 
-    auto pen = painter->pen();
-    painter->setPen(fillColor);
+    auto oldPen = painter->pen();
+    painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
     painter->drawRect(m_rect);
-    painter->setPen(pen);
+    painter->setPen(oldPen);
 }
 
 void BoxGraphic::mousePressEvent(QGraphicsSceneMouseEvent *event)

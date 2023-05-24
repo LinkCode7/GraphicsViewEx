@@ -170,6 +170,8 @@ GraphicsFrame::GraphicsFrame(const QString &name, QWidget *parent) : QFrame(pare
     connect(m_pGraphicsView->horizontalScrollBar(), &QAbstractSlider::valueChanged, this, &GraphicsFrame::setResetButtonEnabled);
 
     setupMatrix();
+
+    m_pGraphicsView->setRenderHint(QPainter::Antialiasing, true);
 }
 
 QGraphicsView *GraphicsFrame::view() const

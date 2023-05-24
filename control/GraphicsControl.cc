@@ -39,10 +39,7 @@ void sindy::viewKeyDown(Qt::Key key, GraphicsView* view)
         for (auto const& item : items)
         {
             QRectF rectf = item->boundingRect();
-
-            // item移动过
-            auto offset = item->pos();
-            rectf.moveTo(offset);
+            rectf.translate(item->pos());
 
             auto pItem = new BoxGraphic(rectf);
             pItem->setColor({255, 235, 0});
