@@ -9,6 +9,14 @@
 
 PolylineGraphic::PolylineGraphic()
 {
+    m_color = {196, 196, 196};
+}
+
+PolylineGraphic::PolylineGraphic(std::initializer_list<QPointF> const &list)
+{
+    m_color = {196, 196, 196};
+    for (auto const &pt : list)
+        m_points.push_back(pt);
 }
 
 QRectF PolylineGraphic::boundingRect() const

@@ -5,6 +5,7 @@
 #include "./graphics/BoxGraphic.h"
 #include "./graphics/ChipGraphic.h"
 #include "./graphics/PointGraphic.h"
+#include "./graphics/PolylineGraphic.h"
 
 extern QGraphicsScene* g_pScene;
 
@@ -21,11 +22,16 @@ void sindy::point2Rect(double x, double y, QRectF& rect, double tol)
 
 void sindy::addTestEntity()
 {
-    if (!g_pScene) return;
+    if (!g_pScene)
+        return;
 
-    g_pScene->addItem(new BoxGraphic(-100, -100, 300, 200));
+    g_pScene->addItem(new BoxGraphic(100, 100, 300, 200));
 
-    g_pScene->addItem(new PointGraphic(100, 100));
+    g_pScene->addItem(new PointGraphic(200, -100));
+
+    auto poly = new PolylineGraphic{{0, 55.28},       {71.2, 55.28},  {93.2, 0},      {115.21, 55.28}, {186.41, 55.28}, {128.81, 89.44},
+                                    {150.81, 144.72}, {93.2, 110.56}, {35.6, 144.72}, {57.6, 89.44},   {0, 55.28}};
+    g_pScene->addItem(poly);
 }
 
 void sindy::addChipToScene()
@@ -36,10 +42,12 @@ void sindy::addChipToScene()
     // Populate g_pScene
     int xx     = 0;
     int nitems = 0;
-    for (int i = -11000; i < 11000; i += 110) {
+    for (int i = -11000; i < 11000; i += 110)
+    {
         ++xx;
         int yy = 0;
-        for (int j = -7000; j < 7000; j += 70) {
+        for (int j = -7000; j < 7000; j += 70)
+        {
             ++yy;
             qreal x = (i + 11000) / 22000.0;
             qreal y = (j + 7000) / 14000.0;

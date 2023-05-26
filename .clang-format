@@ -19,7 +19,7 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: InlineOnly # 只合并定义在class中的短方法
 AllowShortLambdasOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false # 允许单行显示较短的if语句，WithoutElse
-AllowShortLoopsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false # 允许单行显示较短的for语句
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: true

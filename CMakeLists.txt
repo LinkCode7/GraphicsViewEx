@@ -12,23 +12,20 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/lib)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/lib)
 
-# "Qt5Config.cmake"位置
-set(Qt5_DIR C:/Qt/Qt5.14.2/5.14.2/msvc2017_64/lib/cmake/Qt5/)
-
+# 请在环境变量中提供QT路径，如"D:/Qt/Qt5.14.2/5.14.2/msvc2017_64/bin"
 find_package(Qt5 COMPONENTS Widgets Core OpenGL REQUIRED)
 
 # 工程文件
-aux_source_directory(. SRCS)
-aux_source_directory(./control SRCS)
-aux_source_directory(./core SRCS)
-aux_source_directory(./graphics SRCS)
+file(GLOB SRCS
+       ${PROJECT_SOURCE_DIR}/*.cc
+       ${PROJECT_SOURCE_DIR}/control/*.cc
+       ${PROJECT_SOURCE_DIR}/core/*.cc
+       ${PROJECT_SOURCE_DIR}/graphics/*.cc)
 
 add_executable(${PROJECT_NAME} ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::OpenGL)
 
 #打印SRC中列表信息
-message(STATUS "SRC = ${SRCS}")
+message(STATUS "SRCS = ${SRCS}")
