@@ -38,12 +38,12 @@ utility | 工具函数
     - 你的图形继承体系下的所有父类、子类的成员变量应该放在同一个struct内，这是和结构化数据流最大的不同
     - message中的成员由flag管理，可以只保存修改的字段；struct中的字段必须全部提供，适用于固定不变的数据，比如二维点结构，不能缺了x或y
     - message中的数字只是一个递增的序号（kiwic编译时，这里经常报错）
-    - 不同版本的字段变更，对于会写入磁盘或远程服务器的数据，要向前兼容只能新增字段，不能删除（会浪费一个指针的内存）
-  - [kiwi生成C++序列化代码](https://github.com/evanw/kiwi/blob/master/examples/cpp.md)
+    - 不同版本的字段变更，对于会写入磁盘或远程服务器的数据，要向前兼容只能新增字段，不能删除字段（这只会浪费一个指针的内存）
+  - [利用kiwic生成C++的序列化、反序列化代码](https://github.com/evanw/kiwi/blob/master/examples/cpp.md)
     - 安装kiwic时，要以管理员身份启动命令提示符CMD：npm install -g kiwi-schema
     - cd到schema.kiwi文件所在位置（data目录）：kiwic --schema schema.kiwi --cpp schema.h
     - 将已生成的schema.h文件中的实现部分放到schema.cc中，搜"#ifdef"即可定位到
-      - 收缩宏包围的代码段，剪切到源文件中，主要要在相同命名空间下，并包含schema.h
+      - 收缩宏包围的代码段，剪切到源文件中，注意要在相同命名空间下(sindyk)，并包含schema.h
   - 序列化采用非侵入式设计，主要基于访问者模式，核心在于子类实现了visit函数
 
 
