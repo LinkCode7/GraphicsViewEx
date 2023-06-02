@@ -4,17 +4,19 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-#include "../GraphicUtility.h"
+#include "../utility/utility.h"
 
-BoxGraphic::BoxGraphic(QRectF const &rect) : m_rect(rect)
+BoxGraphic::BoxGraphic(QRectF const &rect) : BasicGraphic(eBoxType), m_rect(rect)
 {
     // setPos(m_rect.center());
+    NOTIFY_MAKE_GRAPHIC();
 }
 
-BoxGraphic::BoxGraphic(double minX, double minY, double maxX, double maxY)
+BoxGraphic::BoxGraphic(QPointF const &ptMin, QPointF const &ptMax) : BasicGraphic(eBoxType)
 {
-    sindy::extent2Rect(minX, minY, maxX, maxY, m_rect);
+    sindy::extent2Rect(ptMin, ptMax, m_rect);
     // setPos(m_rect.center());
+    NOTIFY_MAKE_GRAPHIC();
 }
 
 QRectF BoxGraphic::boundingRect() const

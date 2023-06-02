@@ -5,11 +5,12 @@
 #include "qnamespace.h"
 
 class GraphicsView;
+class QKeyEvent;
 
 namespace sindy
 {
-void viewKeyDown(Qt::Key key, GraphicsView* view);
+void viewKeyDown(QKeyEvent* event, GraphicsView* view);
 
 }
 
-#endif  // GRAPHICS_CONTROL_H
+#endif // GRAPHICS_CONTROL_H

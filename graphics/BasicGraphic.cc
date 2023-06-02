@@ -4,10 +4,12 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-BasicGraphic::BasicGraphic() : m_color{0, 255, 0}
+BasicGraphic::BasicGraphic(ObjectType type) : _color{0, 255, 0}, _type(type)
 {
     setFlags(ItemIsSelectable | ItemIsMovable);
     setAcceptHoverEvents(true);
+
+    _saveFlags.full(true); // 暂时不控制
 }
 
 QRectF BasicGraphic::boundingRect() const
@@ -41,7 +43,7 @@ void BasicGraphic::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QColor BasicGraphic::getDrawColor(QStyle::State state)
 {
-    auto color = state & QStyle::State_Selected ? m_color.darker(300) : m_color;
+    auto color = state & QStyle::State_Selected ? _color.darker(300) : _color;
     // if (state & QStyle::State_MouseOver)
     //    color = color.lighter(125);
     return color;

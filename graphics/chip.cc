@@ -1,10 +1,10 @@
-#include "ChipGraphic.h"
+#include "Chip.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-ChipGraphic::ChipGraphic(const QColor &color, int x, int y)
+Chip::Chip(const QColor &color, int x, int y)
 {
     m_x     = x;
     m_y     = y;
@@ -15,24 +15,25 @@ ChipGraphic::ChipGraphic(const QColor &color, int x, int y)
     setAcceptHoverEvents(true);
 }
 
-QRectF ChipGraphic::boundingRect() const
+QRectF Chip::boundingRect() const
 {
     return QRectF(0, 0, 110, 70);
 }
 
-QPainterPath ChipGraphic::shape() const
+QPainterPath Chip::shape() const
 {
     QPainterPath path;
     path.addRect(14, 14, 82, 42);
     return path;
 }
 
-void ChipGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void Chip::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
 
     QColor fillColor = (option->state & QStyle::State_Selected) ? m_color.darker(150) : m_color;
-    if (option->state & QStyle::State_MouseOver) fillColor = fillColor.lighter(125);
+    if (option->state & QStyle::State_MouseOver)
+        fillColor = fillColor.lighter(125);
 
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     if (lod < 0.2)
@@ -53,7 +54,8 @@ void ChipGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QPen oldPen = painter->pen();
     QPen pen    = oldPen;
     int  width  = 0;
-    if (option->state & QStyle::State_Selected) width += 2;
+    if (option->state & QStyle::State_Selected)
+        width += 2;
 
     pen.setWidth(width);
     QBrush b = painter->brush();
@@ -78,9 +80,9 @@ void ChipGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         painter->setFont(font);
         painter->save();
         painter->scale(0.1, 0.1);
-        painter->drawText(170, 180, QString("Model: VSC-2000 (Very Small ChipGraphic) at %1x%2").arg(m_x).arg(m_y));
+        painter->drawText(170, 180, QString("Model: VSC-2000 (Very Small Chip) at %1x%2").arg(m_x).arg(m_y));
         painter->drawText(170, 200, QString("Serial number: DLWR-WEER-123L-ZZ33-SDSJ"));
-        painter->drawText(170, 220, QString("Manufacturer: ChipGraphic Manufacturer"));
+        painter->drawText(170, 220, QString("Manufacturer: Chip Manufacturer"));
         painter->restore();
     }
 
@@ -115,19 +117,20 @@ void ChipGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         painter->setBrush(Qt::NoBrush);
         QPainterPath path;
         path.moveTo(m_stuff.first());
-        for (int i = 1; i < m_stuff.size(); ++i) path.lineTo(m_stuff.at(i));
+        for (int i = 1; i < m_stuff.size(); ++i)
+            path.lineTo(m_stuff.at(i));
         painter->drawPath(path);
         painter->setPen(p);
     }
 }
 
-void ChipGraphic::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void Chip::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mousePressEvent(event);
     update();
 }
 
-void ChipGraphic::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void Chip::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->modifiers() & Qt::ShiftModifier)
     {
@@ -138,7 +141,7 @@ void ChipGraphic::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseMoveEvent(event);
 }
 
-void ChipGraphic::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void Chip::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseReleaseEvent(event);
     update();

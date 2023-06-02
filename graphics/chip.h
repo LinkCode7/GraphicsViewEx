@@ -1,13 +1,13 @@
-#ifndef CHIP_GRAPHIC_H
-#define CHIP_GRAPHIC_H
+#ifndef CHIP_H
+#define CHIP_H
 
 #include <QColor>
 #include <QGraphicsItem>
 
-class ChipGraphic : public QGraphicsItem
+class Chip : public QGraphicsItem
 {
 public:
-    ChipGraphic(const QColor &color, int x, int y);
+    Chip(const QColor &color, int x, int y);
 
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
@@ -25,4 +25,4 @@ private:
     QVector<QPointF> m_stuff;
 };
 
-#endif  // CHIP_GRAPHIC_H
+#endif // !CHIP_H

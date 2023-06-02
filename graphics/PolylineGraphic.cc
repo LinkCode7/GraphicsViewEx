@@ -5,23 +5,26 @@
 #include <QStyleOptionGraphicsItem>
 #include <iostream>
 
-#include "../GraphicUtility.h"
+#include "../utility/utility.h"
 
-PolylineGraphic::PolylineGraphic()
+PolylineGraphic::PolylineGraphic() : BasicGraphic(ePolylineType)
 {
-    m_color = {196, 196, 196};
+    _color = {196, 196, 196};
+    NOTIFY_MAKE_GRAPHIC();
 }
 
-PolylineGraphic::PolylineGraphic(std::initializer_list<QPointF> const &list)
+PolylineGraphic::PolylineGraphic(std::initializer_list<QPointF> const &list) : BasicGraphic(ePolylineType)
 {
-    m_color = {196, 196, 196};
+    _color = {196, 196, 196};
     for (auto const &pt : list)
-        m_points.push_back(pt);
+        _points.push_back(pt);
+
+    NOTIFY_MAKE_GRAPHIC();
 }
 
 QRectF PolylineGraphic::boundingRect() const
 {
-    return QPolygonF(m_points).boundingRect();
+    return QPolygonF(_points).boundingRect();
 }
 QPainterPath PolylineGraphic::shape() const
 {
@@ -33,56 +36,56 @@ void PolylineGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 {
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
 
-    painter->drawPolyline(QPolygonF(m_points));
+    painter->drawPolyline(QPolygonF(_points));
 }
 
 void PolylineGraphic::addPoint(const QPointF &ptNow)
 {
-    m_points.push_back(ptNow);
+    _points.push_back(ptNow);
 }
 
 void PolylineGraphic::setLastPt(const QPointF &ptNow)
 {
-    auto size = m_points.size();
+    auto size = _points.size();
     if (size == 0)
         return;
     else if (size == 1)
-        m_points.push_back(ptNow);
+        _points.push_back(ptNow);
     else
-        m_points[m_points.size() - 1] = ptNow;
+        _points[_points.size() - 1] = ptNow;
 }
 
 bool PolylineGraphic::getFirstPt(QPointF &pt) const
 {
-    if (m_points.size() == 0)
+    if (_points.size() == 0)
         return false;
-    pt = m_points[0];
+    pt = _points[0];
     return true;
 }
 
 void PolylineGraphic::closePolyLine(const QPointF &point)
 {
-    auto size = m_points.size();
+    auto size = _points.size();
     if (size <= 3)
         return;
 
     if (!checkCross(point))
     {
         // addPoint(point);
-        m_points[m_points.size() - 1] = m_points[0];
+        _points[_points.size() - 1] = _points[0];
     }
 }
 
 bool PolylineGraphic::checkCross(const QPointF &point)
 {
-    if (m_points.size() <= 2)
+    if (_points.size() <= 2)
         return false;
 
-    QPointF beginPt = m_points[0];
-    QPointF lastPt  = m_points[m_points.size() - 2];
-    for (int i = 1; i < m_points.size() - 1; ++i)
+    QPointF beginPt = _points[0];
+    QPointF lastPt  = _points[_points.size() - 2];
+    for (int i = 1; i < _points.size() - 1; ++i)
     {
-        QPointF endPt = m_points[i];
+        QPointF endPt = _points[i];
         if (collisionDect(lastPt, point, beginPt, endPt))
         {
             if (lastPt == endPt)
@@ -164,5 +167,5 @@ bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPoi
 
 QVector<QPointF> PolylineGraphic::getPoints()
 {
-    return m_points;
+    return _points;
 }

@@ -1,0 +1,70 @@
+package sindyk;
+
+// 矩形
+struct Rect {
+	float left;
+	float top;
+	float right;
+	float bottom;
+}
+// 二维点
+struct Point2dXY {
+	float x;
+	float y;
+}
+// 二维矩阵
+struct Matrix2d{
+    float _m11;
+	float _m12;
+    float _m21;
+	float _m22;
+    float _dx;
+	float _dy;
+}
+
+// 节点类型
+enum NodeType{
+	eBox = 1;
+	eChip = 2;
+	ePoint = 3;
+	ePolyline = 4;
+}
+
+message GraphicNode {
+// BasicGraphic
+	NodeType type = 1;
+	int rgba64 = 2;
+	int id = 3;
+	Matrix2d mat = 4;
+
+// BoxGraphic
+	Rect rect = 5;
+
+// PointGraphic
+    Point2dXY pt = 6;
+
+// PolylineGraphic
+    Point2dXY[] points = 7;
+}
+
+message Chip {
+	NodeType    type = 1;
+    int         x = 2;
+    int         y = 3;
+    int         color = 4;
+    Point2dXY[] stuff = 5;
+}
+
+message Document {
+	// doc
+	string create_version = 1;
+	string last_open_version = 2;
+
+	// view
+	Matrix2d mat = 3; // 画布上的矩阵
+	int background = 4; // 背景色
+
+	// node
+	GraphicNode[] graphics = 5;
+	Chip[] chips = 6;
+}

@@ -5,7 +5,7 @@
 #include <QSplitter>
 
 #include "./core/GraphicsView.h"
-#include "GraphicUtility.h"
+#include "utility/utility.h"
 
 QGraphicsScene *g_pScene = nullptr;
 

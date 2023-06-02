@@ -21,7 +21,9 @@ file(GLOB SRCS
        ${PROJECT_SOURCE_DIR}/*.cc
        ${PROJECT_SOURCE_DIR}/control/*.cc
        ${PROJECT_SOURCE_DIR}/core/*.cc
-       ${PROJECT_SOURCE_DIR}/graphics/*.cc)
+       ${PROJECT_SOURCE_DIR}/data/*.cc
+       ${PROJECT_SOURCE_DIR}/graphics/*.cc
+       ${PROJECT_SOURCE_DIR}/utility/*.cc)
 
 add_executable(${PROJECT_NAME} ${SRCS})
 

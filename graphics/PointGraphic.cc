@@ -4,21 +4,22 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-#include "../GraphicUtility.h"
+#include "../utility/utility.h"
 #include "qline.h"
 
 #define DOT_DIAMETER 40
 #define DOT_RADIUS 20
 
-PointGraphic::PointGraphic(double x, double y) : m_pt{x, y}
+PointGraphic::PointGraphic(QPointF const &pt) : BasicGraphic(ePointType), _pt(pt)
 {
-    m_color = {255, 0, 0};
+    _color = {255, 0, 0};
+    NOTIFY_MAKE_GRAPHIC();
 }
 
 QRectF PointGraphic::boundingRect() const
 {
     QRectF rect;
-    sindy::point2Rect(m_pt.x(), m_pt.y(), rect, DOT_RADIUS);
+    sindy::point2Rect(_pt.x(), _pt.y(), rect, DOT_RADIUS);
     return rect;
 }
 
@@ -32,12 +33,12 @@ QPainterPath PointGraphic::shape() const
 void PointGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
-    painter->drawEllipse(m_pt.x() - DOT_RADIUS * 0.5, m_pt.y() - DOT_RADIUS * 0.5, DOT_RADIUS, DOT_RADIUS);
+    painter->drawEllipse(_pt.x() - DOT_RADIUS * 0.5, _pt.y() - DOT_RADIUS * 0.5, DOT_RADIUS, DOT_RADIUS);
 
     QLineF line(0 - DOT_RADIUS, 0, 0 + DOT_RADIUS, 0);
 
     painter->save();
-    painter->setTransform(QTransform::fromTranslate(m_pt.x(), m_pt.y()), true);
+    painter->setTransform(QTransform::fromTranslate(_pt.x(), _pt.y()), true);
     painter->drawLine(line);
 
     QTransform transform;

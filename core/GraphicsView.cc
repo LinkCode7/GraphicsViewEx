@@ -63,7 +63,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
         if (m_drag)
         {
-            setInteractive(false);  // 拖拽过程中禁止移动item
+            setInteractive(false); // 拖拽过程中禁止移动item
             m_drag->onLeftClick(mapToScene(event->pos()));
         }
     }
@@ -115,7 +115,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
-    sindy::viewKeyDown(static_cast<Qt::Key>(event->key()), this);
+    sindy::viewKeyDown(event, this);
     QGraphicsView::keyPressEvent(event);
 }
 

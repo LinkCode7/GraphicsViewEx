@@ -1,7 +1,7 @@
 #include "PolylineDrag.h"
 
-#include "../GraphicUtility.h"
 #include "../graphics/PolylineGraphic.h"
+#include "../utility/utility.h"
 #include "qgraphicsscene.h"
 
 extern QGraphicsScene* g_pScene;

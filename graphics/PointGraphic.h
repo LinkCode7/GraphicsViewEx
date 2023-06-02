@@ -5,11 +5,19 @@
 
 class PointGraphic : public BasicGraphic
 {
+    VISIT_THIS_CLASS
 public:
-    PointGraphic(double x, double y);
+    PointGraphic(QPointF const &pt);
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
     void         paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget = nullptr) override;
+
+    // 对象创建相关的业务
+    std::unique_ptr<GraphicMaker> subMake() const override { return std::make_unique<PointMaker>(); }
+
+public:
+    QPointF point() const { return _pt; }
+    void    point(QPointF const &pt) { _pt = pt; }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -17,7 +25,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 protected:
-    QPointF m_pt;
+    QPointF _pt;
 };
 
-#endif  // !POINT_GRAPHIC_H
+#endif // !POINT_GRAPHIC_H
