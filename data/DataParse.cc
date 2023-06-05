@@ -4,10 +4,13 @@
 #include <sstream>
 
 #include "../core/GraphicsView.h"
-#include "../graphics/BasicGraphic.h"
-#include "../graphics/BoxGraphic.h"
-#include "../graphics/PointGraphic.h"
-#include "../graphics/PolylineGraphic.h"
+#include "../graphics/GeAim.h"
+#include "../graphics/GeBox.h"
+#include "../graphics/GePolyline.h"
+#include "../graphics/GePolylineIndex.h"
+#include "../graphics/GeSegment.h"
+#include "../graphics/GeSquarePoints.h"
+#include "../graphics/IGeGraphic.h"
 #include "../utility/utility.h"
 #include "GraphicsDocument.h"
 #include "qgraphicsscene.h"
@@ -50,8 +53,10 @@ void ParseGraphicsData::decode(GraphicsView* pView)
     if (_kiwi.message().last_open_version())
         Document::instance().lastOpenVersion(_kiwi.message().last_open_version()->c_str());
 
-    if (_kiwi.message().mat())
+    if (_kiwi.message().matView())
     {
+        pView->setTransform(_kiwi.toMatrix(_kiwi.message().matView()));
+        // TODO:根据矩阵计算旋转角度、缩放系数，重设滚动条位置
     }
 
     if (_kiwi.message().background())
@@ -75,7 +80,7 @@ void ParseGraphicsData::decodeNode(GraphicsView* pView)
         _node = &(*arrNode)[i];
         _kiwi.currentNode(_node);
 
-        BasicGraphic* object = createObject();
+        IGeGraphic* object = createObject();
         if (!object)
             continue;
 
@@ -84,26 +89,26 @@ void ParseGraphicsData::decodeNode(GraphicsView* pView)
     }
 }
 
-BasicGraphic* ParseGraphicsData::createObject()
+IGeGraphic* ParseGraphicsData::createObject()
 {
     if (!_node)
         return nullptr;
 
-    BasicGraphic* object = nullptr;
+    IGeGraphic* object = nullptr;
 
     sindyk::NodeType* objectType = _node->type();
     switch (*objectType)
     {
         case sindyk::NodeType::eBox:
-            object = new BoxGraphic({});
+            object = new GeBox({});
             break;
         case sindyk::NodeType::eChip:
             break;
-        case sindyk::NodeType::ePoint:
-            object = new PointGraphic({});
+        case sindyk::NodeType::eAim:
+            object = new GeAim({});
             break;
         case sindyk::NodeType::ePolyline:
-            object = new PolylineGraphic({});
+            object = new GePolyline({});
             break;
         default:
             break;
@@ -112,41 +117,71 @@ BasicGraphic* ParseGraphicsData::createObject()
     return object;
 }
 
-void ParseGraphicsData::visit(BasicGraphic* pItem)
+void ParseGraphicsData::visit(IGeGraphic* pItem)
 {
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
     if (_node->id())
         pItem->id(*_node->id());
 
-    if (_node->rgba64())
-        pItem->setColor(*_node->rgba64());
-}
-void ParseGraphicsData::visit(BoxGraphic* pItem)
-{
-    visit(static_cast<BasicGraphic*>(pItem));
+    if (_node->argb())
+        pItem->setColor(*_node->argb());
 
-    if (_node->rect())
-        pItem->rect(_kiwi.toRect(_node->rect()));
+    if (_node->mat())
+    {
+        QTransform trans;
+        trans.translate(100, 100);
+        pItem->setTransform(_kiwi.toMatrix(_node->mat()));
+    }
 }
-void ParseGraphicsData::visit(PointGraphic* pItem)
+void ParseGraphicsData::visit(IGePoint* pItem)
 {
-    visit(static_cast<BasicGraphic*>(pItem));
+    visit(static_cast<IGeGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::ePointGraphicInfo))
+    if (pItem->hasFlag(SaveFlags::eIGePointInfo))
     {
         if (_node->pt())
             pItem->point(_kiwi.toPoint(_node->pt()));
     }
 }
-void ParseGraphicsData::visit(PolylineGraphic* pItem)
+void ParseGraphicsData::visit(IGePointSet* pItem)
 {
-    visit(static_cast<BasicGraphic*>(pItem));
+    visit(static_cast<IGeGraphic*>(pItem));
 
     if (_node->points())
     {
-        QVector<QPointF> points;
+        std::vector<QPointF> points;
         _kiwi.getPoints(points);
         pItem->setPoints(points);
     }
+}
+
+void ParseGraphicsData::ParseGraphicsData::visit(GeBox* pItem)
+{
+    visit(static_cast<IGeGraphic*>(pItem));
+
+    if (_node->rect())
+        pItem->rect(_kiwi.toRect(_node->rect()));
+}
+void ParseGraphicsData::visit(GeAim* pItem)
+{
+    visit(static_cast<IGePoint*>(pItem));
+}
+void ParseGraphicsData::visit(GePolyline* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
+}
+void ParseGraphicsData::visit(GePolylineIndex* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
+}
+
+void ParseGraphicsData::visit(GeSquarePoints* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
+}
+
+void ParseGraphicsData::visit(GeSegment* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
 }

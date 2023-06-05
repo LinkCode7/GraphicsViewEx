@@ -23,10 +23,16 @@ private:
 
 enum class NodeType : uint32_t
 {
-    eBox      = 1,
-    eChip     = 2,
-    ePoint    = 3,
-    ePolyline = 4,
+    eBox           = 1,
+    eChip          = 2,
+    eAim           = 3,
+    ePolyline      = 4,
+    ePolylineIndex = 5,
+    eSquarePoints  = 6,
+    eSegment       = 7,
+    eArc           = 8,
+    eBezier        = 9,
+    ePolygon       = 10,
 };
 
 class Rect;
@@ -103,6 +109,10 @@ public:
     const float *_m12() const;
     void         set__m12(const float &value);
 
+    float *      _m13();
+    const float *_m13() const;
+    void         set__m13(const float &value);
+
     float *      _m21();
     const float *_m21() const;
     void         set__m21(const float &value);
@@ -111,13 +121,21 @@ public:
     const float *_m22() const;
     void         set__m22(const float &value);
 
-    float *      _dx();
-    const float *_dx() const;
-    void         set__dx(const float &value);
+    float *      _m23();
+    const float *_m23() const;
+    void         set__m23(const float &value);
 
-    float *      _dy();
-    const float *_dy() const;
-    void         set__dy(const float &value);
+    float *      _m31();
+    const float *_m31() const;
+    void         set__m31(const float &value);
+
+    float *      _m32();
+    const float *_m32() const;
+    void         set__m32(const float &value);
+
+    float *      _m33();
+    const float *_m33() const;
+    void         set__m33(const float &value);
 
     bool encode(kiwi::ByteBuffer &bb);
     bool decode(kiwi::ByteBuffer &bb, kiwi::MemoryPool &pool, const BinarySchema *schema = nullptr);
@@ -126,10 +144,13 @@ private:
     uint32_t _flags[1]  = {};
     float    _data__m11 = {};
     float    _data__m12 = {};
+    float    _data__m13 = {};
     float    _data__m21 = {};
     float    _data__m22 = {};
-    float    _data__dx  = {};
-    float    _data__dy  = {};
+    float    _data__m23 = {};
+    float    _data__m31 = {};
+    float    _data__m32 = {};
+    float    _data__m33 = {};
 };
 
 class GraphicNode
@@ -141,9 +162,9 @@ public:
     const NodeType *type() const;
     void            set_type(const NodeType &value);
 
-    int32_t *      rgba64();
-    const int32_t *rgba64() const;
-    void           set_rgba64(const int32_t &value);
+    uint32_t *      argb();
+    const uint32_t *argb() const;
+    void            set_argb(const uint32_t &value);
 
     int32_t *      id();
     const int32_t *id() const;
@@ -175,7 +196,7 @@ private:
     Rect *                 _data_rect   = {};
     Point2dXY *            _data_pt     = {};
     kiwi::Array<Point2dXY> _data_points = {};
-    int32_t                _data_rgba64 = {};
+    uint32_t               _data_argb   = {};
     int32_t                _data_id     = {};
 };
 
@@ -196,9 +217,9 @@ public:
     const int32_t *y() const;
     void           set_y(const int32_t &value);
 
-    int32_t *      color();
-    const int32_t *color() const;
-    void           set_color(const int32_t &value);
+    uint32_t *      color();
+    const uint32_t *color() const;
+    void            set_color(const uint32_t &value);
 
     kiwi::Array<Point2dXY> *      stuff();
     const kiwi::Array<Point2dXY> *stuff() const;
@@ -213,7 +234,7 @@ private:
     kiwi::Array<Point2dXY> _data_stuff = {};
     int32_t                _data_x     = {};
     int32_t                _data_y     = {};
-    int32_t                _data_color = {};
+    uint32_t               _data_color = {};
 };
 
 class Document
@@ -229,13 +250,13 @@ public:
     const kiwi::String *last_open_version() const;
     void                set_last_open_version(const kiwi::String &value);
 
-    Matrix2d *      mat();
-    const Matrix2d *mat() const;
-    void            set_mat(Matrix2d *value);
+    Matrix2d *      matView();
+    const Matrix2d *matView() const;
+    void            set_matView(Matrix2d *value);
 
-    int32_t *      background();
-    const int32_t *background() const;
-    void           set_background(const int32_t &value);
+    uint32_t *      background();
+    const uint32_t *background() const;
+    void            set_background(const uint32_t &value);
 
     kiwi::Array<GraphicNode> *      graphics();
     const kiwi::Array<GraphicNode> *graphics() const;
@@ -252,10 +273,10 @@ private:
     uint32_t                 _flags[1]               = {};
     kiwi::String             _data_create_version    = {};
     kiwi::String             _data_last_open_version = {};
-    Matrix2d *               _data_mat               = {};
+    Matrix2d *               _data_matView           = {};
     kiwi::Array<GraphicNode> _data_graphics          = {};
     kiwi::Array<Chip>        _data_chips             = {};
-    int32_t                  _data_background        = {};
+    uint32_t                 _data_background        = {};
 };
 
 #endif

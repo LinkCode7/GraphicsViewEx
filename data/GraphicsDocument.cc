@@ -1,7 +1,7 @@
 #include "GraphicsDocument.h"
 
 #include "../core/GraphicsView.h"
-#include "../graphics/BasicGraphic.h"
+#include "../graphics/IGeGraphic.h"
 #include "qgraphicsscene.h"
 
 extern QGraphicsScene* g_pScene;
@@ -33,13 +33,13 @@ void Document::calculateNewId()
     _newId = max + 1;
 }
 
-void Document::addGraphic(BasicGraphic* pGraphic)
+void Document::addGraphic(IGeGraphic* pGraphic)
 {
     if (!pGraphic)
         return;
     _mapId2Geometry[_newId++] = pGraphic;
 }
-bool Document::removeGraphic(BasicGraphic* pGraphic)
+bool Document::removeGraphic(IGeGraphic* pGraphic)
 {
     for (auto iter = _mapId2Geometry.begin(); iter != _mapId2Geometry.end();)
     {
@@ -56,7 +56,7 @@ bool Document::removeGraphic(BasicGraphic* pGraphic)
     return false;
 }
 
-void Document::getObjects(std::vector<BasicGraphic*>& arrObject)
+void Document::getObjects(std::vector<IGeGraphic*>& arrObject)
 {
     for (auto const& item : _mapId2Geometry)
         arrObject.emplace_back(item.second);

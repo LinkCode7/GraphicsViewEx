@@ -1,4 +1,4 @@
-#include "PointGraphic.h"
+#include "GeAim.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
@@ -10,27 +10,27 @@
 #define DOT_DIAMETER 40
 #define DOT_RADIUS 20
 
-PointGraphic::PointGraphic(QPointF const &pt) : BasicGraphic(ePointType), _pt(pt)
+GeAim::GeAim(QPointF const &pt) : IGePoint(pt, eGeAimType)
 {
     _color = {255, 0, 0};
     NOTIFY_MAKE_GRAPHIC();
 }
 
-QRectF PointGraphic::boundingRect() const
+QRectF GeAim::boundingRect() const
 {
     QRectF rect;
     sindy::point2Rect(_pt.x(), _pt.y(), rect, DOT_RADIUS);
     return rect;
 }
 
-QPainterPath PointGraphic::shape() const
+QPainterPath GeAim::shape() const
 {
     QPainterPath path;
     path.addRect(boundingRect());
     return path;
 }
 
-void PointGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void GeAim::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
     painter->drawEllipse(_pt.x() - DOT_RADIUS * 0.5, _pt.y() - DOT_RADIUS * 0.5, DOT_RADIUS, DOT_RADIUS);
@@ -50,17 +50,17 @@ void PointGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     // painter->setPen(QPen(Qt::black, 0));
 }
 
-void PointGraphic::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void GeAim::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mousePressEvent(event);
 }
 
-void PointGraphic::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void GeAim::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseMoveEvent(event);
 }
 
-void PointGraphic::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void GeAim::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseReleaseEvent(event);
 }

@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_MAKER_H
 #define GRAPHICS_MAKER_H
 
-class BasicGraphic;
+class IGeGraphic;
 
 /*
  * @brief 处理对象创建时的业务
@@ -9,31 +9,49 @@ class BasicGraphic;
 class GraphicMaker
 {
 public:
-    void receive(BasicGraphic *pNew);
+    void receive(IGeGraphic *pNew);
 
 protected:
-    virtual void subCreate(BasicGraphic *pNew) = 0;
+    virtual void subCreate(IGeGraphic *pNew) = 0;
 
 private:
-    void addToDocument(BasicGraphic *pNew);
+    void addToDocument(IGeGraphic *pNew);
 };
 
 class BoxMaker : public GraphicMaker
 {
 public:
-    void subCreate(BasicGraphic *pNew) override {}
+    void subCreate(IGeGraphic *pNew) override {}
 };
 
 class PointMaker : public GraphicMaker
 {
 public:
-    void subCreate(BasicGraphic *pNew) override {}
+    void subCreate(IGeGraphic *pNew) override {}
 };
 
 class PolylineMaker : public GraphicMaker
 {
 public:
-    void subCreate(BasicGraphic *pNew) override {}
+    void subCreate(IGeGraphic *pNew) override {}
+};
+
+class GeSquarePointsMaker : public GraphicMaker
+{
+public:
+    void subCreate(IGeGraphic *pNew) override {}
+};
+
+class GePolylineIndexMaker : public GraphicMaker
+{
+public:
+    void subCreate(IGeGraphic *pNew) override {}
+};
+
+class GeSegmentMaker : public GraphicMaker
+{
+public:
+    void subCreate(IGeGraphic *pNew) override {}
 };
 
 #endif // !GRAPHICS_MAKER_H

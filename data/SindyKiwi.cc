@@ -1,6 +1,6 @@
 #include "SindyKiwi.h"
 
-#include "qmatrix.h"
+#include "qtransform.h"
 #include "schema.h"
 
 SindyKiwi::SindyKiwi() : _message(new sindyk::Document()), _pool(new kiwi::MemoryPool()), _node(nullptr)
@@ -45,24 +45,28 @@ QPointF SindyKiwi::toPoint(sindyk::Point2dXY* pt)
     return QPointF{*pt->x(), *pt->y()};
 }
 
-sindyk::Matrix2d* SindyKiwi::fromMatrix(QMatrix const& mat)
+sindyk::Matrix2d* SindyKiwi::fromMatrix(QTransform const& mat)
 {
     auto out = _pool->allocate<sindyk::Matrix2d>();
     out->set__m11(mat.m11());
     out->set__m12(mat.m12());
+    out->set__m13(mat.m13());
     out->set__m21(mat.m21());
     out->set__m22(mat.m22());
-    out->set__dx(mat.dx());
-    out->set__dy(mat.dy());
+    out->set__m23(mat.m23());
+    out->set__m31(mat.m31());
+    out->set__m32(mat.m32());
+    out->set__m33(mat.m33());
     return out;
 }
 
-QMatrix SindyKiwi::toMatrix(sindyk::Matrix2d* mat)
+QTransform SindyKiwi::toMatrix(sindyk::Matrix2d* mat)
 {
-    return QMatrix{*mat->_m11(), *mat->_m12(), *mat->_m21(), *mat->_m22(), *mat->_dx(), *mat->_dy()};
+    return QTransform{*mat->_m11(), *mat->_m12(), *mat->_m13(), *mat->_m21(), *mat->_m22(),
+                      *mat->_m23(), *mat->_m31(), *mat->_m32(), *mat->_m33()};
 }
 
-void SindyKiwi::setPoints(QVector<QPointF> const& points)
+void SindyKiwi::setPoints(std::vector<QPointF> const& points)
 {
     auto                            size     = points.size();
     kiwi::Array<sindyk::Point2dXY>& arrPoint = _node->set_points(*_pool, size);
@@ -74,7 +78,7 @@ void SindyKiwi::setPoints(QVector<QPointF> const& points)
     }
 }
 
-void SindyKiwi::getPoints(QVector<QPointF>& points)
+void SindyKiwi::getPoints(std::vector<QPointF>& points)
 {
     const kiwi::Array<sindyk::Point2dXY>& arrPoint = *_node->points();
 

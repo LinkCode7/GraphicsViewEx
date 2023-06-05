@@ -7,11 +7,6 @@
 
 class GraphicsView;
 
-class BoxGraphic;
-class PointGraphic;
-class PolylineGraphic;
-class BasicGraphic;
-
 class ParseGraphicsData : public VisitGraphics
 {
 public:
@@ -21,13 +16,19 @@ public:
     void decode(GraphicsView* pView);
 
 public:
-    void visit(BasicGraphic* pItem) override;
-    void visit(BoxGraphic* pItem) override;
-    void visit(PointGraphic* pItem) override;
-    void visit(PolylineGraphic* pItem) override;
+    void visit(IGeGraphic* pItem) override;
+    void visit(IGePoint* pItem) override;
+    void visit(IGePointSet* pItem) override;
+
+    void visit(GeBox* pItem) override;
+    void visit(GeAim* pItem) override;
+    void visit(GePolyline* pItem) override;
+    void visit(GePolylineIndex* pItem) override;
+    void visit(GeSquarePoints* pItem) override;
+    void visit(GeSegment* pItem) override;
 
 private:
-    BasicGraphic* createObject();
+    IGeGraphic* createObject();
 
     void decodeNode(GraphicsView* pView);
 

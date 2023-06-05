@@ -6,11 +6,6 @@
 
 class GraphicsView;
 
-class BoxGraphic;
-class PointGraphic;
-class PolylineGraphic;
-class BasicGraphic;
-
 namespace sindyk
 {
 class GraphicNode;
@@ -27,12 +22,17 @@ public:
     void encode(GraphicsView* pView, SaveFlags const& flag);
 
 public:
-    void visit(BasicGraphic* pItem) override;
-    void visit(BoxGraphic* pItem) override;
-    void visit(PointGraphic* pItem) override;
-    void visit(PolylineGraphic* pItem) override;
+    void visit(IGeGraphic* pItem) override;
+    void visit(IGePoint* pItem) override;
+    void visit(IGePointSet* pItem) override;
 
-private:
+    void visit(GeBox* pItem) override;
+    void visit(GeAim* pItem) override;
+    void visit(GePolyline* pItem) override;
+    void visit(GePolylineIndex* pItem) override;
+    void visit(GeSquarePoints* pItem) override;
+    void visit(GeSegment* pItem) override;
+
 private:
     SindyKiwi            _kiwi;
     sindyk::GraphicNode* _node;

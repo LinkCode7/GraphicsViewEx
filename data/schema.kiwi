@@ -16,34 +16,43 @@ struct Point2dXY {
 struct Matrix2d{
     float _m11;
 	float _m12;
+	float _m13;
     float _m21;
 	float _m22;
-    float _dx;
-	float _dy;
+	float _m23;
+    float _m31;
+	float _m32;
+	float _m33;
 }
 
 // 节点类型
 enum NodeType{
 	eBox = 1;
 	eChip = 2;
-	ePoint = 3;
+	eAim = 3;
 	ePolyline = 4;
+	ePolylineIndex = 5;
+	eSquarePoints = 6;
+	eSegment = 7;
+	eArc = 8;
+	eBezier = 9;
+	ePolygon = 10;
 }
 
 message GraphicNode {
-// BasicGraphic
+// IGeGraphic
 	NodeType type = 1;
-	int rgba64 = 2;
+	uint argb = 2;
 	int id = 3;
 	Matrix2d mat = 4;
 
-// BoxGraphic
+// GeBox
 	Rect rect = 5;
 
-// PointGraphic
+// IGePoint
     Point2dXY pt = 6;
 
-// PolylineGraphic
+// IGePointSet
     Point2dXY[] points = 7;
 }
 
@@ -51,7 +60,7 @@ message Chip {
 	NodeType    type = 1;
     int         x = 2;
     int         y = 3;
-    int         color = 4;
+    uint         color = 4;
     Point2dXY[] stuff = 5;
 }
 
@@ -61,8 +70,8 @@ message Document {
 	string last_open_version = 2;
 
 	// view
-	Matrix2d mat = 3; // 画布上的矩阵
-	int background = 4; // 背景色
+	Matrix2d matView = 3; // 画布上的矩阵
+	uint background = 4; // 背景色
 
 	// node
 	GraphicNode[] graphics = 5;

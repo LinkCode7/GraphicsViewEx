@@ -1,4 +1,4 @@
-#include "BoxGraphic.h"
+#include "GeBox.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
@@ -6,32 +6,34 @@
 
 #include "../utility/utility.h"
 
-BoxGraphic::BoxGraphic(QRectF const &rect) : BasicGraphic(eBoxType), m_rect(rect)
+GeBox::GeBox(QRectF const &rect) : IGeGraphic(eGeBoxType), m_rect(rect)
 {
+    _color = {192, 192, 192};
     // setPos(m_rect.center());
     NOTIFY_MAKE_GRAPHIC();
 }
 
-BoxGraphic::BoxGraphic(QPointF const &ptMin, QPointF const &ptMax) : BasicGraphic(eBoxType)
+GeBox::GeBox(QPointF const &ptMin, QPointF const &ptMax) : IGeGraphic(eGeBoxType)
 {
+    _color = {192, 192, 192};
     sindy::extent2Rect(ptMin, ptMax, m_rect);
     // setPos(m_rect.center());
     NOTIFY_MAKE_GRAPHIC();
 }
 
-QRectF BoxGraphic::boundingRect() const
+QRectF GeBox::boundingRect() const
 {
     return m_rect;
 }
 
-QPainterPath BoxGraphic::shape() const
+QPainterPath GeBox::shape() const
 {
     QPainterPath path;
     path.addRect(boundingRect());
     return path;
 }
 
-void BoxGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void GeBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
 
@@ -43,13 +45,13 @@ void BoxGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->setPen(oldPen);
 }
 
-void BoxGraphic::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void GeBox::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mousePressEvent(event);
     update();
 }
 
-void BoxGraphic::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void GeBox::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->modifiers() & Qt::ShiftModifier)
     {
@@ -59,7 +61,7 @@ void BoxGraphic::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseMoveEvent(event);
 }
 
-void BoxGraphic::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void GeBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseReleaseEvent(event);
     update();

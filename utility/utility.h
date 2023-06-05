@@ -26,7 +26,7 @@ constexpr double radian2angle(double radian)
 
 void extent2Rect(QPointF const& ptMin, QPointF const& ptMax, QRectF& rect);
 void extent2Rect(double minX, double minY, double maxX, double maxY, QRectF& rect);
-void point2Rect(double x, double y, QRectF& rect, double tol);
+void point2Rect(double x, double y, QRectF& rect, double halfLength);
 
 void addTestEntity();
 void addChipToScene();

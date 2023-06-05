@@ -5,7 +5,7 @@
 
 #include "SaveFlags.h"
 
-class BasicGraphic;
+class IGeGraphic;
 
 class Document
 {
@@ -22,11 +22,11 @@ public:
     void reset();
     void calculateNewId();
 
-    void addGraphic(BasicGraphic* pGraphic);
-    bool removeGraphic(BasicGraphic* pGraphic);
+    void addGraphic(IGeGraphic* pGraphic);
+    bool removeGraphic(IGeGraphic* pGraphic);
 
     // 获取所有图形
-    void getObjects(std::vector<BasicGraphic*>& arrObject);
+    void getObjects(std::vector<IGeGraphic*>& arrObject);
 
     void        createVersion(std::string const& str) { _createVersion = str; }
     std::string createVersion() const { return _createVersion; }
@@ -40,7 +40,7 @@ private:
     std::string _createVersion;
     std::string _lastOpenVersion;
 
-    std::unordered_map<uint, BasicGraphic*> _mapId2Geometry;
+    std::unordered_map<uint, IGeGraphic*> _mapId2Geometry;
 };
 
 #endif // !GRAPHICS_DOCUMENT_H

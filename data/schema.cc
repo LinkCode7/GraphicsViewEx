@@ -211,68 +211,116 @@ void Matrix2d::set__m12(const float &value)
     _data__m12 = value;
 }
 
+float *Matrix2d::_m13()
+{
+    return _flags[0] & 4 ? &_data__m13 : nullptr;
+}
+
+const float *Matrix2d::_m13() const
+{
+    return _flags[0] & 4 ? &_data__m13 : nullptr;
+}
+
+void Matrix2d::set__m13(const float &value)
+{
+    _flags[0] |= 4;
+    _data__m13 = value;
+}
+
 float *Matrix2d::_m21()
 {
-    return _flags[0] & 4 ? &_data__m21 : nullptr;
+    return _flags[0] & 8 ? &_data__m21 : nullptr;
 }
 
 const float *Matrix2d::_m21() const
 {
-    return _flags[0] & 4 ? &_data__m21 : nullptr;
+    return _flags[0] & 8 ? &_data__m21 : nullptr;
 }
 
 void Matrix2d::set__m21(const float &value)
 {
-    _flags[0] |= 4;
+    _flags[0] |= 8;
     _data__m21 = value;
 }
 
 float *Matrix2d::_m22()
 {
-    return _flags[0] & 8 ? &_data__m22 : nullptr;
+    return _flags[0] & 16 ? &_data__m22 : nullptr;
 }
 
 const float *Matrix2d::_m22() const
 {
-    return _flags[0] & 8 ? &_data__m22 : nullptr;
+    return _flags[0] & 16 ? &_data__m22 : nullptr;
 }
 
 void Matrix2d::set__m22(const float &value)
 {
-    _flags[0] |= 8;
+    _flags[0] |= 16;
     _data__m22 = value;
 }
 
-float *Matrix2d::_dx()
+float *Matrix2d::_m23()
 {
-    return _flags[0] & 16 ? &_data__dx : nullptr;
+    return _flags[0] & 32 ? &_data__m23 : nullptr;
 }
 
-const float *Matrix2d::_dx() const
+const float *Matrix2d::_m23() const
 {
-    return _flags[0] & 16 ? &_data__dx : nullptr;
+    return _flags[0] & 32 ? &_data__m23 : nullptr;
 }
 
-void Matrix2d::set__dx(const float &value)
-{
-    _flags[0] |= 16;
-    _data__dx = value;
-}
-
-float *Matrix2d::_dy()
-{
-    return _flags[0] & 32 ? &_data__dy : nullptr;
-}
-
-const float *Matrix2d::_dy() const
-{
-    return _flags[0] & 32 ? &_data__dy : nullptr;
-}
-
-void Matrix2d::set__dy(const float &value)
+void Matrix2d::set__m23(const float &value)
 {
     _flags[0] |= 32;
-    _data__dy = value;
+    _data__m23 = value;
+}
+
+float *Matrix2d::_m31()
+{
+    return _flags[0] & 64 ? &_data__m31 : nullptr;
+}
+
+const float *Matrix2d::_m31() const
+{
+    return _flags[0] & 64 ? &_data__m31 : nullptr;
+}
+
+void Matrix2d::set__m31(const float &value)
+{
+    _flags[0] |= 64;
+    _data__m31 = value;
+}
+
+float *Matrix2d::_m32()
+{
+    return _flags[0] & 128 ? &_data__m32 : nullptr;
+}
+
+const float *Matrix2d::_m32() const
+{
+    return _flags[0] & 128 ? &_data__m32 : nullptr;
+}
+
+void Matrix2d::set__m32(const float &value)
+{
+    _flags[0] |= 128;
+    _data__m32 = value;
+}
+
+float *Matrix2d::_m33()
+{
+    return _flags[0] & 256 ? &_data__m33 : nullptr;
+}
+
+const float *Matrix2d::_m33() const
+{
+    return _flags[0] & 256 ? &_data__m33 : nullptr;
+}
+
+void Matrix2d::set__m33(const float &value)
+{
+    _flags[0] |= 256;
+    _data__m33 = value;
 }
 
 bool Matrix2d::encode(kiwi::ByteBuffer &_bb)
@@ -283,18 +331,27 @@ bool Matrix2d::encode(kiwi::ByteBuffer &_bb)
     if (_m12() == nullptr)
         return false;
     _bb.writeVarFloat(_data__m12);
+    if (_m13() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data__m13);
     if (_m21() == nullptr)
         return false;
     _bb.writeVarFloat(_data__m21);
     if (_m22() == nullptr)
         return false;
     _bb.writeVarFloat(_data__m22);
-    if (_dx() == nullptr)
+    if (_m23() == nullptr)
         return false;
-    _bb.writeVarFloat(_data__dx);
-    if (_dy() == nullptr)
+    _bb.writeVarFloat(_data__m23);
+    if (_m31() == nullptr)
         return false;
-    _bb.writeVarFloat(_data__dy);
+    _bb.writeVarFloat(_data__m31);
+    if (_m32() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data__m32);
+    if (_m33() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data__m33);
     return true;
 }
 
@@ -306,18 +363,27 @@ bool Matrix2d::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const Bina
     if (!_bb.readVarFloat(_data__m12))
         return false;
     set__m12(_data__m12);
+    if (!_bb.readVarFloat(_data__m13))
+        return false;
+    set__m13(_data__m13);
     if (!_bb.readVarFloat(_data__m21))
         return false;
     set__m21(_data__m21);
     if (!_bb.readVarFloat(_data__m22))
         return false;
     set__m22(_data__m22);
-    if (!_bb.readVarFloat(_data__dx))
+    if (!_bb.readVarFloat(_data__m23))
         return false;
-    set__dx(_data__dx);
-    if (!_bb.readVarFloat(_data__dy))
+    set__m23(_data__m23);
+    if (!_bb.readVarFloat(_data__m31))
         return false;
-    set__dy(_data__dy);
+    set__m31(_data__m31);
+    if (!_bb.readVarFloat(_data__m32))
+        return false;
+    set__m32(_data__m32);
+    if (!_bb.readVarFloat(_data__m33))
+        return false;
+    set__m33(_data__m33);
     return true;
 }
 
@@ -337,20 +403,20 @@ void GraphicNode::set_type(const NodeType &value)
     _data_type = value;
 }
 
-int32_t *GraphicNode::rgba64()
+uint32_t *GraphicNode::argb()
 {
-    return _flags[0] & 2 ? &_data_rgba64 : nullptr;
+    return _flags[0] & 2 ? &_data_argb : nullptr;
 }
 
-const int32_t *GraphicNode::rgba64() const
+const uint32_t *GraphicNode::argb() const
 {
-    return _flags[0] & 2 ? &_data_rgba64 : nullptr;
+    return _flags[0] & 2 ? &_data_argb : nullptr;
 }
 
-void GraphicNode::set_rgba64(const int32_t &value)
+void GraphicNode::set_argb(const uint32_t &value)
 {
     _flags[0] |= 2;
-    _data_rgba64 = value;
+    _data_argb = value;
 }
 
 int32_t *GraphicNode::id()
@@ -437,10 +503,10 @@ bool GraphicNode::encode(kiwi::ByteBuffer &_bb)
         _bb.writeVarUint(1);
         _bb.writeVarUint(static_cast<uint32_t>(_data_type));
     }
-    if (rgba64() != nullptr)
+    if (argb() != nullptr)
     {
         _bb.writeVarUint(2);
-        _bb.writeVarInt(_data_rgba64);
+        _bb.writeVarUint(_data_argb);
     }
     if (id() != nullptr)
     {
@@ -498,9 +564,9 @@ bool GraphicNode::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const B
             }
             case 2:
             {
-                if (!_bb.readVarInt(_data_rgba64))
+                if (!_bb.readVarUint(_data_argb))
                     return false;
-                set_rgba64(_data_rgba64);
+                set_argb(_data_argb);
                 break;
             }
             case 3:
@@ -598,17 +664,17 @@ void Chip::set_y(const int32_t &value)
     _data_y = value;
 }
 
-int32_t *Chip::color()
+uint32_t *Chip::color()
 {
     return _flags[0] & 8 ? &_data_color : nullptr;
 }
 
-const int32_t *Chip::color() const
+const uint32_t *Chip::color() const
 {
     return _flags[0] & 8 ? &_data_color : nullptr;
 }
 
-void Chip::set_color(const int32_t &value)
+void Chip::set_color(const uint32_t &value)
 {
     _flags[0] |= 8;
     _data_color = value;
@@ -650,7 +716,7 @@ bool Chip::encode(kiwi::ByteBuffer &_bb)
     if (color() != nullptr)
     {
         _bb.writeVarUint(4);
-        _bb.writeVarInt(_data_color);
+        _bb.writeVarUint(_data_color);
     }
     if (stuff() != nullptr)
     {
@@ -699,7 +765,7 @@ bool Chip::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const BinarySc
             }
             case 4:
             {
-                if (!_bb.readVarInt(_data_color))
+                if (!_bb.readVarUint(_data_color))
                     return false;
                 set_color(_data_color);
                 break;
@@ -755,32 +821,32 @@ void Document::set_last_open_version(const kiwi::String &value)
     _data_last_open_version = value;
 }
 
-Matrix2d *Document::mat()
+Matrix2d *Document::matView()
 {
-    return _data_mat;
+    return _data_matView;
 }
 
-const Matrix2d *Document::mat() const
+const Matrix2d *Document::matView() const
 {
-    return _data_mat;
+    return _data_matView;
 }
 
-void Document::set_mat(Matrix2d *value)
+void Document::set_matView(Matrix2d *value)
 {
-    _data_mat = value;
+    _data_matView = value;
 }
 
-int32_t *Document::background()
-{
-    return _flags[0] & 8 ? &_data_background : nullptr;
-}
-
-const int32_t *Document::background() const
+uint32_t *Document::background()
 {
     return _flags[0] & 8 ? &_data_background : nullptr;
 }
 
-void Document::set_background(const int32_t &value)
+const uint32_t *Document::background() const
+{
+    return _flags[0] & 8 ? &_data_background : nullptr;
+}
+
+void Document::set_background(const uint32_t &value)
 {
     _flags[0] |= 8;
     _data_background = value;
@@ -830,16 +896,16 @@ bool Document::encode(kiwi::ByteBuffer &_bb)
         _bb.writeVarUint(2);
         _bb.writeString(_data_last_open_version.c_str());
     }
-    if (mat() != nullptr)
+    if (matView() != nullptr)
     {
         _bb.writeVarUint(3);
-        if (!_data_mat->encode(_bb))
+        if (!_data_matView->encode(_bb))
             return false;
     }
     if (background() != nullptr)
     {
         _bb.writeVarUint(4);
-        _bb.writeVarInt(_data_background);
+        _bb.writeVarUint(_data_background);
     }
     if (graphics() != nullptr)
     {
@@ -889,14 +955,14 @@ bool Document::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const Bina
             }
             case 3:
             {
-                _data_mat = _pool.allocate<Matrix2d>();
-                if (!_data_mat->decode(_bb, _pool, _schema))
+                _data_matView = _pool.allocate<Matrix2d>();
+                if (!_data_matView->decode(_bb, _pool, _schema))
                     return false;
                 break;
             }
             case 4:
             {
-                if (!_bb.readVarInt(_data_background))
+                if (!_bb.readVarUint(_data_background))
                     return false;
                 set_background(_data_background);
                 break;

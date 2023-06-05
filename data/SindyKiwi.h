@@ -2,9 +2,9 @@
 #define SINDY_KIWI_H
 
 #include <string>
+#include <vector>
 
 #include "qrect.h"
-#include "qvector.h"
 
 namespace kiwi
 {
@@ -39,11 +39,11 @@ public:
     QPointF            toPoint(sindyk::Point2dXY* pt);
     sindyk::Point2dXY* fromPoint(QPointF const& pt);
 
-    sindyk::Matrix2d* fromMatrix(QMatrix const& mat);
-    QMatrix           toMatrix(sindyk::Matrix2d* mat);
+    sindyk::Matrix2d* fromMatrix(QTransform const& mat);
+    QTransform        toMatrix(sindyk::Matrix2d* mat);
 
-    void getPoints(QVector<QPointF>& points);
-    void setPoints(QVector<QPointF> const& points);
+    void getPoints(std::vector<QPointF>& points);
+    void setPoints(std::vector<QPointF> const& points);
 
 private:
     kiwi::MemoryPool*    _pool;

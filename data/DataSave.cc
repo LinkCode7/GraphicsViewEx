@@ -5,10 +5,15 @@
 #include <fstream>
 
 #include "../core/GraphicsView.h"
-#include "../graphics/BasicGraphic.h"
-#include "../graphics/BoxGraphic.h"
-#include "../graphics/PointGraphic.h"
-#include "../graphics/PolylineGraphic.h"
+#include "../graphics/GeAim.h"
+#include "../graphics/GeBox.h"
+#include "../graphics/GePolyline.h"
+#include "../graphics/GePolylineIndex.h"
+#include "../graphics/GeSegment.h"
+#include "../graphics/GeSquarePoints.h"
+#include "../graphics/IGeGraphic.h"
+#include "../graphics/IGePoint.h"
+#include "../graphics/IGePointSet.h"
 #include "../utility/utility.h"
 #include "GraphicsDocument.h"
 #include "qgraphicsscene.h"
@@ -16,6 +21,24 @@
 #include "schema.h"
 
 #define CURRENT_VERSION "1.1"
+
+void SaveGraphicsData::test()
+{
+    sindyk::Document _message;
+    _kiwi.message().set_background(1);
+
+    kiwi::ByteBuffer buffer;
+    bool             encode_success = _kiwi.message().encode(buffer);
+
+    sindyk::Document message2;
+    kiwi::MemoryPool pool;
+    bool             decode_success = message2.decode(buffer, pool);
+
+    if (message2.background())
+    {
+        printf("value is %d\n", *message2.background());
+    }
+}
 
 void SaveGraphicsData::saveAsFile(GraphicsView* pView, SaveFlags const& flag)
 {
@@ -50,11 +73,11 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
 
     if (flag.has(SaveFlags::eViewInfo))
     {
-        _kiwi.message().set_mat(_kiwi.fromMatrix(QMatrix{}));
+        _kiwi.message().set_matView(_kiwi.fromMatrix(pView->transform()));
         _kiwi.message().set_background(1);
     }
 
-    std::vector<BasicGraphic*> arrObject;
+    std::vector<IGeGraphic*> arrObject;
     Document::instance().getObjects(arrObject);
 
     auto size = arrObject.size();
@@ -70,63 +93,69 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
     }
 }
 
-void SaveGraphicsData::visit(BasicGraphic* pItem)
+void SaveGraphicsData::visit(IGeGraphic* pItem)
 {
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
-    if (pItem->hasFlag(SaveFlags::eBasicGraphicInfo))
+    if (pItem->hasFlag(SaveFlags::eIGeGraphicInfo))
     {
         _node->set_id(pItem->id());
-        _node->set_rgba64(pItem->getRgba64());
+        _node->set_argb(pItem->getArgb32());
     }
-    if (pItem->hasFlag(SaveFlags::eBasicGraphicMat))
+    if (pItem->hasFlag(SaveFlags::eIGeGraphicMat))
     {
+        _node->set_mat(_kiwi.fromMatrix(pItem->sceneTransform()));
     }
 }
 
-void SaveGraphicsData::visit(BoxGraphic* pItem)
+void SaveGraphicsData::visit(IGePoint* pItem)
 {
-    visit(static_cast<BasicGraphic*>(pItem));
+    visit(static_cast<IGeGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eBoxGraphicInfo))
-    {
-        _node->set_rect(_kiwi.fromRect(pItem->rect()));
-    }
-}
-void SaveGraphicsData::visit(PointGraphic* pItem)
-{
-    visit(static_cast<BasicGraphic*>(pItem));
-
-    if (pItem->hasFlag(SaveFlags::ePointGraphicInfo))
+    if (pItem->hasFlag(SaveFlags::eIGePointInfo))
     {
         _node->set_pt(_kiwi.fromPoint(pItem->point()));
     }
 }
-void SaveGraphicsData::visit(PolylineGraphic* pItem)
-{
-    visit(static_cast<BasicGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::ePolylineGraphic))
+void SaveGraphicsData::visit(IGePointSet* pItem)
+{
+    visit(static_cast<IGeGraphic*>(pItem));
+
+    if (pItem->hasFlag(SaveFlags::eIGePointSetInfo))
     {
-        QVector<QPointF> points = pItem->getPoints();
-        _kiwi.setPoints(points);
+        _kiwi.setPoints(*pItem->getPoints());
     }
 }
 
-void SaveGraphicsData::test()
+void SaveGraphicsData::visit(GeBox* pItem)
 {
-    sindyk::Document _message;
-    _kiwi.message().set_background(1);
+    visit(static_cast<IGeGraphic*>(pItem));
 
-    kiwi::ByteBuffer buffer;
-    bool             encode_success = _kiwi.message().encode(buffer);
-
-    sindyk::Document message2;
-    kiwi::MemoryPool pool;
-    bool             decode_success = message2.decode(buffer, pool);
-
-    if (message2.background())
+    if (pItem->hasFlag(SaveFlags::eGeBoxInfo))
     {
-        printf("value is %d\n", *message2.background());
+        _node->set_rect(_kiwi.fromRect(pItem->rect()));
     }
+}
+void SaveGraphicsData::visit(GeAim* pItem)
+{
+    visit(static_cast<IGePoint*>(pItem));
+}
+void SaveGraphicsData::visit(GePolyline* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
+}
+void SaveGraphicsData::visit(GePolylineIndex* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
+}
+
+void SaveGraphicsData::visit(GeSquarePoints* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
+}
+
+void SaveGraphicsData::visit(GeSegment* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
 }

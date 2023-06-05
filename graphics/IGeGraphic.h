@@ -1,5 +1,5 @@
-#ifndef BASIC_GRAPHIC_H
-#define BASIC_GRAPHIC_H
+#ifndef DB_GRAPHIC_H
+#define DB_GRAPHIC_H
 
 #include <QGraphicsItem>
 #include <qstyle>
@@ -15,19 +15,27 @@ class GraphicMaker;
 public:                  \
     void visit(VisitGraphics *visitor) override { visitor->visit(this); }
 
-class BasicGraphic : public QGraphicsItem
+class IGeGraphic : public QGraphicsItem
 {
 public:
+    // 可以直接构造的对象
     enum ObjectType : unsigned int
     {
-        eUnknownType  = 0,
-        eBoxType      = 1,
-        eChipType     = 2,
-        ePointType    = 3,
-        ePolylineType = 4,
+        eUnknownType         = 0,
+        eGeBoxType           = 1, // 包围盒
+        eChipType            = 2,
+        eGeAimType           = 3, // 定位点
+        eGePolylineType      = 4, // 连续线段，LineString
+        eGePolylineIndexType = 5, // 绘制带索引的连续线段
+        eGeSquarePointsType  = 6, // 方形点集
+
+        eGeSegmentType = 7,  // 线段
+        eGeArcType     = 8,  // 弧线
+        eGeBezierType  = 9,  // 贝塞尔曲线
+        eGePolygonType = 10, // 多边形
     };
 
-    BasicGraphic(ObjectType type);
+    IGeGraphic(ObjectType type);
 
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
@@ -42,7 +50,8 @@ public:
     virtual void visit(VisitGraphics *visitor) = 0;
 
 public:
-    int  getRgba64() const { return _color.rgba64(); }
+    uint getArgb32() const { return _color.rgba64().toArgb32(); }
+    uint setArgb32(uint argb) { _color = QRgba64::fromArgb32(argb); }
     void setColor(QColor const &color) { _color = color; }
 
     QColor getDrawColor(QStyle::State state);
@@ -70,4 +79,4 @@ protected:
     SaveFlags _saveFlags;
 };
 
-#endif // !BASIC_GRAPHIC_H
+#endif // !DB_GRAPHIC_H

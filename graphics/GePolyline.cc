@@ -1,61 +1,44 @@
-#include "PolylineGraphic.h"
+#include "GePolyline.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+// #include <algorithm>
 #include <iostream>
 
 #include "../utility/utility.h"
 
-PolylineGraphic::PolylineGraphic() : BasicGraphic(ePolylineType)
+GePolyline::GePolyline() : IGePointSet(eGePolylineType)
 {
     _color = {196, 196, 196};
     NOTIFY_MAKE_GRAPHIC();
 }
 
-PolylineGraphic::PolylineGraphic(std::initializer_list<QPointF> const &list) : BasicGraphic(ePolylineType)
+GePolyline::GePolyline(std::initializer_list<QPointF> const &list) : IGePointSet(list, eGePolylineType)
 {
     _color = {196, 196, 196};
-    for (auto const &pt : list)
-        _points.push_back(pt);
-
     NOTIFY_MAKE_GRAPHIC();
 }
 
-QRectF PolylineGraphic::boundingRect() const
-{
-    return QPolygonF(_points).boundingRect();
-}
-QPainterPath PolylineGraphic::shape() const
-{
-    QPainterPath path;
-    path.addRect(boundingRect());
-    return path;
-}
-void PolylineGraphic::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void GePolyline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
 
-    painter->drawPolyline(QPolygonF(_points));
+    painter->drawPolyline(_points.data(), _points.size());
 }
 
-void PolylineGraphic::addPoint(const QPointF &ptNow)
-{
-    _points.push_back(ptNow);
-}
-
-void PolylineGraphic::setLastPt(const QPointF &ptNow)
+void GePolyline::setLastPt(const QPointF &ptNow)
 {
     auto size = _points.size();
     if (size == 0)
         return;
     else if (size == 1)
-        _points.push_back(ptNow);
+        _points.emplace_back(ptNow);
     else
         _points[_points.size() - 1] = ptNow;
 }
 
-bool PolylineGraphic::getFirstPt(QPointF &pt) const
+bool GePolyline::getFirstPt(QPointF &pt) const
 {
     if (_points.size() == 0)
         return false;
@@ -63,7 +46,7 @@ bool PolylineGraphic::getFirstPt(QPointF &pt) const
     return true;
 }
 
-void PolylineGraphic::closePolyLine(const QPointF &point)
+void GePolyline::closePolyline(const QPointF &point)
 {
     auto size = _points.size();
     if (size <= 3)
@@ -76,7 +59,7 @@ void PolylineGraphic::closePolyLine(const QPointF &point)
     }
 }
 
-bool PolylineGraphic::checkCross(const QPointF &point)
+bool GePolyline::checkCross(const QPointF &point)
 {
     if (_points.size() <= 2)
         return false;
@@ -103,7 +86,8 @@ bool PolylineGraphic::checkCross(const QPointF &point)
     }
     return false;
 }
-bool PolylineGraphic::collisionDect(const QPointF &p1, const QPointF &p2, const QPointF &p3, const QPointF &p4)
+
+bool GePolyline::collisionDect(const QPointF &p1, const QPointF &p2, const QPointF &p3, const QPointF &p4)
 {
     double x1max = std::max(p1.x(), p2.x());
     double x1min = std::min(p1.x(), p2.x());
@@ -127,7 +111,7 @@ bool PolylineGraphic::collisionDect(const QPointF &p1, const QPointF &p2, const 
 
     return checkX && checkY;
 }
-bool PolylineGraphic::crossDect(const QPointF &p1, const QPointF &p2, const QPointF &p3, const QPointF &p4)
+bool GePolyline::crossDect(const QPointF &p1, const QPointF &p2, const QPointF &p3, const QPointF &p4)
 {
     auto   p1p3  = QPointF(p3.x() - p1.x(), p3.y() - p1.y());
     auto   p1p2  = QPointF(p2.x() - p1.x(), p2.y() - p1.y());
@@ -145,7 +129,7 @@ bool PolylineGraphic::crossDect(const QPointF &p1, const QPointF &p2, const QPoi
 
     return (res1 < 0 && res2 < 0) ? true : false;
 }
-bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPointF &p2)
+bool GePolyline::onLineDect(const QPointF &p, const QPointF &p1, const QPointF &p2)
 {
     auto pXpl = QPointF(p1.x() - p2.x(), p1.y() - p2.y());
     auto pXp2 = QPointF(p.x() - p2.x(), p.y() - p2.y());
@@ -163,9 +147,4 @@ bool PolylineGraphic::onLineDect(const QPointF &p, const QPointF &p1, const QPoi
     if (p.x() >= left && p.x() <= right && p.y() >= bottom && p.y() <= top)
         return r2 < 0.05 ? true : false;
     return false;
-}
-
-QVector<QPointF> PolylineGraphic::getPoints()
-{
-    return _points;
 }

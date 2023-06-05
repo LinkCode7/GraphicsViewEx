@@ -1,14 +1,14 @@
-#ifndef BOX_GRAPHIC_H
-#define BOX_GRAPHIC_H
+#ifndef GE_BOX_H
+#define GE_BOX_H
 
-#include "BasicGraphic.h"
+#include "IGeGraphic.h"
 
-class BoxGraphic : public BasicGraphic
+class GeBox : public IGeGraphic
 {
     VISIT_THIS_CLASS
 public:
-    BoxGraphic(QRectF const &rect);
-    BoxGraphic(QPointF const &ptMin, QPointF const &ptMax);
+    GeBox(QRectF const &rect);
+    GeBox(QPointF const &ptMin, QPointF const &ptMax);
 
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
@@ -29,4 +29,4 @@ private:
     QRectF m_rect;
 };
 
-#endif // !BOX_GRAPHIC_H
+#endif // !GE_BOX_H
