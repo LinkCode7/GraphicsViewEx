@@ -1,9 +1,9 @@
 #include "DataParse.h"
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
-#include "../core/GraphicsView.h"
 #include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
 #include "../graphics/GePolyline.h"
@@ -12,7 +12,8 @@
 #include "../graphics/GeSquarePoints.h"
 #include "../graphics/IGeGraphic.h"
 #include "../utility/utility.h"
-#include "GraphicsDocument.h"
+#include "../view/GraphicsArchive.h"
+#include "../view/GraphicsView.h"
 #include "qgraphicsscene.h"
 #include "schema.h"
 
@@ -41,17 +42,18 @@ void ParseGraphicsData::reset(GraphicsView* pView, std::string const& strHex)
     kiwi::ByteBuffer bb(data, size);
     _kiwi.message().decode(bb, _kiwi.pool());
 
-    Document::instance().reset();
+    GeArchive().doc()->reset();
     this->decode(pView);
 }
 
 void ParseGraphicsData::decode(GraphicsView* pView)
 {
+    auto doc = GeArchive().doc();
     if (_kiwi.message().create_version())
-        Document::instance().createVersion(_kiwi.message().create_version()->c_str());
+        doc->createVersion(_kiwi.message().create_version()->c_str());
 
     if (_kiwi.message().last_open_version())
-        Document::instance().lastOpenVersion(_kiwi.message().last_open_version()->c_str());
+        doc->lastOpenVersion(_kiwi.message().last_open_version()->c_str());
 
     if (_kiwi.message().matView())
     {
@@ -61,6 +63,7 @@ void ParseGraphicsData::decode(GraphicsView* pView)
 
     if (_kiwi.message().background())
     {
+        pView->setBgColor(*_kiwi.message().background());
     }
 
     decodeNode(pView);
@@ -110,7 +113,17 @@ IGeGraphic* ParseGraphicsData::createObject()
         case sindyk::NodeType::ePolyline:
             object = new GePolyline({});
             break;
+        case sindyk::NodeType::ePolylineIndex:
+            object = new GePolylineIndex({});
+            break;
+        case sindyk::NodeType::eSquarePoints:
+            object = new GeSquarePoints({});
+            break;
+        case sindyk::NodeType::eSegment:
+            object = new GeSegment();
+            break;
         default:
+            std::cout << ">>> error type" << std::endl;
             break;
     }
 
@@ -125,23 +138,13 @@ void ParseGraphicsData::visit(IGeGraphic* pItem)
         pItem->id(*_node->id());
 
     if (_node->argb())
-        pItem->setColor(*_node->argb());
+        pItem->setGeColor(*_node->argb());
 
     if (_node->mat())
     {
         QTransform trans;
         trans.translate(100, 100);
         pItem->setTransform(_kiwi.toMatrix(_node->mat()));
-    }
-}
-void ParseGraphicsData::visit(IGePoint* pItem)
-{
-    visit(static_cast<IGeGraphic*>(pItem));
-
-    if (pItem->hasFlag(SaveFlags::eIGePointInfo))
-    {
-        if (_node->pt())
-            pItem->point(_kiwi.toPoint(_node->pt()));
     }
 }
 void ParseGraphicsData::visit(IGePointSet* pItem)
@@ -154,6 +157,10 @@ void ParseGraphicsData::visit(IGePointSet* pItem)
         _kiwi.getPoints(points);
         pItem->setPoints(points);
     }
+}
+void ParseGraphicsData::visit(IGePoint* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
 }
 
 void ParseGraphicsData::ParseGraphicsData::visit(GeBox* pItem)

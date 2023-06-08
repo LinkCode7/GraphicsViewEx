@@ -1,5 +1,5 @@
 #include "IGePoint.h"
 
-IGePoint::IGePoint(QPointF const &pt, IGeGraphic::ObjectType type) : IGeGraphic(type), _pt(pt)
+IGePoint::IGePoint(QPointF const &pt, IGeGraphic::ObjectType type) : IGePointSet({pt}, type)
 {
 }

@@ -1,6 +1,5 @@
 #include "utility.h"
 
-#include <QGraphicsScene>
 #include <iomanip>
 #include <sstream>
 
@@ -11,8 +10,7 @@
 #include "../graphics/GeSegment.h"
 #include "../graphics/GeSquarePoints.h"
 #include "../graphics/chip.h"
-
-extern QGraphicsScene* g_pScene;
+#include "../view/GraphicsArchive.h"
 
 void sindy::extent2Rect(double minX, double minY, double maxX, double maxY, QRectF& rect)
 {
@@ -32,22 +30,23 @@ void sindy::point2Rect(double x, double y, QRectF& rect, double halfLength)
 
 void sindy::addTestEntity()
 {
-    if (!g_pScene)
+    auto pScene = GeArchive().scene();
+    if (!pScene)
         return;
 
-    g_pScene->addItem(new GeBox({100, 100}, {300, 200}));
+    pScene->addItem(new GeBox({100, 100}, {300, 200}));
 
-    g_pScene->addItem(new GeAim({200, -100}));
+    pScene->addItem(new GeAim({200, -100}));
 
-    g_pScene->addItem(new GeSegment({-100, -100}, {100, 100}));
+    pScene->addItem(new GeSegment({-100, -100}, {100, 100}));
 
     std::initializer_list<QPointF> list = {{0, 55.28},      {71.2, 55.28},   {93.2, 0},        {115.21, 55.28},
                                            {186.41, 55.28}, {128.81, 89.44}, {150.81, 144.72}, {93.2, 110.56},
                                            {35.6, 144.72},  {57.6, 89.44},   {0, 55.28}};
 
-    g_pScene->addItem(new GePolyline(list));
-    g_pScene->addItem(new GePolylineIndex(list));
-    g_pScene->addItem(new GeSquarePoints(list));
+    pScene->addItem(new GePolyline(list));
+    pScene->addItem(new GePolylineIndex(list));
+    pScene->addItem(new GeSquarePoints(list));
 }
 
 void sindy::addChipToScene()
@@ -55,7 +54,8 @@ void sindy::addChipToScene()
     QImage image;
     image.load("image/qt4logo.png");
 
-    // Populate g_pScene
+    auto pScene = GeArchive().scene();
+
     int xx     = 0;
     int nitems = 0;
     for (int i = -11000; i < 11000; i += 110)
@@ -71,7 +71,7 @@ void sindy::addChipToScene()
             QColor         color(image.pixel(int(image.width() * x), int(image.height() * y)));
             QGraphicsItem* item = new Chip(color, xx, yy);
             item->setPos(QPointF(i, j));
-            g_pScene->addItem(item);
+            pScene->addItem(item);
 
             ++nitems;
         }
@@ -101,4 +101,46 @@ void sindy::hexString2Stream(std::string const& hexString, uint8_t*& data, size_
         unsigned char byte     = static_cast<unsigned char>(stoi(byte_str, nullptr, 16));
         data[i / 2]            = byte;
     }
+}
+
+void writeFromStream(char* buff, char* filename, size_t size)
+{
+    FILE* fp = fopen(filename, "wb+");
+    if (!fp)
+        return;
+
+    fwrite(buff, 1, size, fp);
+    fclose(fp);
+}
+
+void readToStream(const char* filename)
+{
+    FILE* fp = fopen(filename, "rb");
+    if (!fp)
+        return;
+
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+
+    char* buff = new char[size];
+    memset(buff, 0, size);
+
+    fseek(fp, 0, SEEK_SET);
+    size_t nRead = fread(buff, sizeof(char), size, fp);
+    fclose(fp);
+    if (false && nRead > 0)
+    {
+        //将二进制流打印成16进制字符串
+        for (unsigned int i = 0; i < nRead; i++)
+        {
+            printf("%02X ", (unsigned char)buff[i]);
+            if (i % 16 == 15)
+                printf("\n");
+        }
+    }
+
+    // 字节序反转<stdlib.h>：_byteswap_ulong
+
+    writeFromStream(buff, "NewFileName", size);
+    delete[] buff;
 }

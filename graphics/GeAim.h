@@ -15,7 +15,7 @@ public:
     void         paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget = nullptr) override;
 
     // 对象创建相关的业务
-    std::unique_ptr<GraphicMaker> subMake() const override { return std::make_unique<PointMaker>(); }
+    std::unique_ptr<GraphicMaker> subMake() const override { return std::make_unique<AimMaker>(); }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

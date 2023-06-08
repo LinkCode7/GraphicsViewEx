@@ -49,19 +49,8 @@ message GraphicNode {
 // GeBox
 	Rect rect = 5;
 
-// IGePoint
-    Point2dXY pt = 6;
-
 // IGePointSet
-    Point2dXY[] points = 7;
-}
-
-message Chip {
-	NodeType    type = 1;
-    int         x = 2;
-    int         y = 3;
-    uint         color = 4;
-    Point2dXY[] stuff = 5;
+    Point2dXY[] points = 6;
 }
 
 message Document {
@@ -75,5 +64,4 @@ message Document {
 
 	// node
 	GraphicNode[] graphics = 5;
-	Chip[] chips = 6;
 }

@@ -1,19 +1,15 @@
 #include "GraphicsDocument.h"
 
-#include "../core/GraphicsView.h"
 #include "../graphics/IGeGraphic.h"
-#include "qgraphicsscene.h"
-
-extern QGraphicsScene* g_pScene;
+#include "../view/GraphicsArchive.h"
+#include "../view/GraphicsScene.h"
 
 void Document::reset()
 {
-    if (!g_pScene)
-        return;
-
+    auto pScene = GeArchive().scene();
     for (auto const& item : _mapId2Geometry)
     {
-        g_pScene->removeItem(item.second);
+        pScene->removeItem(item.second);
     }
 
     _newId = 0;

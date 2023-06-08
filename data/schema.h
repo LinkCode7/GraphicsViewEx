@@ -11,13 +11,11 @@ public:
     bool                      parse(kiwi::ByteBuffer &bb);
     const kiwi::BinarySchema &underlyingSchema() const { return _schema; }
     bool                      skipGraphicNodeField(kiwi::ByteBuffer &bb, uint32_t id) const;
-    bool                      skipChipField(kiwi::ByteBuffer &bb, uint32_t id) const;
     bool                      skipDocumentField(kiwi::ByteBuffer &bb, uint32_t id) const;
 
 private:
     kiwi::BinarySchema _schema;
     uint32_t           _indexGraphicNode = 0;
-    uint32_t           _indexChip        = 0;
     uint32_t           _indexDocument    = 0;
 };
 
@@ -39,7 +37,6 @@ class Rect;
 class Point2dXY;
 class Matrix2d;
 class GraphicNode;
-class Chip;
 class Document;
 
 class Rect
@@ -178,10 +175,6 @@ public:
     const Rect *rect() const;
     void        set_rect(Rect *value);
 
-    Point2dXY *      pt();
-    const Point2dXY *pt() const;
-    void             set_pt(Point2dXY *value);
-
     kiwi::Array<Point2dXY> *      points();
     const kiwi::Array<Point2dXY> *points() const;
     kiwi::Array<Point2dXY> &      set_points(kiwi::MemoryPool &pool, uint32_t count);
@@ -194,47 +187,9 @@ private:
     NodeType               _data_type   = {};
     Matrix2d *             _data_mat    = {};
     Rect *                 _data_rect   = {};
-    Point2dXY *            _data_pt     = {};
     kiwi::Array<Point2dXY> _data_points = {};
     uint32_t               _data_argb   = {};
     int32_t                _data_id     = {};
-};
-
-class Chip
-{
-public:
-    Chip() { (void)_flags; }
-
-    NodeType *      type();
-    const NodeType *type() const;
-    void            set_type(const NodeType &value);
-
-    int32_t *      x();
-    const int32_t *x() const;
-    void           set_x(const int32_t &value);
-
-    int32_t *      y();
-    const int32_t *y() const;
-    void           set_y(const int32_t &value);
-
-    uint32_t *      color();
-    const uint32_t *color() const;
-    void            set_color(const uint32_t &value);
-
-    kiwi::Array<Point2dXY> *      stuff();
-    const kiwi::Array<Point2dXY> *stuff() const;
-    kiwi::Array<Point2dXY> &      set_stuff(kiwi::MemoryPool &pool, uint32_t count);
-
-    bool encode(kiwi::ByteBuffer &bb);
-    bool decode(kiwi::ByteBuffer &bb, kiwi::MemoryPool &pool, const BinarySchema *schema = nullptr);
-
-private:
-    uint32_t               _flags[1]   = {};
-    NodeType               _data_type  = {};
-    kiwi::Array<Point2dXY> _data_stuff = {};
-    int32_t                _data_x     = {};
-    int32_t                _data_y     = {};
-    uint32_t               _data_color = {};
 };
 
 class Document
@@ -262,10 +217,6 @@ public:
     const kiwi::Array<GraphicNode> *graphics() const;
     kiwi::Array<GraphicNode> &      set_graphics(kiwi::MemoryPool &pool, uint32_t count);
 
-    kiwi::Array<Chip> *      chips();
-    const kiwi::Array<Chip> *chips() const;
-    kiwi::Array<Chip> &      set_chips(kiwi::MemoryPool &pool, uint32_t count);
-
     bool encode(kiwi::ByteBuffer &bb);
     bool decode(kiwi::ByteBuffer &bb, kiwi::MemoryPool &pool, const BinarySchema *schema = nullptr);
 
@@ -275,7 +226,6 @@ private:
     kiwi::String             _data_last_open_version = {};
     Matrix2d *               _data_matView           = {};
     kiwi::Array<GraphicNode> _data_graphics          = {};
-    kiwi::Array<Chip>        _data_chips             = {};
     uint32_t                 _data_background        = {};
 };
 

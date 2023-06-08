@@ -24,7 +24,7 @@ public:
     void subCreate(IGeGraphic *pNew) override {}
 };
 
-class PointMaker : public GraphicMaker
+class AimMaker : public GraphicMaker
 {
 public:
     void subCreate(IGeGraphic *pNew) override {}

@@ -23,8 +23,7 @@ public:
         eIGeGraphicInfo, // 基类中的普通信息
         eIGeGraphicMat,  // 基类中的变换信息
 
-        eIGePointInfo,    // 点
-        eIGePointSetInfo, // 点集
+        eIGePointSetInfo, // 点集[1,n]
 
         // 子类
         eGeAimInfo, // 定位点

@@ -43,7 +43,7 @@ void IGeGraphic::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QColor IGeGraphic::getDrawColor(QStyle::State state)
 {
-    auto color = state & QStyle::State_Selected ? _color.darker(300) : _color;
+    auto color = state & QStyle::State_Selected ? _color.darker(230) : _color;
     // if (state & QStyle::State_MouseOver)
     //    color = color.lighter(125);
     return color;

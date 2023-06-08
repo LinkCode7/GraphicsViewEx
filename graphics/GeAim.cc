@@ -19,7 +19,7 @@ GeAim::GeAim(QPointF const &pt) : IGePoint(pt, eGeAimType)
 QRectF GeAim::boundingRect() const
 {
     QRectF rect;
-    sindy::point2Rect(_pt.x(), _pt.y(), rect, DOT_RADIUS);
+    sindy::point2Rect(point().x(), point().y(), rect, DOT_RADIUS);
     return rect;
 }
 
@@ -33,12 +33,12 @@ QPainterPath GeAim::shape() const
 void GeAim::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
-    painter->drawEllipse(_pt.x() - DOT_RADIUS * 0.5, _pt.y() - DOT_RADIUS * 0.5, DOT_RADIUS, DOT_RADIUS);
+    painter->drawEllipse(point().x() - DOT_RADIUS * 0.5, point().y() - DOT_RADIUS * 0.5, DOT_RADIUS, DOT_RADIUS);
 
     QLineF line(0 - DOT_RADIUS, 0, 0 + DOT_RADIUS, 0);
 
     painter->save();
-    painter->setTransform(QTransform::fromTranslate(_pt.x(), _pt.y()), true);
+    painter->setTransform(QTransform::fromTranslate(point().x(), point().y()), true);
     painter->drawLine(line);
 
     QTransform transform;

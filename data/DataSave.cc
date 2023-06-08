@@ -4,7 +4,6 @@
 
 #include <fstream>
 
-#include "../core/GraphicsView.h"
 #include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
 #include "../graphics/GePolyline.h"
@@ -15,7 +14,8 @@
 #include "../graphics/IGePoint.h"
 #include "../graphics/IGePointSet.h"
 #include "../utility/utility.h"
-#include "GraphicsDocument.h"
+#include "../view/GraphicsArchive.h"
+#include "../view/GraphicsView.h"
 #include "qgraphicsscene.h"
 #include "qmatrix.h"
 #include "schema.h"
@@ -65,20 +65,21 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
     if (!pView)
         return;
 
+    auto doc = GeArchive().doc();
     if (flag.has(SaveFlags::eDocVersion))
     {
-        _kiwi.message().set_create_version(_kiwi.fromString(Document::instance().createVersion()));
+        _kiwi.message().set_create_version(_kiwi.fromString(doc->createVersion()));
         _kiwi.message().set_last_open_version(_kiwi.fromString(CURRENT_VERSION));
     }
 
     if (flag.has(SaveFlags::eViewInfo))
     {
         _kiwi.message().set_matView(_kiwi.fromMatrix(pView->transform()));
-        _kiwi.message().set_background(1);
+        _kiwi.message().set_background(pView->getBgColor().rgba64().toArgb32());
     }
 
     std::vector<IGeGraphic*> arrObject;
-    Document::instance().getObjects(arrObject);
+    doc->getObjects(arrObject);
 
     auto size = arrObject.size();
 
@@ -107,17 +108,6 @@ void SaveGraphicsData::visit(IGeGraphic* pItem)
         _node->set_mat(_kiwi.fromMatrix(pItem->sceneTransform()));
     }
 }
-
-void SaveGraphicsData::visit(IGePoint* pItem)
-{
-    visit(static_cast<IGeGraphic*>(pItem));
-
-    if (pItem->hasFlag(SaveFlags::eIGePointInfo))
-    {
-        _node->set_pt(_kiwi.fromPoint(pItem->point()));
-    }
-}
-
 void SaveGraphicsData::visit(IGePointSet* pItem)
 {
     visit(static_cast<IGeGraphic*>(pItem));
@@ -126,6 +116,10 @@ void SaveGraphicsData::visit(IGePointSet* pItem)
     {
         _kiwi.setPoints(*pItem->getPoints());
     }
+}
+void SaveGraphicsData::visit(IGePoint* pItem)
+{
+    visit(static_cast<IGePointSet*>(pItem));
 }
 
 void SaveGraphicsData::visit(GeBox* pItem)

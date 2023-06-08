@@ -1,15 +1,13 @@
 #include "GraphicsControl.h"
 
-#include "../core/GraphicsView.h"
 #include "../data/DataParse.h"
 #include "../data/DataSave.h"
 #include "../graphics/GeBox.h"
+#include "../view/GraphicsArchive.h"
+#include "../view/GraphicsView.h"
 #include "DragAction.h"
 #include "PolylineDrag.h"
 #include "qevent.h"
-#include "qgraphicsscene.h"
-
-extern QGraphicsScene* g_pScene;
 
 void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
 {
@@ -28,6 +26,7 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
         }
     }
 
+    auto pScene = GeArchive().scene();
     switch (key)
     {
         case Qt::Key_P:
@@ -42,7 +41,7 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
         }
         case Qt::Key_B:
         {
-            auto items = g_pScene->selectedItems();
+            auto items = pScene->selectedItems();
             for (auto const& item : items)
             {
                 QRectF rectf = item->boundingRect();
@@ -50,21 +49,21 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
                 rectf.translate({mat.dx(), mat.dy()});
 
                 auto pItem = new GeBox(rectf);
-                pItem->setColor({255, 235, 0});
+                pItem->setGeColor({255, 235, 0});
                 pItem->setFlags(0);
-                g_pScene->addItem(pItem);
+                pScene->addItem(pItem);
             }
             break;
         }
         case Qt::Key_Delete:
         {
-            if (!g_pScene)
+            if (!pScene)
                 return;
 
-            auto items = g_pScene->selectedItems();
+            auto items = pScene->selectedItems();
 
             for (const auto& item : items)
-                g_pScene->removeItem(item);
+                pScene->removeItem(item);
 
             break;
         }
@@ -87,10 +86,15 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
                 "000024860000580000";
 
             auto test =
-                "010002312e3100037f0000000000007f0000000000007f00000004010503010102c08183fe0f0300047f0000000000007f0000000000007f0000000585"
-                "00009085000090870000908700002c000103028080fcff0f0300047f0000000000007f0000000000007f0000000686000090850100900001040280fe83"
-                "f80f0300047f0000000000007f0000000000007f000000070b0084703dba85cccc1c84703dba85cccc7400850ad7cc84703dba86ecd17484703dba86b8"
-                "9e018590c26586b89e2d86a4702185cccc7485703dba84cccc1c86a4702184cccccc8590c2650084703dba0000";
+                "010002312e3100037f0000000000007f0000000000007f00000004010506010102c08183fe0f0300047f0000000000007f0000000000007f0000000585"
+                "000090850000908700002c86000090000103028080fcff0f0300047f0000000000007f0000000000007f0000000601860000908501009000010702c489"
+                "93fe0f0300047f0000000000007f0000000000007f00000006028501009085010090850000908500009000010402c48993fe0f0300047f000000000000"
+                "7f0000000000007f000000060b0084703dba85cccc1c84703dba85cccc7400850ad7cc84703dba86ecd17484703dba86b89e018590c26586b89e2d86a4"
+                "702185cccc7485703dba84cccc1c86a4702184cccccc8590c2650084703dba00010502c48993fe0f0300047f0000000000007f0000000000007f000000"
+                "060b0084703dba85cccc1c84703dba85cccc7400850ad7cc84703dba86ecd17484703dba86b89e018590c26586b89e2d86a4702185cccc7485703dba84"
+                "cccc1c86a4702184cccccc8590c2650084703dba00010602ff8180f80f0300047f0000000000007f0000000000007f000000060b0084703dba85cccc1c"
+                "84703dba85cccc7400850ad7cc84703dba86ecd17484703dba86b89e018590c26586b89e2d86a4702185cccc7485703dba84cccc1c86a4702184cccccc"
+                "8590c2650084703dba0000";
 
             ParseGraphicsData data;
             // data.reset(view, test);

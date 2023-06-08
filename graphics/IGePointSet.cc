@@ -10,7 +10,7 @@ IGePointSet::IGePointSet(IGeGraphic::ObjectType type) : IGeGraphic(type)
 IGePointSet::IGePointSet(std::initializer_list<QPointF> const& list, ObjectType type) : IGeGraphic(type)
 {
     for (auto const& pt : list)
-        _points.push_back(pt);
+        _points.emplace_back(pt);
 }
 
 QRectF IGePointSet::boundingRect() const

@@ -49,10 +49,13 @@ public:
     // 访问者模式
     virtual void visit(VisitGraphics *visitor) = 0;
 
+    virtual void list(std::vector<std::string> const &) {}
+
 public:
-    uint getArgb32() const { return _color.rgba64().toArgb32(); }
-    uint setArgb32(uint argb) { _color = QRgba64::fromArgb32(argb); }
-    void setColor(QColor const &color) { _color = color; }
+    uint   getArgb32() const { return _color.rgba64().toArgb32(); }
+    uint   setArgb32(uint argb) { _color = QRgba64::fromArgb32(argb); }
+    QColor getGeColor() const { return _color; }
+    void   setGeColor(QColor const &color) { _color = color; }
 
     QColor getDrawColor(QStyle::State state);
     double getDrawWidth(QStyle::State state);

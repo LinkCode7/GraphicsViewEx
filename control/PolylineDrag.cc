@@ -2,14 +2,12 @@
 
 #include "../graphics/GePolyline.h"
 #include "../utility/utility.h"
-#include "qgraphicsscene.h"
-
-extern QGraphicsScene* g_pScene;
+#include "../view/GraphicsArchive.h"
 
 PolylineDrag::PolylineDrag()
 {
     m_geo = new GePolyline();
-    g_pScene->addItem(m_geo);
+    GeArchive().scene()->addItem(m_geo);
 }
 
 void PolylineDrag::onLeftClick(const QPointF& curClick)
@@ -36,7 +34,7 @@ bool PolylineDrag::keyAction(Qt::Key key)
 {
     if (key == Qt::Key_Escape)
     {
-        g_pScene->removeItem(m_geo);
+        GeArchive().scene()->removeItem(m_geo);
         return true;
     }
     else if (key == Qt::Key_C)
