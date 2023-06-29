@@ -28,7 +28,10 @@ void PropertyTable::cellClicked(int row, int column)
     QColor color = QColorDialog::getColor(old, this, "Please select a color");
 
     if (old != color)
+    {
         setSelectedBodyColor(color);
+        this->viewport()->update();
+    }
 }
 
 void PropertyTable::doSelectionChanged()
@@ -39,13 +42,13 @@ void PropertyTable::doSelectionChanged()
 
     auto old = getSelectedBodyColor();
     pItem->setBackgroundColor(old);
-    this->update();
+    this->viewport()->update();
 }
 
 void PropertyTable::initProperty()
 {
     auto item = new QTableWidgetItem;
-    item->setText("color");
+    item->setText("ContourColor");
     setItem(0, 0, item);
 
     auto count = rowCount();
