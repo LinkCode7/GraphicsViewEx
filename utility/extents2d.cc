@@ -17,45 +17,45 @@ bool compareDouble(double value1, double value2, double tol = SINDY_ZERO)
     return false;
 }
 
-Extents2d::Extents2d() : m_min{MY_EXTENTS_MIN, MY_EXTENTS_MIN}, m_max{MY_EXTENTS_MAX, MY_EXTENTS_MAX}
+Box2d::Box2d() : m_min{MY_EXTENTS_MIN, MY_EXTENTS_MIN}, m_max{MY_EXTENTS_MAX, MY_EXTENTS_MAX}
 {
 }
-Extents2d::Extents2d(const QPointF& pt) : m_min(pt), m_max(pt)
+Box2d::Box2d(const QPointF& pt) : m_min(pt), m_max(pt)
 {
 }
-Extents2d::Extents2d(const std::initializer_list<QPointF>& list)
+Box2d::Box2d(const std::initializer_list<QPointF>& list)
     : m_min{MY_EXTENTS_MIN, MY_EXTENTS_MIN}, m_max{MY_EXTENTS_MAX, MY_EXTENTS_MAX}
 {
     for (const auto& point : list)
         addPoint(point);
 }
 
-void Extents2d::reset()
+void Box2d::reset()
 {
     m_min = {MY_EXTENTS_MIN, MY_EXTENTS_MIN};
     m_max = {MY_EXTENTS_MAX, MY_EXTENTS_MAX};
 }
-void Extents2d::reset(const QPointF& pt1, const QPointF& pt2)
+void Box2d::reset(const QPointF& pt1, const QPointF& pt2)
 {
     m_min = pt1;
     m_max = pt1;
     addPoint(pt2);
 }
-void Extents2d::set(const QPointF& ptMin, const QPointF& ptMax)
+void Box2d::set(const QPointF& ptMin, const QPointF& ptMax)
 {
     m_min = ptMin;
     m_max = ptMax;
 }
 
 // 建议使用前先判断有效性
-bool Extents2d::invalid() const
+bool Box2d::invalid() const
 {
-    if (compareDouble(m_min.x(), MY_EXTENTS_MIN) && compareDouble(m_min.y(), MY_EXTENTS_MIN) && compareDouble(m_max.x(), MY_EXTENTS_MAX) &&
-        compareDouble(m_max.y(), MY_EXTENTS_MAX))
+    if (compareDouble(m_min.x(), MY_EXTENTS_MIN) && compareDouble(m_min.y(), MY_EXTENTS_MIN) &&
+        compareDouble(m_max.x(), MY_EXTENTS_MAX) && compareDouble(m_max.y(), MY_EXTENTS_MAX))
         return true;
     return false;
 }
-void Extents2d::addPoint(const QPointF& pt)
+void Box2d::addPoint(const QPointF& pt)
 {
     if (pt.x() < m_min.x())
         m_min.setX(pt.x());
@@ -67,18 +67,18 @@ void Extents2d::addPoint(const QPointF& pt)
     if (pt.y() > m_max.y())
         m_max.setY(pt.y());
 }
-void Extents2d::addExtents(const Extents2d& ext)
+void Box2d::add(const Box2d& ext)
 {
     addPoint(ext.m_min);
     addPoint(ext.m_max);
 }
-void Extents2d::operator+=(const Extents2d& ext)
+void Box2d::operator+=(const Box2d& ext)
 {
     addPoint(ext.m_min);
     addPoint(ext.m_max);
 }
 
-bool Extents2d::inExtents(const QPointF& pt) const
+bool Box2d::inBox(const QPointF& pt) const
 {
     if (pt.x() < m_min.x() || pt.x() > m_max.x())
         return false;
@@ -86,7 +86,7 @@ bool Extents2d::inExtents(const QPointF& pt) const
         return false;
     return true;
 }
-bool Extents2d::inExtents(const QPointF& pt, double tol) const
+bool Box2d::inBox(const QPointF& pt, double tol) const
 {
     if (pt.x() < m_min.x() - tol || pt.x() > m_max.x() + tol)
         return false;
@@ -94,7 +94,7 @@ bool Extents2d::inExtents(const QPointF& pt, double tol) const
         return false;
     return true;
 }
-bool Extents2d::outExtents(const QPointF& pt) const
+bool Box2d::outBox(const QPointF& pt) const
 {
     if (pt.x() < m_min.x() || pt.x() > m_max.x())
         return true;
@@ -102,7 +102,7 @@ bool Extents2d::outExtents(const QPointF& pt) const
         return true;
     return false;
 }
-bool Extents2d::outExtents(const QPointF& pt, double tol) const
+bool Box2d::outBox(const QPointF& pt, double tol) const
 {
     if (pt.x() < m_min.x() - tol || pt.x() > m_max.x() + tol)
         return true;
@@ -110,7 +110,7 @@ bool Extents2d::outExtents(const QPointF& pt, double tol) const
         return true;
     return false;
 }
-bool Extents2d::outExtents(const Extents2d& ext) const
+bool Box2d::outBox(const Box2d& ext) const
 {
     if (ext.m_max.x() < m_min.x() || ext.m_min.x() > m_max.x())
         return true;
@@ -118,7 +118,7 @@ bool Extents2d::outExtents(const Extents2d& ext) const
         return true;
     return false;
 }
-bool Extents2d::outExtents(const Extents2d& ext, double tol) const
+bool Box2d::outBox(const Box2d& ext, double tol) const
 {
     if (ext.m_max.x() < m_min.x() - tol || ext.m_min.x() > m_max.x() + tol)
         return true;
@@ -127,13 +127,13 @@ bool Extents2d::outExtents(const Extents2d& ext, double tol) const
     return false;
 }
 
-void Extents2d::expand(double value)
+void Box2d::expand(double value)
 {
     m_min -= {value, value};
     m_max += {value, value};
 }
 
-void Extents2d::moveTo(const QPointF& ptNewCenter)
+void Box2d::moveTo(const QPointF& ptNewCenter)
 {
     QPointF ptCurCenter{(m_max.x() * 0.5 + m_min.x() * 0.5), (m_max.y() * 0.5 + m_min.y() * 0.5)};
     auto    offset = ptNewCenter - ptCurCenter;
@@ -141,7 +141,7 @@ void Extents2d::moveTo(const QPointF& ptNewCenter)
     m_max += offset;
 }
 
-QPointF Extents2d::centerPt() const
+QPointF Box2d::centerPt() const
 {
     return {(m_max.x() * 0.5 + m_min.x() * 0.5), (m_max.y() * 0.5 + m_min.y() * 0.5)};
 }

@@ -15,7 +15,7 @@ IGePointSet::IGePointSet(std::initializer_list<QPointF> const& list, ObjectType 
 
 QRectF IGePointSet::boundingRect() const
 {
-    Extents2d ext;
+    Box2d ext;
     for (auto const& pt : _points)
         ext.addPoint(pt);
 
