@@ -1,6 +1,8 @@
 #ifndef GRAPHICS_VIEW_H
 #define GRAPHICS_VIEW_H
 
+#include <qmenu.h>
+
 #include <QFrame>
 #include <QGraphicsView>
 
@@ -19,7 +21,8 @@ class GraphicsView : public QGraphicsView
     Q_OBJECT
 
 public:
-    GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v) { setBackgroundBrush(QColor{239, 239, 239}); }
+    ~GraphicsView();
+    GraphicsView(GraphicsFrame *v);
 
     enum ViewState
     {
@@ -55,6 +58,8 @@ private:
     bool           _bMoveView        = false;
     QPoint         _ptRightMouseDown = {};
 
+    QMenu *_menu = nullptr;
+
     int                         _state = 0;
     QString                     _strCommand;
     std::shared_ptr<DragAction> _drag;
@@ -89,9 +94,9 @@ private slots:
 private:
     GraphicsView *_pGraphicsView;
 
-    QToolButton *  _pResetBtn;
-    QSlider *      _pZoomSlider;
-    QSlider *      _pRotateSlider;
+    QToolButton   *_pResetBtn;
+    QSlider       *_pZoomSlider;
+    QSlider       *_pRotateSlider;
     PropertyTable *_property;
 };
 

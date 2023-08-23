@@ -1,6 +1,6 @@
 #include "IGePointSet.h"
 
-#include "../utility/extents2d.h"
+#include "../utility/box2d.h"
 #include "../utility/utility.h"
 
 IGePointSet::IGePointSet(IGeGraphic::ObjectType type) : IGeGraphic(type)

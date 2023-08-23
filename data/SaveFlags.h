@@ -57,6 +57,7 @@ class IGePointSet;
 class IGePoint;
 class GePolylineIndex;
 class GeSegment;
+class GePolygon;
 
 // 访问者
 class VisitGraphics
@@ -72,6 +73,7 @@ public:
     virtual void visit(GePolylineIndex*) = 0;
     virtual void visit(GeSquarePoints*)  = 0;
     virtual void visit(GeSegment*)       = 0;
+    virtual void visit(GePolygon*)       = 0;
 };
 
 #endif // !SAVE_FLAGS_H

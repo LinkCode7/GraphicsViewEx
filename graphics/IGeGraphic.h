@@ -11,6 +11,7 @@
 class GraphicMaker;
 
 #define NOTIFY_MAKE_GRAPHIC() this->notify()
+
 #define VISIT_THIS_CLASS \
 public:                  \
     void visit(VisitGraphics *visitor) override { visitor->visit(this); }
@@ -27,7 +28,7 @@ public:
         eGeAimType           = 3, // 定位点
         eGePolylineType      = 4, // 连续线段，LineString
         eGePolylineIndexType = 5, // 绘制带索引的连续线段
-        eGeSquarePointsType  = 6, // 方形点集
+        eGeSquarePointsType  = 6, // 点集
 
         eGeSegmentType = 7,  // 线段
         eGeArcType     = 8,  // 弧线
@@ -60,14 +61,14 @@ public:
     QColor getDrawColor(QStyle::State state);
     double getDrawWidth(QStyle::State state);
 
-    void id(uint id) { _id = id; }
-    uint id() const { return _id; }
+    void        id(std::string const &id) { _id = id; }
+    std::string id() const { return _id; }
 
     ObjectType objectType() const { return _type; }
 
-    void addFlag(SaveFlags::Flag flag) { _saveFlags.add(flag); }
-    void removeFlag(SaveFlags::Flag flag) { _saveFlags.remove(flag); }
-    bool hasFlag(SaveFlags::Flag flag) const { return _saveFlags.has(flag); }
+    void addFlag(SaveFlags::Flag flag) { _runTimeFlags.add(flag); }
+    void removeFlag(SaveFlags::Flag flag) { _runTimeFlags.remove(flag); }
+    bool hasFlag(SaveFlags::Flag flag) const { return _runTimeFlags.has(flag); }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -75,11 +76,12 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 protected:
-    uint       _id{0};
-    QColor     _color;
-    ObjectType _type;
+    std::string _id;
+    QColor      _color;
+    ObjectType  _type;
 
-    SaveFlags _saveFlags;
+    uint64_t  _saveFlags = 0;
+    SaveFlags _runTimeFlags;
 };
 
 #endif // !DB_GRAPHIC_H

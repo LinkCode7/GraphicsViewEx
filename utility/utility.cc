@@ -1,10 +1,12 @@
 #include "utility.h"
 
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 
 #include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
+#include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
 #include "../graphics/GePolylineIndex.h"
 #include "../graphics/GeSegment.h"
@@ -40,9 +42,9 @@ void sindy::addTestEntity()
 
     pScene->addItem(new GeSegment({-100, -100}, {100, 100}));
 
-    std::initializer_list<QPointF> list = {{0, 55.28},      {71.2, 55.28},   {93.2, 0},        {115.21, 55.28},
-                                           {186.41, 55.28}, {128.81, 89.44}, {150.81, 144.72}, {93.2, 110.56},
-                                           {35.6, 144.72},  {57.6, 89.44},   {0, 55.28}};
+    std::initializer_list<QPointF> list = {{-186.41, 55.28},  {-115.21, 55.28}, {-93.21, 0},     {-71.21, 55.28},
+                                           {0, 55.28},        {-57.6, 89.44},   {-35.6, 144.72}, {-93.21, 110.56},
+                                           {-150.81, 144.72}, {-128.81, 89.44}, {-186.41, 55.28}};
 
     pScene->addItem(new GePolyline(list));
     pScene->addItem(new GePolylineIndex(list));
@@ -103,7 +105,22 @@ void sindy::hexString2Stream(std::string const& hexString, uint8_t*& data, size_
     }
 }
 
-void writeFromStream(char* buff, char* filename, size_t size)
+bool sindy::readContents(std::string const& filename, std::string& text)
+{
+    std::fstream fs;
+    fs.open(filename, std::ios::in);
+    if (!fs.is_open())
+        return false;
+
+    std::stringstream ss;
+    ss << fs.rdbuf();
+    fs.close();
+
+    text = ss.str();
+    return true;
+}
+
+void writeFromStream(char const* buff, char const* filename, size_t size)
 {
     FILE* fp = fopen(filename, "wb+");
     if (!fp)
@@ -130,7 +147,7 @@ void readToStream(const char* filename)
     fclose(fp);
     if (false && nRead > 0)
     {
-        //将二进制流打印成16进制字符串
+        // 将二进制流打印成16进制字符串
         for (unsigned int i = 0; i < nRead; i++)
         {
             printf("%02X ", (unsigned char)buff[i]);

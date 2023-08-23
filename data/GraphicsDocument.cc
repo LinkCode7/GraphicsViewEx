@@ -7,41 +7,27 @@
 void Document::reset()
 {
     auto pScene = GeArchive().scene();
-    for (auto const& item : _mapId2Geometry)
+    for (auto const& item : _geometries)
     {
-        pScene->removeItem(item.second);
+        pScene->removeItem(item);
     }
 
-    _newId = 0;
-    _mapId2Geometry.clear();
-}
-
-void Document::calculateNewId()
-{
-    uint max = 0;
-    for (auto const& item : _mapId2Geometry)
-    {
-        auto id = item.second->id();
-        if (id > max)
-            max = id;
-    }
-
-    _newId = max + 1;
+    _geometries.clear();
 }
 
 void Document::addGraphic(IGeGraphic* pGraphic)
 {
     if (!pGraphic)
         return;
-    _mapId2Geometry[_newId++] = pGraphic;
+    _geometries.emplace_back(pGraphic);
 }
 bool Document::removeGraphic(IGeGraphic* pGraphic)
 {
-    for (auto iter = _mapId2Geometry.begin(); iter != _mapId2Geometry.end();)
+    for (auto iter = _geometries.begin(); iter != _geometries.end();)
     {
-        if (iter->second == pGraphic)
+        if (*iter == pGraphic)
         {
-            iter = _mapId2Geometry.erase(iter);
+            iter = _geometries.erase(iter);
             return true;
         }
         else
@@ -50,10 +36,4 @@ bool Document::removeGraphic(IGeGraphic* pGraphic)
         }
     }
     return false;
-}
-
-void Document::getObjects(std::vector<IGeGraphic*>& arrObject)
-{
-    for (auto const& item : _mapId2Geometry)
-        arrObject.emplace_back(item.second);
 }

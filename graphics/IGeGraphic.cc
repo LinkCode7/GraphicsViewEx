@@ -9,7 +9,12 @@ IGeGraphic::IGeGraphic(ObjectType type) : _color{0, 255, 0}, _type(type)
     setFlags(ItemIsSelectable | ItemIsMovable);
     setAcceptHoverEvents(true);
 
-    _saveFlags.full(true); // 暂时不控制
+    _runTimeFlags.full(true); // 暂时不控制
+
+    // 颠倒y轴
+    QTransform matrix;
+    matrix.scale(1, -1);
+    setTransform(matrix, true);
 }
 
 QRectF IGeGraphic::boundingRect() const

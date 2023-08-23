@@ -6,6 +6,7 @@
 
 #include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
+#include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
 #include "../graphics/GePolylineIndex.h"
 #include "../graphics/GeSegment.h"
@@ -78,10 +79,8 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
         _kiwi.message().set_background(pView->getBgColor().rgba64().toArgb32());
     }
 
-    std::vector<IGeGraphic*> arrObject;
-    doc->getObjects(arrObject);
-
-    auto size = arrObject.size();
+    std::vector<IGeGraphic*> arrObject = doc->getObjects();
+    auto                     size      = arrObject.size();
 
     uint                             index      = 0;
     kiwi::Array<sindyk::GraphicNode> arrGraphic = _kiwi.message().set_graphics(_kiwi.pool(), size);
@@ -96,11 +95,12 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
 
 void SaveGraphicsData::visit(IGeGraphic* pItem)
 {
+    _node->set_flags(0);
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
     if (pItem->hasFlag(SaveFlags::eIGeGraphicInfo))
     {
-        _node->set_id(pItem->id());
+        _node->set_id(_kiwi.fromString(pItem->id()));
         _node->set_argb(pItem->getArgb32());
     }
     if (pItem->hasFlag(SaveFlags::eIGeGraphicMat))
@@ -152,4 +152,13 @@ void SaveGraphicsData::visit(GeSquarePoints* pItem)
 void SaveGraphicsData::visit(GeSegment* pItem)
 {
     visit(static_cast<IGePointSet*>(pItem));
+}
+
+void SaveGraphicsData::visit(GePolygon* pItem)
+{
+    visit(static_cast<IGeGraphic*>(pItem));
+
+    if (pItem->hasFlag(SaveFlags::eIGePointSetInfo))
+    {
+    }
 }

@@ -6,6 +6,7 @@
 
 #include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
+#include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
 #include "../graphics/GePolylineIndex.h"
 #include "../graphics/GeSegment.h"
@@ -135,7 +136,11 @@ void ParseGraphicsData::visit(IGeGraphic* pItem)
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
     if (_node->id())
-        pItem->id(*_node->id());
+        pItem->id(_node->id()->c_str());
+
+    if (_node->flags())
+    {
+    }
 
     if (_node->argb())
         pItem->setGeColor(*_node->argb());
@@ -191,4 +196,8 @@ void ParseGraphicsData::visit(GeSquarePoints* pItem)
 void ParseGraphicsData::visit(GeSegment* pItem)
 {
     visit(static_cast<IGePointSet*>(pItem));
+}
+
+void ParseGraphicsData::visit(GePolygon* pItem)
+{
 }

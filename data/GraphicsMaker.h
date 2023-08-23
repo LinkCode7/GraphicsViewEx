@@ -36,6 +36,12 @@ public:
     void subCreate(IGeGraphic *pNew) override {}
 };
 
+class PolygonMaker : public GraphicMaker
+{
+public:
+    void subCreate(IGeGraphic *pNew) override {}
+};
+
 class GeSquarePointsMaker : public GraphicMaker
 {
 public:

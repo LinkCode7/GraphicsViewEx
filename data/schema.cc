@@ -2,6 +2,7 @@
 
 namespace sindyk
 {
+
 bool BinarySchema::parse(kiwi::ByteBuffer &bb)
 {
     if (!_schema.parse(bb))
@@ -413,17 +414,17 @@ void GraphicNode::set_argb(const uint32_t &value)
     _data_argb = value;
 }
 
-int32_t *GraphicNode::id()
+kiwi::String *GraphicNode::id()
 {
     return _flags[0] & 4 ? &_data_id : nullptr;
 }
 
-const int32_t *GraphicNode::id() const
+const kiwi::String *GraphicNode::id() const
 {
     return _flags[0] & 4 ? &_data_id : nullptr;
 }
 
-void GraphicNode::set_id(const int32_t &value)
+void GraphicNode::set_id(const kiwi::String &value)
 {
     _flags[0] |= 4;
     _data_id = value;
@@ -444,6 +445,22 @@ void GraphicNode::set_mat(Matrix2d *value)
     _data_mat = value;
 }
 
+uint32_t *GraphicNode::flags()
+{
+    return _flags[0] & 16 ? &_data_flags : nullptr;
+}
+
+const uint32_t *GraphicNode::flags() const
+{
+    return _flags[0] & 16 ? &_data_flags : nullptr;
+}
+
+void GraphicNode::set_flags(const uint32_t &value)
+{
+    _flags[0] |= 16;
+    _data_flags = value;
+}
+
 Rect *GraphicNode::rect()
 {
     return _data_rect;
@@ -461,17 +478,17 @@ void GraphicNode::set_rect(Rect *value)
 
 kiwi::Array<Point2dXY> *GraphicNode::points()
 {
-    return _flags[0] & 32 ? &_data_points : nullptr;
+    return _flags[0] & 64 ? &_data_points : nullptr;
 }
 
 const kiwi::Array<Point2dXY> *GraphicNode::points() const
 {
-    return _flags[0] & 32 ? &_data_points : nullptr;
+    return _flags[0] & 64 ? &_data_points : nullptr;
 }
 
 kiwi::Array<Point2dXY> &GraphicNode::set_points(kiwi::MemoryPool &pool, uint32_t count)
 {
-    _flags[0] |= 32;
+    _flags[0] |= 64;
     return _data_points = pool.array<Point2dXY>(count);
 }
 
@@ -490,7 +507,7 @@ bool GraphicNode::encode(kiwi::ByteBuffer &_bb)
     if (id() != nullptr)
     {
         _bb.writeVarUint(3);
-        _bb.writeVarInt(_data_id);
+        _bb.writeString(_data_id.c_str());
     }
     if (mat() != nullptr)
     {
@@ -498,15 +515,20 @@ bool GraphicNode::encode(kiwi::ByteBuffer &_bb)
         if (!_data_mat->encode(_bb))
             return false;
     }
-    if (rect() != nullptr)
+    if (flags() != nullptr)
     {
         _bb.writeVarUint(5);
+        _bb.writeVarUint(_data_flags);
+    }
+    if (rect() != nullptr)
+    {
+        _bb.writeVarUint(6);
         if (!_data_rect->encode(_bb))
             return false;
     }
     if (points() != nullptr)
     {
-        _bb.writeVarUint(6);
+        _bb.writeVarUint(7);
         _bb.writeVarUint(_data_points.size());
         for (Point2dXY &_it : _data_points)
             if (!_it.encode(_bb))
@@ -544,7 +566,7 @@ bool GraphicNode::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const B
             }
             case 3:
             {
-                if (!_bb.readVarInt(_data_id))
+                if (!_bb.readString(_data_id, _pool))
                     return false;
                 set_id(_data_id);
                 break;
@@ -558,12 +580,19 @@ bool GraphicNode::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const B
             }
             case 5:
             {
+                if (!_bb.readVarUint(_data_flags))
+                    return false;
+                set_flags(_data_flags);
+                break;
+            }
+            case 6:
+            {
                 _data_rect = _pool.allocate<Rect>();
                 if (!_data_rect->decode(_bb, _pool, _schema))
                     return false;
                 break;
             }
-            case 6:
+            case 7:
             {
                 if (!_bb.readVarUint(_count))
                     return false;

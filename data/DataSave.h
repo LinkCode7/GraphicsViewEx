@@ -32,6 +32,7 @@ public:
     void visit(GePolylineIndex* pItem) override;
     void visit(GeSquarePoints* pItem) override;
     void visit(GeSegment* pItem) override;
+    void visit(GePolygon* pItem) override;
 
 private:
     SindyKiwi            _kiwi;

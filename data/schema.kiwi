@@ -43,14 +43,15 @@ message GraphicNode {
 // IGeGraphic
 	NodeType type = 1;
 	uint argb = 2;
-	int id = 3;
+	string id = 3;
 	Matrix2d mat = 4;
+	uint flags = 5;
 
 // GeBox
-	Rect rect = 5;
+	Rect rect = 6;
 
 // IGePointSet
-    Point2dXY[] points = 6;
+    Point2dXY[] points = 7;
 }
 
 message Document {

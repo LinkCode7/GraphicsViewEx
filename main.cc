@@ -1,9 +1,12 @@
 #include "main.h"
 
+#include <qmatrix4x4.h>
+
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QSplitter>
 
+#include "./view/GraphicsArchive.h"
 #include "./view/GraphicsScene.h"
 #include "./view/GraphicsView.h"
 #include "utility/utility.h"

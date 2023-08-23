@@ -14,19 +14,18 @@ public:
     Document(Document const&) = delete;
 
     void reset();
-    void calculateNewId();
 
     // 添加、删除图形
     void addGraphic(IGeGraphic* pGraphic);
     bool removeGraphic(IGeGraphic* pGraphic);
 
     // 选中图形
-    void                            clearSelectedGraphics() { return _selected.clear(); }
-    void                            addSelectedGraphics(IGeGraphic* pGraphic) { return _selected.emplace_back(pGraphic); }
+    void                            clearSelectedGraphics() { _selected.clear(); }
+    void                            addSelectedGraphics(IGeGraphic* pGraphic) { _selected.emplace_back(pGraphic); }
     const std::vector<IGeGraphic*>* selectedGraphics() const { return &_selected; }
 
     // 获取所有图形
-    void getObjects(std::vector<IGeGraphic*>& arrObject);
+    std::vector<IGeGraphic*> getObjects() const { return _geometries; }
 
     // 版本号
     void        createVersion(std::string const& str) { _createVersion = str; }
@@ -35,13 +34,11 @@ public:
     std::string lastOpenVersion() const { return _lastOpenVersion; }
 
 private:
-    uint _newId = 0;
-
     std::string _createVersion;
     std::string _lastOpenVersion;
 
-    std::vector<IGeGraphic*>              _selected;
-    std::unordered_map<uint, IGeGraphic*> _mapId2Geometry;
+    std::vector<IGeGraphic*> _selected;
+    std::vector<IGeGraphic*> _geometries;
 };
 
 #endif // !GRAPHICS_DOCUMENT_H

@@ -1,4 +1,4 @@
-#include "extents2d.h"
+#include "box2d.h"
 
 #include "float.h"
 

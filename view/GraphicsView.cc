@@ -69,6 +69,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             _drag->onLeftClick(mapToScene(event->pos()));
         }
     }
+    else if (event->button() == Qt::RightButton)
+    {
+        _menu->exec(QCursor::pos());
+    }
 
     QGraphicsView::mousePressEvent(event);
 }
@@ -89,7 +93,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 #ifdef _DEBUG
     auto ptTest  = event->pos();
     auto ptScene = this->mapToScene(ptTest);
-    std::cout << "MousePoint(" << ptScene.x() << ", " << ptScene.y() << ")" << std::endl;
+    // std::cout << "MousePoint(" << ptScene.x() << ", " << ptScene.y() << ")" << std::endl;
 #endif
 
     if (_drag)
@@ -119,6 +123,22 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     sindy::viewKeyDown(event, this);
     QGraphicsView::keyPressEvent(event);
+}
+
+GraphicsView ::~GraphicsView()
+{
+    delete _menu;
+}
+
+GraphicsView::GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v)
+{
+    setBackgroundBrush(QColor{239, 239, 239});
+
+    // 菜单
+    QAction *action = new QAction("导入json", this);
+    _menu           = new QMenu(this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::triggeredImportJson);
 }
 
 GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget *parent) : QFrame(parent)
@@ -181,8 +201,10 @@ GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget 
     connect(_pResetBtn, &QAbstractButton::clicked, this, &GraphicsFrame::resetView);
     connect(_pZoomSlider, &QAbstractSlider::valueChanged, this, &GraphicsFrame::setupMatrix);
     connect(_pRotateSlider, &QAbstractSlider::valueChanged, this, &GraphicsFrame::setupMatrix);
-    connect(_pGraphicsView->verticalScrollBar(), &QAbstractSlider::valueChanged, this, &GraphicsFrame::setResetButtonEnabled);
-    connect(_pGraphicsView->horizontalScrollBar(), &QAbstractSlider::valueChanged, this, &GraphicsFrame::setResetButtonEnabled);
+    connect(_pGraphicsView->verticalScrollBar(), &QAbstractSlider::valueChanged, this,
+            &GraphicsFrame::setResetButtonEnabled);
+    connect(_pGraphicsView->horizontalScrollBar(), &QAbstractSlider::valueChanged, this,
+            &GraphicsFrame::setResetButtonEnabled);
 
     connect(_pResetBtn, &QAbstractButton::clicked, this, &GraphicsFrame::resetView);
 

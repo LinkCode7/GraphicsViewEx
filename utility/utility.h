@@ -36,6 +36,8 @@ std::string stream2HexString(uint8_t* data, size_t length);
 // 十六进制字符串转数据流
 void hexString2Stream(std::string const& hexString, uint8_t*& data, size_t& length);
 
+bool readContents(std::string const& filename, std::string& text);
+
 } // namespace sindy
 
 #endif // !GRAPHIC_UTILITY_H
