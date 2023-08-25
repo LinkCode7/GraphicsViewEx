@@ -45,4 +45,10 @@ Release
 ipch
 lib
 out
-bin
+
+# bin
+*.ilk
+*.pdb
+
+*boolean*.json
+*boolean*.txt

@@ -26,6 +26,8 @@ void createSelectedBox();
 void onCreatePolyline();
 void createPolyline(GraphicsView* view);
 
+void deleteSelectedItems();
+
 } // namespace sindy
 
 #endif // GRAPHICS_CONTROL_H

@@ -33,7 +33,6 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
         }
     }
 
-    auto pScene = GeArchive().scene();
     switch (key)
     {
         case Qt::Key_P:
@@ -48,14 +47,7 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
         }
         case Qt::Key_Delete:
         {
-            if (!pScene)
-                return;
-
-            auto items = pScene->selectedItems();
-
-            for (const auto& item : items)
-                pScene->removeItem(item);
-
+            deleteSelectedItems();
             break;
         }
         case Qt::Key_S:
@@ -270,4 +262,14 @@ void sindy::createPolyline(GraphicsView* view)
     view->setCommand("polyline");
     view->addState(GraphicsView::eDragInit);
     // view->addState(GraphicsView::eDragging);
+}
+
+void sindy::deleteSelectedItems()
+{
+    auto pScene = GeArchive().scene();
+    if (!pScene)
+        return;
+    auto items = pScene->selectedItems();
+    for (const auto& item : items)
+        pScene->removeItem(item);
 }

@@ -149,7 +149,6 @@ GraphicsView::GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v)
 
     QAction *separator = new QAction(this);
     separator->setSeparator(true);
-    separator->setText("---");
     _menu->addAction(separator);
 
     action = new QAction("create selected box.(b)", this);
@@ -159,6 +158,14 @@ GraphicsView::GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v)
     action = new QAction("create polyline.(p)", this);
     _menu->addAction(action);
     QObject::connect(action, &QAction::triggered, this, &sindy::onCreatePolyline);
+
+    action = new QAction("delete selected items.(Delete)", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::deleteSelectedItems);
+
+    separator = new QAction(this);
+    separator->setSeparator(true);
+    _menu->addAction(separator);
 
     action = new QAction("import from json.", this);
     _menu->addAction(action);

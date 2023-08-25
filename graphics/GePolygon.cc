@@ -93,7 +93,8 @@ void GePolygon::drawArcSegment(QPainter* painter, const QStyleOptionGraphicsItem
         {
             // 第3、4个参数表示圆/椭圆的宽度和高度，第5、6个参数表示起始角度和扫描角度
             painter->drawArc(pArc->center.x - pArc->radius, pArc->center.y - pArc->radius2, pArc->radius * 2,
-                             pArc->radius2 * 2, radian2Degree(pArc->beginAngle), radian2Degree(pArc->sweepAngle));
+                             pArc->radius2 * 2, sindy::radian2Degree(pArc->beginAngle),
+                             sindy::radian2Degree(pArc->sweepAngle));
         }
     }
 }

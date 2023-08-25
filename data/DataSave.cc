@@ -81,19 +81,8 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
     auto                     size      = arrObject.size();
 
     uint                             index      = 0;
-    kiwi::Array<sindyk::GraphicNode> arrGraphic = _kiwi.message().set_graphics(_kiwi.pool(), 3000);
+    kiwi::Array<sindyk::GraphicNode> arrGraphic = _kiwi.message().set_graphics(_kiwi.pool(), size);
 
-    for (auto i = 20000; i < size; ++i)
-    {
-        if (index >= 3000)
-            return;
-        _node = &arrGraphic[index++];
-        _kiwi.currentNode(_node);
-
-        arrObject[i]->visit(this);
-    }
-
-    return;
     for (auto const& graphic : arrObject)
     {
         _node = &arrGraphic[index++];

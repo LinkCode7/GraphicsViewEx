@@ -7,21 +7,24 @@ class QPointF;
 
 #include "stdint.h"
 
-#ifndef M_PI
-    #define M_PI 3.14159265358979323846 // pi
+#ifndef PI
+    #define PI 3.14159265358979323846    // pi
+    #define PI2 6.28318530717958623200   // pi*2
+    #define PI_2 1.57079632679489661923  // pi/2
+    #define PI_4 0.785398163397448309616 // pi/4
 #endif
 
 namespace sindy
 {
-// 角度转弧度
-constexpr double angle2radian(double angle)
-{
-    return M_PI / 180 * angle;
-}
 // 弧度转角度
-constexpr double radian2angle(double radian)
+inline constexpr double radian2Degree(double radian)
 {
-    return 180 / M_PI * radian;
+    return (radian * 180) / PI;
+}
+// 角度转弧度
+inline constexpr double degree2Radian(double degree)
+{
+    return (degree / 180) * PI;
 }
 
 void extent2Rect(QPointF const& ptMin, QPointF const& ptMax, QRectF& rect);
