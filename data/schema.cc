@@ -2,14 +2,19 @@
 
 namespace sindyk
 {
-
 bool BinarySchema::parse(kiwi::ByteBuffer &bb)
 {
     if (!_schema.parse(bb))
         return false;
+    _schema.findDefinition("PolyElement", _indexPolyElement);
     _schema.findDefinition("GraphicNode", _indexGraphicNode);
     _schema.findDefinition("Document", _indexDocument);
     return true;
+}
+
+bool BinarySchema::skipPolyElementField(kiwi::ByteBuffer &bb, uint32_t id) const
+{
+    return _schema.skipField(bb, _indexPolyElement, id);
 }
 
 bool BinarySchema::skipGraphicNodeField(kiwi::ByteBuffer &bb, uint32_t id) const
@@ -382,6 +387,263 @@ bool Matrix2d::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const Bina
     return true;
 }
 
+Point2dXY *PolySegment::begin()
+{
+    return _data_begin;
+}
+
+const Point2dXY *PolySegment::begin() const
+{
+    return _data_begin;
+}
+
+void PolySegment::set_begin(Point2dXY *value)
+{
+    _data_begin = value;
+}
+
+Point2dXY *PolySegment::end()
+{
+    return _data_end;
+}
+
+const Point2dXY *PolySegment::end() const
+{
+    return _data_end;
+}
+
+void PolySegment::set_end(Point2dXY *value)
+{
+    _data_end = value;
+}
+
+bool PolySegment::encode(kiwi::ByteBuffer &_bb)
+{
+    if (begin() == nullptr)
+        return false;
+    if (!_data_begin->encode(_bb))
+        return false;
+    if (end() == nullptr)
+        return false;
+    if (!_data_end->encode(_bb))
+        return false;
+    return true;
+}
+
+bool PolySegment::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const BinarySchema *_schema)
+{
+    _data_begin = _pool.allocate<Point2dXY>();
+    if (!_data_begin->decode(_bb, _pool, _schema))
+        return false;
+    _data_end = _pool.allocate<Point2dXY>();
+    if (!_data_end->decode(_bb, _pool, _schema))
+        return false;
+    return true;
+}
+
+Point2dXY *PolyArc::center()
+{
+    return _data_center;
+}
+
+const Point2dXY *PolyArc::center() const
+{
+    return _data_center;
+}
+
+void PolyArc::set_center(Point2dXY *value)
+{
+    _data_center = value;
+}
+
+float *PolyArc::radius()
+{
+    return _flags[0] & 2 ? &_data_radius : nullptr;
+}
+
+const float *PolyArc::radius() const
+{
+    return _flags[0] & 2 ? &_data_radius : nullptr;
+}
+
+void PolyArc::set_radius(const float &value)
+{
+    _flags[0] |= 2;
+    _data_radius = value;
+}
+
+float *PolyArc::radius2()
+{
+    return _flags[0] & 4 ? &_data_radius2 : nullptr;
+}
+
+const float *PolyArc::radius2() const
+{
+    return _flags[0] & 4 ? &_data_radius2 : nullptr;
+}
+
+void PolyArc::set_radius2(const float &value)
+{
+    _flags[0] |= 4;
+    _data_radius2 = value;
+}
+
+float *PolyArc::beginAngle()
+{
+    return _flags[0] & 8 ? &_data_beginAngle : nullptr;
+}
+
+const float *PolyArc::beginAngle() const
+{
+    return _flags[0] & 8 ? &_data_beginAngle : nullptr;
+}
+
+void PolyArc::set_beginAngle(const float &value)
+{
+    _flags[0] |= 8;
+    _data_beginAngle = value;
+}
+
+float *PolyArc::sweepAngle()
+{
+    return _flags[0] & 16 ? &_data_sweepAngle : nullptr;
+}
+
+const float *PolyArc::sweepAngle() const
+{
+    return _flags[0] & 16 ? &_data_sweepAngle : nullptr;
+}
+
+void PolyArc::set_sweepAngle(const float &value)
+{
+    _flags[0] |= 16;
+    _data_sweepAngle = value;
+}
+
+bool PolyArc::encode(kiwi::ByteBuffer &_bb)
+{
+    if (center() == nullptr)
+        return false;
+    if (!_data_center->encode(_bb))
+        return false;
+    if (radius() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data_radius);
+    if (radius2() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data_radius2);
+    if (beginAngle() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data_beginAngle);
+    if (sweepAngle() == nullptr)
+        return false;
+    _bb.writeVarFloat(_data_sweepAngle);
+    return true;
+}
+
+bool PolyArc::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const BinarySchema *_schema)
+{
+    _data_center = _pool.allocate<Point2dXY>();
+    if (!_data_center->decode(_bb, _pool, _schema))
+        return false;
+    if (!_bb.readVarFloat(_data_radius))
+        return false;
+    set_radius(_data_radius);
+    if (!_bb.readVarFloat(_data_radius2))
+        return false;
+    set_radius2(_data_radius2);
+    if (!_bb.readVarFloat(_data_beginAngle))
+        return false;
+    set_beginAngle(_data_beginAngle);
+    if (!_bb.readVarFloat(_data_sweepAngle))
+        return false;
+    set_sweepAngle(_data_sweepAngle);
+    return true;
+}
+
+PolySegment *PolyElement::segment()
+{
+    return _data_segment;
+}
+
+const PolySegment *PolyElement::segment() const
+{
+    return _data_segment;
+}
+
+void PolyElement::set_segment(PolySegment *value)
+{
+    _data_segment = value;
+}
+
+PolyArc *PolyElement::arc()
+{
+    return _data_arc;
+}
+
+const PolyArc *PolyElement::arc() const
+{
+    return _data_arc;
+}
+
+void PolyElement::set_arc(PolyArc *value)
+{
+    _data_arc = value;
+}
+
+bool PolyElement::encode(kiwi::ByteBuffer &_bb)
+{
+    if (segment() != nullptr)
+    {
+        _bb.writeVarUint(1);
+        if (!_data_segment->encode(_bb))
+            return false;
+    }
+    if (arc() != nullptr)
+    {
+        _bb.writeVarUint(2);
+        if (!_data_arc->encode(_bb))
+            return false;
+    }
+    _bb.writeVarUint(0);
+    return true;
+}
+
+bool PolyElement::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const BinarySchema *_schema)
+{
+    while (true)
+    {
+        uint32_t _type;
+        if (!_bb.readVarUint(_type))
+            return false;
+        switch (_type)
+        {
+            case 0:
+                return true;
+            case 1:
+            {
+                _data_segment = _pool.allocate<PolySegment>();
+                if (!_data_segment->decode(_bb, _pool, _schema))
+                    return false;
+                break;
+            }
+            case 2:
+            {
+                _data_arc = _pool.allocate<PolyArc>();
+                if (!_data_arc->decode(_bb, _pool, _schema))
+                    return false;
+                break;
+            }
+            default:
+            {
+                if (!_schema || !_schema->skipPolyElementField(_bb, _type))
+                    return false;
+                break;
+            }
+        }
+    }
+}
+
 NodeType *GraphicNode::type()
 {
     return _flags[0] & 1 ? &_data_type : nullptr;
@@ -461,6 +723,38 @@ void GraphicNode::set_flags(const uint32_t &value)
     _data_flags = value;
 }
 
+kiwi::Array<uint32_t> *GraphicNode::polyIndexes()
+{
+    return _flags[0] & 32 ? &_data_polyIndexes : nullptr;
+}
+
+const kiwi::Array<uint32_t> *GraphicNode::polyIndexes() const
+{
+    return _flags[0] & 32 ? &_data_polyIndexes : nullptr;
+}
+
+kiwi::Array<uint32_t> &GraphicNode::set_polyIndexes(kiwi::MemoryPool &pool, uint32_t count)
+{
+    _flags[0] |= 32;
+    return _data_polyIndexes = pool.array<uint32_t>(count);
+}
+
+kiwi::Array<PolyElement> *GraphicNode::polyElements()
+{
+    return _flags[0] & 64 ? &_data_polyElements : nullptr;
+}
+
+const kiwi::Array<PolyElement> *GraphicNode::polyElements() const
+{
+    return _flags[0] & 64 ? &_data_polyElements : nullptr;
+}
+
+kiwi::Array<PolyElement> &GraphicNode::set_polyElements(kiwi::MemoryPool &pool, uint32_t count)
+{
+    _flags[0] |= 64;
+    return _data_polyElements = pool.array<PolyElement>(count);
+}
+
 Rect *GraphicNode::rect()
 {
     return _data_rect;
@@ -478,18 +772,34 @@ void GraphicNode::set_rect(Rect *value)
 
 kiwi::Array<Point2dXY> *GraphicNode::points()
 {
-    return _flags[0] & 64 ? &_data_points : nullptr;
+    return _flags[0] & 256 ? &_data_points : nullptr;
 }
 
 const kiwi::Array<Point2dXY> *GraphicNode::points() const
 {
-    return _flags[0] & 64 ? &_data_points : nullptr;
+    return _flags[0] & 256 ? &_data_points : nullptr;
 }
 
 kiwi::Array<Point2dXY> &GraphicNode::set_points(kiwi::MemoryPool &pool, uint32_t count)
 {
-    _flags[0] |= 64;
+    _flags[0] |= 256;
     return _data_points = pool.array<Point2dXY>(count);
+}
+
+uint32_t *GraphicNode::symbolType()
+{
+    return _flags[0] & 512 ? &_data_symbolType : nullptr;
+}
+
+const uint32_t *GraphicNode::symbolType() const
+{
+    return _flags[0] & 512 ? &_data_symbolType : nullptr;
+}
+
+void GraphicNode::set_symbolType(const uint32_t &value)
+{
+    _flags[0] |= 512;
+    _data_symbolType = value;
 }
 
 bool GraphicNode::encode(kiwi::ByteBuffer &_bb)
@@ -520,19 +830,39 @@ bool GraphicNode::encode(kiwi::ByteBuffer &_bb)
         _bb.writeVarUint(5);
         _bb.writeVarUint(_data_flags);
     }
-    if (rect() != nullptr)
+    if (polyIndexes() != nullptr)
     {
         _bb.writeVarUint(6);
+        _bb.writeVarUint(_data_polyIndexes.size());
+        for (uint32_t &_it : _data_polyIndexes)
+            _bb.writeVarUint(_it);
+    }
+    if (polyElements() != nullptr)
+    {
+        _bb.writeVarUint(7);
+        _bb.writeVarUint(_data_polyElements.size());
+        for (PolyElement &_it : _data_polyElements)
+            if (!_it.encode(_bb))
+                return false;
+    }
+    if (rect() != nullptr)
+    {
+        _bb.writeVarUint(8);
         if (!_data_rect->encode(_bb))
             return false;
     }
     if (points() != nullptr)
     {
-        _bb.writeVarUint(7);
+        _bb.writeVarUint(9);
         _bb.writeVarUint(_data_points.size());
         for (Point2dXY &_it : _data_points)
             if (!_it.encode(_bb))
                 return false;
+    }
+    if (symbolType() != nullptr)
+    {
+        _bb.writeVarUint(10);
+        _bb.writeVarUint(_data_symbolType);
     }
     _bb.writeVarUint(0);
     return true;
@@ -587,18 +917,43 @@ bool GraphicNode::decode(kiwi::ByteBuffer &_bb, kiwi::MemoryPool &_pool, const B
             }
             case 6:
             {
-                _data_rect = _pool.allocate<Rect>();
-                if (!_data_rect->decode(_bb, _pool, _schema))
+                if (!_bb.readVarUint(_count))
                     return false;
+                for (uint32_t &_it : set_polyIndexes(_pool, _count))
+                    if (!_bb.readVarUint(_it))
+                        return false;
                 break;
             }
             case 7:
             {
                 if (!_bb.readVarUint(_count))
                     return false;
+                for (PolyElement &_it : set_polyElements(_pool, _count))
+                    if (!_it.decode(_bb, _pool, _schema))
+                        return false;
+                break;
+            }
+            case 8:
+            {
+                _data_rect = _pool.allocate<Rect>();
+                if (!_data_rect->decode(_bb, _pool, _schema))
+                    return false;
+                break;
+            }
+            case 9:
+            {
+                if (!_bb.readVarUint(_count))
+                    return false;
                 for (Point2dXY &_it : set_points(_pool, _count))
                     if (!_it.decode(_bb, _pool, _schema))
                         return false;
+                break;
+            }
+            case 10:
+            {
+                if (!_bb.readVarUint(_data_symbolType))
+                    return false;
+                set_symbolType(_data_symbolType);
                 break;
             }
             default:

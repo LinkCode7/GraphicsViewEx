@@ -8,15 +8,16 @@
 
 #include "../utility/utility.h"
 
-GePolyline::GePolyline() : IGePointSet(eGePolylineType)
+GePolyline::GePolyline() : IGePointSet(eGePolylineType), GraphicsSymbol(eUnknownSymbol)
 {
-    _color = {196, 196, 196};
+    _color = {255, 255, 255};
     NOTIFY_MAKE_GRAPHIC();
 }
 
-GePolyline::GePolyline(std::initializer_list<QPointF> const &list) : IGePointSet(list, eGePolylineType)
+GePolyline::GePolyline(std::initializer_list<QPointF> const &list, GraphicsSymbol::Type type)
+    : IGePointSet(list, eGePolylineType), GraphicsSymbol(type)
 {
-    _color = {196, 196, 196};
+    _color = {255, 255, 255};
     NOTIFY_MAKE_GRAPHIC();
 }
 
@@ -25,6 +26,23 @@ void GePolyline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
 
     painter->drawPolyline(_points.data(), _points.size());
+
+    if (_symbol != ePointsIndex)
+        return;
+
+    // 绘制索引
+    auto size = _points.size();
+    if (size < 2)
+        return;
+
+    painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state) / 2));
+
+    // 闭合多段线，不绘制最后一个数字
+    size = _points[0] == _points[size - 1] ? size - 1 : size;
+    for (auto i = 0; i < size; ++i)
+    {
+        painter->drawText(_points[i], QString::number(i));
+    }
 }
 
 void GePolyline::setLastPt(const QPointF &ptNow)

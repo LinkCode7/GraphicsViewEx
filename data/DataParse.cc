@@ -4,13 +4,11 @@
 #include <iostream>
 #include <sstream>
 
-#include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
 #include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
-#include "../graphics/GePolylineIndex.h"
-#include "../graphics/GeSegment.h"
 #include "../graphics/GeSquarePoints.h"
+#include "../graphics/GeSymbolPoint.h"
 #include "../graphics/IGeGraphic.h"
 #include "../utility/utility.h"
 #include "../view/GraphicsArchive.h"
@@ -108,20 +106,21 @@ IGeGraphic* ParseGraphicsData::createObject()
             break;
         case sindyk::NodeType::eChip:
             break;
-        case sindyk::NodeType::eAim:
-            object = new GeAim({});
-            break;
-        case sindyk::NodeType::ePolyline:
-            object = new GePolyline({});
-            break;
-        case sindyk::NodeType::ePolylineIndex:
-            object = new GePolylineIndex({});
-            break;
-        case sindyk::NodeType::eSquarePoints:
-            object = new GeSquarePoints({});
+        case sindyk::NodeType::eSymbolPoint:
+            object = new GeSymbolPoint({});
             break;
         case sindyk::NodeType::eSegment:
-            object = new GeSegment();
+        case sindyk::NodeType::eArc:
+        case sindyk::NodeType::eBezier:
+            break;
+        case sindyk::NodeType::ePolyline:
+            object = new GePolyline();
+            break;
+        case sindyk::NodeType::ePolygon:
+            object = new GePolygon();
+            break;
+        case sindyk::NodeType::eSquarePoints:
+            object = new GeSquarePoints();
             break;
         default:
             std::cout << ">>> error type" << std::endl;
@@ -140,6 +139,7 @@ void ParseGraphicsData::visit(IGeGraphic* pItem)
 
     if (_node->flags())
     {
+        pItem->saveStatus(*_node->flags());
     }
 
     if (_node->argb())
@@ -175,17 +175,19 @@ void ParseGraphicsData::ParseGraphicsData::visit(GeBox* pItem)
     if (_node->rect())
         pItem->rect(_kiwi.toRect(_node->rect()));
 }
-void ParseGraphicsData::visit(GeAim* pItem)
+void ParseGraphicsData::visit(GeSymbolPoint* pItem)
 {
     visit(static_cast<IGePoint*>(pItem));
+
+    if (_node->symbolType())
+        pItem->symbolType((GraphicsSymbol::Type)*_node->symbolType());
 }
 void ParseGraphicsData::visit(GePolyline* pItem)
 {
     visit(static_cast<IGePointSet*>(pItem));
-}
-void ParseGraphicsData::visit(GePolylineIndex* pItem)
-{
-    visit(static_cast<IGePointSet*>(pItem));
+
+    if (_node->symbolType())
+        pItem->symbolType((GraphicsSymbol::Type)*_node->symbolType());
 }
 
 void ParseGraphicsData::visit(GeSquarePoints* pItem)
@@ -193,11 +195,47 @@ void ParseGraphicsData::visit(GeSquarePoints* pItem)
     visit(static_cast<IGePointSet*>(pItem));
 }
 
-void ParseGraphicsData::visit(GeSegment* pItem)
-{
-    visit(static_cast<IGePointSet*>(pItem));
-}
-
 void ParseGraphicsData::visit(GePolygon* pItem)
 {
+    visit(static_cast<IGeGraphic*>(pItem));
+
+    if (auto pIndexes = _node->polyIndexes(); pIndexes)
+    {
+        auto size = pIndexes->size();
+
+        std::vector<int> arr;
+        arr.reserve(size);
+
+        for (auto i = 0; i < size; ++i)
+            arr.emplace_back((*pIndexes)[i]);
+
+        pItem->indexes(arr);
+    }
+
+    if (auto pElements = _node->polyElements(); pElements)
+    {
+        auto size = pElements->size();
+        for (auto i = 0; i < size; ++i)
+        {
+            if (auto pSeg = (*pElements)[i].segment(); pSeg)
+            {
+                auto segment     = std::make_shared<sindy::PolySegment>();
+                segment->begin.x = *pSeg->begin()->x();
+                segment->begin.y = *pSeg->begin()->y();
+                segment->end.x   = *pSeg->end()->x();
+                segment->end.y   = *pSeg->end()->y();
+                pItem->setEdge(segment);
+            }
+            else if (auto pArc = (*pElements)[i].arc(); pArc)
+            {
+                auto arc        = std::make_shared<sindy::PolyArc>();
+                arc->center.x   = *pArc->center()->x();
+                arc->center.y   = *pArc->center()->y();
+                arc->radius     = *pArc->radius();
+                arc->beginAngle = *pArc->beginAngle();
+                arc->sweepAngle = *pArc->sweepAngle();
+                pItem->setEdge(arc);
+            }
+        }
+    }
 }

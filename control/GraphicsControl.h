@@ -12,8 +12,19 @@ namespace sindy
 {
 void viewKeyDown(QKeyEvent* event, GraphicsView* view);
 
-void triggeredImportJson();
-void importJson(std::string const& line);
+void onImportFromJson();
+void _importFromJson(std::string const& line);
+
+void onOpenDocument();
+void openDocument(std::string const& filename, GraphicsView* view = nullptr);
+
+void onSaveDocument();
+void saveDocument(GraphicsView* view);
+
+void createSelectedBox();
+
+void onCreatePolyline();
+void createPolyline(GraphicsView* view);
 
 } // namespace sindy
 

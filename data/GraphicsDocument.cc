@@ -7,9 +7,10 @@
 void Document::reset()
 {
     auto pScene = GeArchive().scene();
-    for (auto const& item : _geometries)
+    for (auto& item : _geometries)
     {
         pScene->removeItem(item);
+        delete item;
     }
 
     _geometries.clear();

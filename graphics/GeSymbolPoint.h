@@ -1,14 +1,14 @@
-#ifndef GE_AIM_H
-#define GE_AIM_H
+#ifndef GE_SYMBOL_POINT_H
+#define GE_SYMBOL_POINT_H
 
 #include "IGePoint.h"
 
-// 定位点
-class GeAim : public IGePoint
+// 符号点
+class GeSymbolPoint : public IGePoint, public GraphicsSymbol
 {
     VISIT_THIS_CLASS
 public:
-    GeAim(QPointF const &pt);
+    GeSymbolPoint(QPointF const &pt, GraphicsSymbol::Type type = eAimPoint);
 
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
@@ -23,4 +23,4 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 };
 
-#endif // !GE_AIM_H
+#endif // !GE_SYMBOL_POINT_H

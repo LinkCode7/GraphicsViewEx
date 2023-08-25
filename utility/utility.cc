@@ -4,13 +4,11 @@
 #include <iomanip>
 #include <sstream>
 
-#include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
 #include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
-#include "../graphics/GePolylineIndex.h"
-#include "../graphics/GeSegment.h"
 #include "../graphics/GeSquarePoints.h"
+#include "../graphics/GeSymbolPoint.h"
 #include "../graphics/chip.h"
 #include "../view/GraphicsArchive.h"
 
@@ -38,16 +36,16 @@ void sindy::addTestEntity()
 
     pScene->addItem(new GeBox({100, 100}, {300, 200}));
 
-    pScene->addItem(new GeAim({200, -100}));
+    pScene->addItem(new GeSymbolPoint({200, -100}));
 
-    pScene->addItem(new GeSegment({-100, -100}, {100, 100}));
+    // pScene->addItem(new GeSegment({-100, -100}, {100, 100}));
 
     std::initializer_list<QPointF> list = {{-186.41, 55.28},  {-115.21, 55.28}, {-93.21, 0},     {-71.21, 55.28},
                                            {0, 55.28},        {-57.6, 89.44},   {-35.6, 144.72}, {-93.21, 110.56},
                                            {-150.81, 144.72}, {-128.81, 89.44}, {-186.41, 55.28}};
 
     pScene->addItem(new GePolyline(list));
-    pScene->addItem(new GePolylineIndex(list));
+    pScene->addItem(new GePolyline(list, GraphicsSymbol::ePointsIndex));
     pScene->addItem(new GeSquarePoints(list));
 }
 

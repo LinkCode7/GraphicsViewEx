@@ -47,10 +47,10 @@ void parseFromJson(std::string const& contents)
 void saveAsJson()
 {
     using namespace sindy;
-    Segment element0({0, 0}, {50, 0});
-    Arc     element1({50, 0}, 50, PI, PI);
-    Segment element2({100, 0}, {100, 100});
-    Segment element3({100, 100}, {0, 0});
+    PolySegment element0({0, 0}, {50, 0});
+    PolyArc     element1({50, 0}, 50, PI, PI);
+    PolySegment element2({100, 0}, {100, 100});
+    PolySegment element3({100, 100}, {0, 0});
 
     auto json = JsonString::makeArray({element0, element1, element2, element3});
     parseFromJson(json);

@@ -26,4 +26,22 @@ protected:
     std::vector<QPointF> _points;
 };
 
-#endif
+class GraphicsSymbol
+{
+public:
+    enum Type
+    {
+        eUnknownSymbol = 0,
+        eAimPoint      = 1, // 瞄准镜
+        ePointsIndex   = 2, // 多段线端点的序列号
+    };
+    Type symbolType() const { return _symbol; }
+    void symbolType(Type value) { _symbol = value; }
+
+    GraphicsSymbol(Type symbol) : _symbol(symbol) {}
+
+protected:
+    Type _symbol = eUnknownSymbol;
+};
+
+#endif // !I_GE_POINT_SET_H

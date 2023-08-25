@@ -19,23 +19,28 @@ public:                  \
 class IGeGraphic : public QGraphicsItem
 {
 public:
-    // 可以直接构造的对象
+    // 可以直接构造的对象，和sindyk::NodeType对应
     enum ObjectType : unsigned int
     {
-        eUnknownType         = 0,
-        eGeBoxType           = 1, // 包围盒
-        eChipType            = 2,
-        eGeAimType           = 3, // 定位点
-        eGePolylineType      = 4, // 连续线段，LineString
-        eGePolylineIndexType = 5, // 绘制带索引的连续线段
-        eGeSquarePointsType  = 6, // 点集
-
-        eGeSegmentType = 7,  // 线段
-        eGeArcType     = 8,  // 弧线
-        eGeBezierType  = 9,  // 贝塞尔曲线
-        eGePolygonType = 10, // 多边形
+        eUnknownType        = 0,
+        eGePolylineType     = 1, // 连续线段，LineString
+        eGePolygonType      = 2, // 多边形
+        eGeSegmentType      = 3, // 线段
+        eGeArcType          = 4, // 弧线
+        eGeBezierType       = 5, // 贝塞尔曲线
+        eGeBoxType          = 6, // 包围盒
+        eGeSymbolPointType  = 7, // 符号点
+        eGeSquarePointsType = 8, // 点集
+        eChipType           = 1001,
     };
 
+    enum ObjectStatus : unsigned int
+    {
+        eUnknownStatus  = 0,
+        eNonSegmentEdge = 1, // 多边形中存在非线段边
+    };
+
+    virtual ~IGeGraphic() {}
     IGeGraphic(ObjectType type);
 
     QRectF       boundingRect() const override;
@@ -64,11 +69,18 @@ public:
     void        id(std::string const &id) { _id = id; }
     std::string id() const { return _id; }
 
+    uint32_t saveStatus() const { return _saveStatus; }
+    void     saveStatus(uint32_t value) { _saveStatus = value; }
+
     ObjectType objectType() const { return _type; }
 
     void addFlag(SaveFlags::Flag flag) { _runTimeFlags.add(flag); }
     void removeFlag(SaveFlags::Flag flag) { _runTimeFlags.remove(flag); }
     bool hasFlag(SaveFlags::Flag flag) const { return _runTimeFlags.has(flag); }
+
+    void addStatus(ObjectStatus state) { _saveStatus |= state; }
+    void removeStatus(ObjectStatus state) { _saveStatus &= (~state); }
+    bool hasStatus(ObjectStatus state) const { return _saveStatus & state; }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -80,7 +92,7 @@ protected:
     QColor      _color;
     ObjectType  _type;
 
-    uint64_t  _saveFlags = 0;
+    uint32_t  _saveStatus = 0;
     SaveFlags _runTimeFlags;
 };
 

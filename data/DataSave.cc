@@ -4,13 +4,11 @@
 
 #include <fstream>
 
-#include "../graphics/GeAim.h"
 #include "../graphics/GeBox.h"
 #include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
-#include "../graphics/GePolylineIndex.h"
-#include "../graphics/GeSegment.h"
 #include "../graphics/GeSquarePoints.h"
+#include "../graphics/GeSymbolPoint.h"
 #include "../graphics/IGeGraphic.h"
 #include "../graphics/IGePoint.h"
 #include "../graphics/IGePointSet.h"
@@ -41,12 +39,12 @@ void SaveGraphicsData::test()
     }
 }
 
-void SaveGraphicsData::saveAsFile(GraphicsView* pView, SaveFlags const& flag)
+void SaveGraphicsData::saveAsFile(GraphicsView* pView, SaveFlags const& flag, std::string const& filename)
 {
     std::string strHex = getHexString(pView, flag);
 
     std::fstream file;
-    file.open(DOCUMENT_SAVE_FILE_NAME, std::ios::out); // bin
+    file.open(filename, std::ios::out); // bin
     file.write(strHex.c_str(), strHex.size());
     file.close();
 }
@@ -83,7 +81,19 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
     auto                     size      = arrObject.size();
 
     uint                             index      = 0;
-    kiwi::Array<sindyk::GraphicNode> arrGraphic = _kiwi.message().set_graphics(_kiwi.pool(), size);
+    kiwi::Array<sindyk::GraphicNode> arrGraphic = _kiwi.message().set_graphics(_kiwi.pool(), 3000);
+
+    for (auto i = 20000; i < size; ++i)
+    {
+        if (index >= 3000)
+            return;
+        _node = &arrGraphic[index++];
+        _kiwi.currentNode(_node);
+
+        arrObject[i]->visit(this);
+    }
+
+    return;
     for (auto const& graphic : arrObject)
     {
         _node = &arrGraphic[index++];
@@ -95,7 +105,7 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
 
 void SaveGraphicsData::visit(IGeGraphic* pItem)
 {
-    _node->set_flags(0);
+    _node->set_flags(pItem->saveStatus());
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
     if (pItem->hasFlag(SaveFlags::eIGeGraphicInfo))
@@ -131,25 +141,22 @@ void SaveGraphicsData::visit(GeBox* pItem)
         _node->set_rect(_kiwi.fromRect(pItem->rect()));
     }
 }
-void SaveGraphicsData::visit(GeAim* pItem)
+void SaveGraphicsData::visit(GeSymbolPoint* pItem)
 {
     visit(static_cast<IGePoint*>(pItem));
+
+    if (pItem->hasFlag(SaveFlags::eGraphicSymbolInfo))
+        _node->set_symbolType(pItem->symbolType());
 }
 void SaveGraphicsData::visit(GePolyline* pItem)
 {
     visit(static_cast<IGePointSet*>(pItem));
-}
-void SaveGraphicsData::visit(GePolylineIndex* pItem)
-{
-    visit(static_cast<IGePointSet*>(pItem));
+
+    if (pItem->hasFlag(SaveFlags::eGraphicSymbolInfo))
+        _node->set_symbolType(pItem->symbolType());
 }
 
 void SaveGraphicsData::visit(GeSquarePoints* pItem)
-{
-    visit(static_cast<IGePointSet*>(pItem));
-}
-
-void SaveGraphicsData::visit(GeSegment* pItem)
 {
     visit(static_cast<IGePointSet*>(pItem));
 }
@@ -158,7 +165,8 @@ void SaveGraphicsData::visit(GePolygon* pItem)
 {
     visit(static_cast<IGeGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eIGePointSetInfo))
+    if (pItem->hasFlag(SaveFlags::eGePolygonInfo))
     {
+        _kiwi.setPolygon(pItem);
     }
 }

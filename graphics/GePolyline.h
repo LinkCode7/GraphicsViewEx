@@ -3,12 +3,12 @@
 
 #include "IGePointSet.h"
 
-class GePolyline : public IGePointSet
+class GePolyline : public IGePointSet, public GraphicsSymbol
 {
     VISIT_THIS_CLASS
 public:
     GePolyline();
-    GePolyline(std::initializer_list<QPointF> const &list);
+    GePolyline(std::initializer_list<QPointF> const &list, GraphicsSymbol::Type type = eUnknownSymbol);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 

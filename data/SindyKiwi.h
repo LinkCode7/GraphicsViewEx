@@ -6,6 +6,8 @@
 
 #include "qrect.h"
 
+class GePolygon;
+
 namespace kiwi
 {
 class MemoryPool;
@@ -44,6 +46,8 @@ public:
 
     void getPoints(std::vector<QPointF>& points);
     void setPoints(std::vector<QPointF> const& points);
+
+    void setPolygon(GePolygon* polygon);
 
 private:
     kiwi::MemoryPool*    _pool;

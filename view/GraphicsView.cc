@@ -71,7 +71,8 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
     else if (event->button() == Qt::RightButton)
     {
-        _menu->exec(QCursor::pos());
+        if (!_drag)
+            _menu->exec(QCursor::pos());
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -132,13 +133,36 @@ GraphicsView ::~GraphicsView()
 
 GraphicsView::GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v)
 {
-    setBackgroundBrush(QColor{239, 239, 239});
+    // 黑色背景
+    setBackgroundBrush(QColor{0, 0, 0});
 
     // 菜单
-    QAction *action = new QAction("导入json", this);
-    _menu           = new QMenu(this);
+    _menu = new QMenu(this);
+
+    QAction *action = new QAction("open document.", this);
     _menu->addAction(action);
-    QObject::connect(action, &QAction::triggered, this, &sindy::triggeredImportJson);
+    QObject::connect(action, &QAction::triggered, this, &sindy::onOpenDocument);
+
+    action = new QAction("save document.(ctrl+s)", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::onSaveDocument);
+
+    QAction *separator = new QAction(this);
+    separator->setSeparator(true);
+    separator->setText("---");
+    _menu->addAction(separator);
+
+    action = new QAction("create selected box.(b)", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::createSelectedBox);
+
+    action = new QAction("create polyline.(p)", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::onCreatePolyline);
+
+    action = new QAction("import from json.", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::onImportFromJson);
 }
 
 GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget *parent) : QFrame(parent)

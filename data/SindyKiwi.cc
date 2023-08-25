@@ -1,5 +1,6 @@
 #include "SindyKiwi.h"
 
+#include "../graphics/GePolygon.h"
 #include "qtransform.h"
 #include "schema.h"
 
@@ -86,5 +87,60 @@ void SindyKiwi::getPoints(std::vector<QPointF>& points)
     for (size_t i = 0; i < size; ++i)
     {
         points.push_back({*arrPoint[i].x(), *arrPoint[i].y()});
+    }
+}
+
+void SindyKiwi::setPolygon(GePolygon* polygon)
+{
+    // 每个闭合图形的边的数量
+    auto const& arrIndex = polygon->indexes();
+
+    auto                   size    = arrIndex.size();
+    kiwi::Array<uint32_t>& indexes = _node->set_polyIndexes(*_pool, size);
+    for (auto i = 0; i < size; ++i)
+    {
+        indexes[i] = arrIndex[i];
+    }
+
+    // 边
+    auto const& arrElement = polygon->elements();
+
+    size                                       = arrElement.size();
+    kiwi::Array<sindyk::PolyElement>& elements = _node->set_polyElements(*_pool, size);
+    for (auto i = 0; i < size; ++i)
+    {
+        if (auto pLine = dynamic_cast<sindy::PolySegment*>(arrElement[i].get()); pLine)
+        {
+            auto seg = _pool->allocate<sindyk::PolySegment>();
+
+            auto begin = _pool->allocate<sindyk::Point2dXY>();
+            begin->set_x(pLine->begin.x);
+            begin->set_y(pLine->begin.y);
+            seg->set_begin(begin);
+            auto end = _pool->allocate<sindyk::Point2dXY>();
+            end->set_x(pLine->end.x);
+            end->set_y(pLine->end.y);
+            seg->set_end(end);
+            elements[i].set_segment(seg);
+        }
+        else if (auto pArc = dynamic_cast<sindy::PolyArc*>(arrElement[i].get()); pArc)
+        {
+            auto arc = _pool->allocate<sindyk::PolyArc>();
+
+            auto center = _pool->allocate<sindyk::Point2dXY>();
+            center->set_x(pArc->center.x);
+            center->set_y(pArc->center.y);
+            arc->set_center(center);
+            arc->set_radius(pArc->radius);
+            arc->set_radius2(pArc->radius2);
+            arc->set_beginAngle(pArc->beginAngle);
+            arc->set_sweepAngle(pArc->sweepAngle);
+            elements[i].set_arc(arc);
+        }
+        else
+        {
+            std::cout << "unsupported type\n";
+            assert(0);
+        }
     }
 }

@@ -13,7 +13,7 @@ struct Point2dXY {
 	float y;
 }
 // 二维矩阵
-struct Matrix2d{
+struct Matrix2d {
     float _m11;
 	float _m12;
 	float _m13;
@@ -25,33 +25,58 @@ struct Matrix2d{
 	float _m33;
 }
 
+// 多边形的边-线段
+struct PolySegment {
+	Point2dXY begin;
+	Point2dXY end;
+}
+// 多边形的边-弧线
+struct PolyArc {
+	Point2dXY center;
+    float radius;
+	float radius2;
+    float beginAngle;
+    float sweepAngle;
+}
+
+message PolyElement {
+	PolySegment segment = 1;
+	PolyArc arc = 2;
+}
+
 // 节点类型
 enum NodeType{
-	eBox = 1;
-	eChip = 2;
-	eAim = 3;
-	ePolyline = 4;
-	ePolylineIndex = 5;
-	eSquarePoints = 6;
-	eSegment = 7;
-	eArc = 8;
-	eBezier = 9;
-	ePolygon = 10;
+	ePolyline = 1;
+	ePolygon = 2;
+	eSegment = 3;
+	eArc = 4;
+	eBezier = 5;
+	eBox = 6;
+	eSymbolPoint = 7;
+	eSquarePoints = 8;
+	eChip = 1001;
 }
 
 message GraphicNode {
-// IGeGraphic
+	// IGeGraphic
 	NodeType type = 1;
 	uint argb = 2;
 	string id = 3;
 	Matrix2d mat = 4;
 	uint flags = 5;
 
-// GeBox
-	Rect rect = 6;
+	// GePolygon，这两个数据要么同时存在，要么都为空
+	uint[] polyIndexes = 6; // 若存在边，则至少存在一个外轮廓
+	PolyElement[] polyElements = 7;
 
-// IGePointSet
-    Point2dXY[] points = 7;
+	// GeBox
+	Rect rect = 8;
+
+	// IGePointSet
+    Point2dXY[] points = 9;
+
+	// GeSymbolPoint
+    uint symbolType = 10;
 }
 
 message Document {

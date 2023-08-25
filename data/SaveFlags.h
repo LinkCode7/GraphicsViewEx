@@ -1,7 +1,7 @@
 #ifndef SAVE_FLAGS_H
 #define SAVE_FLAGS_H
 
-#define DOCUMENT_SAVE_FILE_NAME "GraphicsDocument.txt"
+#define DOCUMENT_SAVE_FILE_NAME "sindy.txt"
 
 using uint = unsigned int;
 
@@ -16,21 +16,26 @@ public:
     // 需要序列化的标志，可细分到每个字段
     enum Flag
     {
-        eDocVersion = 0, // 文档版本
+        // 文档
+        eDocVersion = 0, // 版本
 
-        eViewInfo, // 画布信息
+        // 画布
+        eViewInfo,
 
-        eIGeGraphicInfo, // 基类中的普通信息
-        eIGeGraphicMat,  // 基类中的变换信息
-
+        // 基类数据
+        eIGeGraphicInfo,  // 普通信息
+        eIGeGraphicMat,   // 变换信息
         eIGePointSetInfo, // 点集[1,n]
 
         // 子类
-        eGeAimInfo, // 定位点
-        eGeBoxInfo, // 包围盒
-        eChipInfo,
+        eGeBoxInfo,          // 包围盒
         eGeSquarePointsInfo, // 方形点集
-        // eGePolylineIndexInfo, // 带编号的连续线段
+        eGePolygonInfo,      // 多边形数据
+        eChipInfo,
+
+        // 其它共性的
+        eGraphicSymbolInfo, // 符号点
+
         eAllCount
     };
 
@@ -49,7 +54,7 @@ private:
 };
 
 class GeBox;
-class GeAim;
+class GeSymbolPoint;
 class GePolyline;
 class IGeGraphic;
 class GeSquarePoints;
@@ -67,13 +72,11 @@ public:
     virtual void visit(IGePoint*)         = 0;
     virtual void visit(IGePointSet*)      = 0;
 
-    virtual void visit(GeBox*)           = 0;
-    virtual void visit(GeAim*)           = 0;
-    virtual void visit(GePolyline*)      = 0;
-    virtual void visit(GePolylineIndex*) = 0;
-    virtual void visit(GeSquarePoints*)  = 0;
-    virtual void visit(GeSegment*)       = 0;
-    virtual void visit(GePolygon*)       = 0;
+    virtual void visit(GeBox*)          = 0;
+    virtual void visit(GeSymbolPoint*)  = 0;
+    virtual void visit(GePolyline*)     = 0;
+    virtual void visit(GeSquarePoints*) = 0;
+    virtual void visit(GePolygon*)      = 0;
 };
 
 #endif // !SAVE_FLAGS_H

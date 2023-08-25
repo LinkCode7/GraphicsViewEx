@@ -12,7 +12,7 @@
 GeSquarePoints::GeSquarePoints() : IGePointSet(eGeSquarePointsType)
 {
     _color = {0, 0, 255};
-    setFlags(0);
+    // setFlags(0);
     setAcceptHoverEvents(false);
     NOTIFY_MAKE_GRAPHIC();
 }
@@ -20,7 +20,7 @@ GeSquarePoints::GeSquarePoints() : IGePointSet(eGeSquarePointsType)
 GeSquarePoints::GeSquarePoints(std::initializer_list<QPointF> const &list) : IGePointSet(list, eGeSquarePointsType)
 {
     _color = {0, 0, 255};
-    setFlags(0);
+    // setFlags(0);
     setAcceptHoverEvents(false);
     NOTIFY_MAKE_GRAPHIC();
 }

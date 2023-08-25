@@ -8,14 +8,14 @@
 
 GeBox::GeBox(QRectF const &rect) : IGeGraphic(eGeBoxType), m_rect(rect)
 {
-    _color = {192, 192, 192};
+    _color = {172, 159, 4};
     // setPos(m_rect.center());
     NOTIFY_MAKE_GRAPHIC();
 }
 
 GeBox::GeBox(QPointF const &ptMin, QPointF const &ptMax) : IGeGraphic(eGeBoxType)
 {
-    _color = {192, 192, 192};
+    _color = {172, 159, 4};
     sindy::extent2Rect(ptMin, ptMax, m_rect);
     // setPos(m_rect.center());
     NOTIFY_MAKE_GRAPHIC();
@@ -37,12 +37,9 @@ void GeBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 {
     Q_UNUSED(widget);
 
-    QColor fillColor = getDrawColor(option->state);
-
-    auto oldPen = painter->pen();
-    painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state), Qt::DashLine));
     painter->drawRect(m_rect);
-    painter->setPen(oldPen);
 }
 
 void GeBox::mousePressEvent(QGraphicsSceneMouseEvent *event)

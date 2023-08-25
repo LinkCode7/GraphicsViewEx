@@ -94,9 +94,9 @@ private slots:
 private:
     GraphicsView *_pGraphicsView;
 
-    QToolButton   *_pResetBtn;
-    QSlider       *_pZoomSlider;
-    QSlider       *_pRotateSlider;
+    QToolButton *  _pResetBtn;
+    QSlider *      _pZoomSlider;
+    QSlider *      _pRotateSlider;
     PropertyTable *_property;
 };
 

@@ -21,11 +21,9 @@ public:
     void visit(IGePointSet* pItem) override;
 
     void visit(GeBox* pItem) override;
-    void visit(GeAim* pItem) override;
+    void visit(GeSymbolPoint* pItem) override;
     void visit(GePolyline* pItem) override;
-    void visit(GePolylineIndex* pItem) override;
     void visit(GeSquarePoints* pItem) override;
-    void visit(GeSegment* pItem) override;
     void visit(GePolygon* pItem) override;
 
 private:
