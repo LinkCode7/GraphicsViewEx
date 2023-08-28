@@ -41,6 +41,21 @@ void SaveGraphicsData::test()
 
 void SaveGraphicsData::saveAsFile(GraphicsView* pView, SaveFlags const& flag, std::string const& filename)
 {
+    if (filename.ends_with(".data"))
+    {
+        FILE* fp = fopen(filename.c_str(), "wb+");
+        if (!fp)
+            return;
+        this->encode(pView, flag);
+
+        kiwi::ByteBuffer bb;
+        _kiwi.message().encode(bb);
+
+        fwrite(bb.data(), 1, bb.size(), fp);
+        fclose(fp);
+        return;
+    }
+
     std::string strHex = getHexString(pView, flag);
 
     std::fstream file;

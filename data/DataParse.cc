@@ -16,8 +16,39 @@
 #include "qgraphicsscene.h"
 #include "schema.h"
 
+void readStream(char const* filename, uint8_t*& data, uint64_t& size)
+{
+    FILE* fp = fopen(filename, "rb");
+    if (!fp)
+        return;
+
+    fseek(fp, 0, SEEK_END);
+    size = ftell(fp);
+
+    data = new uint8_t[size];
+    memset(data, 0, size);
+
+    fseek(fp, 0, SEEK_SET);
+    fread(data, sizeof(char), size, fp);
+    fclose(fp);
+}
+
 void ParseGraphicsData::fromFile(GraphicsView* pView, std::string const& filename)
 {
+    if (filename.ends_with(".data"))
+    {
+        uint64_t size = 0;
+        uint8_t* data = nullptr;
+        readStream(filename.c_str(), data, size);
+
+        kiwi::ByteBuffer bb(data, size);
+        _kiwi.message().decode(bb, _kiwi.pool());
+
+        GeArchive().doc()->reset();
+        this->decode(pView);
+        return;
+    }
+
     std::fstream file;
     file.open(filename, std::ios::in);
     if (!file.is_open())
