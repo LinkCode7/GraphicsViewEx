@@ -47,6 +47,21 @@ void sindy::addTestEntity()
     pScene->addItem(new GePolyline(list));
     pScene->addItem(new GePolyline(list, GraphicsSymbol::ePointsIndex));
     pScene->addItem(new GeSquarePoints(list));
+
+    auto polyEllipse = new GePolygon();
+    polyEllipse->addNewEdge(std::make_shared<sindy::PolyArc>(sindy::Point(0, -100), 50, 30, 0, PI2));
+    pScene->addItem(polyEllipse);
+
+    auto polySegment = new GePolygon();
+    polySegment->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{200, 0}, sindy::Point{300, -200}));
+    pScene->addItem(polySegment);
+
+    auto polygon = new GePolygon();
+    polygon->addNewEdge(std::make_shared<sindy::PolyArc>(sindy::Point(50, 0), 50, 30, 0, PI));
+    polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{0, 0}, sindy::Point{0, 50}));
+    polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{0, 50}, sindy::Point{100, 50}));
+    polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{100, 50}, sindy::Point{100, 0}));
+    pScene->addItem(polygon);
 }
 
 void sindy::addChipToScene()

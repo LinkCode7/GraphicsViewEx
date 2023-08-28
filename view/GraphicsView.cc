@@ -72,7 +72,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     else if (event->button() == Qt::RightButton)
     {
         if (!_drag)
+        {
+            _resetViewMatrix->setCheckable(hasState(eChangeViewMatrix));
             _menu->exec(QCursor::pos());
+        }
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -167,6 +170,11 @@ GraphicsView::GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v)
     separator->setSeparator(true);
     _menu->addAction(separator);
 
+    _resetViewMatrix = new QAction("reset view matrix.", this);
+    _resetViewMatrix->setCheckable(false);
+    _menu->addAction(_resetViewMatrix);
+    QObject::connect(_resetViewMatrix, &QAction::triggered, this, [&]() { _frame->resetView(); });
+
     action = new QAction("import from json.", this);
     _menu->addAction(action);
     QObject::connect(action, &QAction::triggered, this, &sindy::onImportFromJson);
@@ -209,10 +217,6 @@ GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget 
     QHBoxLayout *rotateSliderLayout = new QHBoxLayout;
     rotateSliderLayout->addWidget(_pRotateSlider);
 
-    _pResetBtn = new QToolButton;
-    _pResetBtn->setText(tr("reset"));
-    _pResetBtn->setEnabled(false);
-
     // 表格
     _property = new PropertyTable();
     scene->setPropertyTable(_property);
@@ -222,22 +226,18 @@ GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget 
     topLayout->addWidget(_pGraphicsView, 0, 1);
     topLayout->addLayout(zoomSliderLayout, 0, 2);
     topLayout->addLayout(rotateSliderLayout, 1, 1);
-    topLayout->addWidget(_pResetBtn, 1, 2);
     topLayout->setColumnStretch(0, 15);
     topLayout->setColumnStretch(1, 100);
     topLayout->setColumnStretch(2, 1);
     // topLayout->setColumnMinimumWidth(2, 10);
     setLayout(topLayout);
 
-    connect(_pResetBtn, &QAbstractButton::clicked, this, &GraphicsFrame::resetView);
     connect(_pZoomSlider, &QAbstractSlider::valueChanged, this, &GraphicsFrame::setupMatrix);
     connect(_pRotateSlider, &QAbstractSlider::valueChanged, this, &GraphicsFrame::setupMatrix);
     connect(_pGraphicsView->verticalScrollBar(), &QAbstractSlider::valueChanged, this,
             &GraphicsFrame::setResetButtonEnabled);
     connect(_pGraphicsView->horizontalScrollBar(), &QAbstractSlider::valueChanged, this,
             &GraphicsFrame::setResetButtonEnabled);
-
-    connect(_pResetBtn, &QAbstractButton::clicked, this, &GraphicsFrame::resetView);
 
     setupMatrix();
 
@@ -256,12 +256,12 @@ void GraphicsFrame::resetView()
     setupMatrix();
     _pGraphicsView->ensureVisible(QRectF(0, 0, 0, 0));
 
-    _pResetBtn->setEnabled(false);
+    _pGraphicsView->removeState(GraphicsView::eChangeViewMatrix);
 }
 
 void GraphicsFrame::setResetButtonEnabled()
 {
-    _pResetBtn->setEnabled(true);
+    _pGraphicsView->addState(GraphicsView::eChangeViewMatrix);
 }
 
 void GraphicsFrame::setupMatrix()

@@ -26,9 +26,10 @@ public:
 
     enum ViewState
     {
-        eUnknownState = 0,
-        eDragInit     = 1,
-        eDragging     = eDragInit << 1,
+        eUnknownState     = 0,
+        eDragInit         = 1,
+        eDragging         = eDragInit << 1,
+        eChangeViewMatrix = eDragInit << 2,
     };
     void addState(ViewState state) { _state |= state; }
     void removeState(ViewState state) { _state &= (~state); }
@@ -58,7 +59,8 @@ private:
     bool           _bMoveView        = false;
     QPoint         _ptRightMouseDown = {};
 
-    QMenu *_menu = nullptr;
+    QMenu *  _menu            = nullptr;
+    QAction *_resetViewMatrix = nullptr;
 
     int                         _state = 0;
     QString                     _strCommand;
@@ -80,8 +82,9 @@ public slots:
     void zoomIn(int level = 1);
     void zoomOut(int level = 1);
 
-private slots:
     void resetView();
+
+private slots:
     void setResetButtonEnabled();
     void setupMatrix();
     void togglePointerMode();
@@ -94,7 +97,6 @@ private slots:
 private:
     GraphicsView *_pGraphicsView;
 
-    QToolButton *  _pResetBtn;
     QSlider *      _pZoomSlider;
     QSlider *      _pRotateSlider;
     PropertyTable *_property;

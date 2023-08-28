@@ -1,5 +1,7 @@
 #include "GraphicsDocument.h"
 
+#include <set>
+
 #include "../graphics/IGeGraphic.h"
 #include "../view/GraphicsArchive.h"
 #include "../view/GraphicsScene.h"
@@ -37,4 +39,31 @@ bool Document::removeGraphic(IGeGraphic* pGraphic)
         }
     }
     return false;
+}
+
+void Document::deleteSelectedItems()
+{
+    std::set<IGeGraphic*> select;
+    for (auto const& item : _selected)
+    {
+        select.emplace(item);
+    }
+
+    std::vector<IGeGraphic*> unselect;
+
+    auto pScene = GeArchive().scene();
+    for (auto const& item : _geometries)
+    {
+        if (select.find(item) != select.end())
+        {
+            pScene->removeItem(item);
+            delete item;
+            continue;
+        }
+
+        unselect.emplace_back(item);
+    }
+
+    _selected.clear();
+    _geometries = std::move(unselect);
 }

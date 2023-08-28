@@ -18,6 +18,7 @@ public:
     // 添加、删除图形
     void addGraphic(IGeGraphic* pGraphic);
     bool removeGraphic(IGeGraphic* pGraphic);
+    void deleteSelectedItems();
 
     // 选中图形
     void                            clearSelectedGraphics() { _selected.clear(); }

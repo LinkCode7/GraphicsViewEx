@@ -65,7 +65,8 @@ QRectF GePolygon::boundingRect() const
         }
         else if (auto pArc = dynamic_cast<sindy::PolyArc*>(element.get()); pArc)
         {
-            // box.addPoint({pArc->center.x, pArc->center.y});
+            box.addPoint({pArc->center.x, pArc->center.y});
+            box.expand(30.0);
         }
     }
 
@@ -87,14 +88,16 @@ void GePolygon::drawArcSegment(QPainter* painter, const QStyleOptionGraphicsItem
     {
         if (auto pLine = dynamic_cast<sindy::PolySegment*>(element.get()); pLine)
         {
-            painter->drawLine(pLine->begin.x, pLine->begin.y, pLine->begin.x, pLine->begin.y);
+            painter->drawLine(pLine->begin.x, pLine->begin.y, pLine->end.x, pLine->end.y);
         }
         else if (auto pArc = dynamic_cast<sindy::PolyArc*>(element.get()); pArc)
         {
-            // 第3、4个参数表示圆/椭圆的宽度和高度，第5、6个参数表示起始角度和扫描角度
+            // 第3、4个参数表示圆/椭圆的宽度和高度；
+            // 第5、6个参数表示起始角度和扫描角度，[0, 360]，负数表示逆时针旋转，正数表示顺时针旋转
+            // Qt 中的角度单位是以 1/16 度为单位的，因此在设置起始角度和弧度时需要将角度值乘以 16
             painter->drawArc(pArc->center.x - pArc->radius, pArc->center.y - pArc->radius2, pArc->radius * 2,
-                             pArc->radius2 * 2, sindy::radian2Degree(pArc->beginAngle),
-                             sindy::radian2Degree(pArc->sweepAngle));
+                             pArc->radius2 * 2, sindy::radian2Degree(pArc->beginAngle) * 16,
+                             sindy::radian2Degree(pArc->sweepAngle) * 16);
         }
     }
 }

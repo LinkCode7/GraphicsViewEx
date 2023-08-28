@@ -232,6 +232,7 @@ void ParseGraphicsData::visit(GePolygon* pItem)
                 arc->center.x   = *pArc->center()->x();
                 arc->center.y   = *pArc->center()->y();
                 arc->radius     = *pArc->radius();
+                arc->radius2    = *pArc->radius2();
                 arc->beginAngle = *pArc->beginAngle();
                 arc->sweepAngle = *pArc->sweepAngle();
                 pItem->setEdge(arc);

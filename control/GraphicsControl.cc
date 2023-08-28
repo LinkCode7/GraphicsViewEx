@@ -266,10 +266,6 @@ void sindy::createPolyline(GraphicsView* view)
 
 void sindy::deleteSelectedItems()
 {
-    auto pScene = GeArchive().scene();
-    if (!pScene)
-        return;
-    auto items = pScene->selectedItems();
-    for (const auto& item : items)
-        pScene->removeItem(item);
+    auto doc = GeArchive().doc();
+    doc->deleteSelectedItems();
 }

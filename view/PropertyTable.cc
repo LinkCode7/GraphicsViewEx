@@ -48,7 +48,7 @@ void PropertyTable::doSelectionChanged()
 void PropertyTable::initProperty()
 {
     auto item = new QTableWidgetItem;
-    item->setText("ContourColor");
+    item->setText("color");
     setItem(0, 0, item);
 
     auto count = rowCount();
