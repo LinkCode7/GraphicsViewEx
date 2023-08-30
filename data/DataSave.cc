@@ -39,7 +39,7 @@ void SaveGraphicsData::test()
     }
 }
 
-void SaveGraphicsData::saveAsFile(GraphicsView* pView, SaveFlags const& flag, std::string const& filename)
+void SaveGraphicsData::saveAsFile(GraphicsView* pView, RuntimeFlag const& flag, std::string const& filename)
 {
     if (filename.ends_with(".data"))
     {
@@ -64,7 +64,7 @@ void SaveGraphicsData::saveAsFile(GraphicsView* pView, SaveFlags const& flag, st
     file.close();
 }
 
-std::string SaveGraphicsData::getHexString(GraphicsView* pView, SaveFlags const& flag)
+std::string SaveGraphicsData::getHexString(GraphicsView* pView, RuntimeFlag const& flag)
 {
     this->encode(pView, flag);
 
@@ -74,13 +74,13 @@ std::string SaveGraphicsData::getHexString(GraphicsView* pView, SaveFlags const&
     return sindy::stream2HexString(bb.data(), bb.size());
 }
 
-void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
+void SaveGraphicsData::encode(GraphicsView* pView, RuntimeFlag const& flag)
 {
     if (!pView)
         return;
 
     auto doc = GeArchive().doc();
-    if (flag.has(SaveFlags::eDocVersion))
+    if (flag.has(RuntimeFlag::eDocVersion))
     {
         _kiwi.message().set_create_version(_kiwi.fromString(doc->createVersion()));
         _kiwi.message().set_last_open_version(_kiwi.fromString(CURRENT_VERSION));
@@ -88,7 +88,7 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
 
     _kiwi.message().set_maxId(doc->maxId());
 
-    if (flag.has(SaveFlags::eViewInfo))
+    if (flag.has(RuntimeFlag::eViewInfo))
     {
         _kiwi.message().set_matView(_kiwi.fromMatrix(pView->transform()));
         _kiwi.message().set_background(pView->getBgColor().rgba64().toArgb32());
@@ -114,13 +114,13 @@ void SaveGraphicsData::visit(IGeGraphic* pItem)
     _node->set_flags(pItem->saveStatus());
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
-    if (pItem->hasFlag(SaveFlags::eIGeGraphicInfo))
+    if (pItem->hasFlag(RuntimeFlag::eIGeGraphicInfo))
     {
         _node->set_id(pItem->id());
         _node->set_name(_kiwi.fromString(pItem->name()));
         _node->set_argb(pItem->getArgb32());
     }
-    if (pItem->hasFlag(SaveFlags::eIGeGraphicMat))
+    if (pItem->hasFlag(RuntimeFlag::eIGeGraphicMat))
     {
         _node->set_mat(_kiwi.fromMatrix(pItem->sceneTransform()));
     }
@@ -129,7 +129,7 @@ void SaveGraphicsData::visit(IGePointSet* pItem)
 {
     visit(static_cast<IGeGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eIGePointSetInfo))
+    if (pItem->hasFlag(RuntimeFlag::eIGePointSetInfo))
     {
         _kiwi.setPoints(*pItem->getPoints());
     }
@@ -143,7 +143,7 @@ void SaveGraphicsData::visit(GeBox* pItem)
 {
     visit(static_cast<IGeGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eGeBoxInfo))
+    if (pItem->hasFlag(RuntimeFlag::eGeBoxInfo))
     {
         _node->set_rect(_kiwi.fromRect(pItem->rect()));
     }
@@ -152,14 +152,14 @@ void SaveGraphicsData::visit(GeSymbolPoint* pItem)
 {
     visit(static_cast<IGePoint*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eGraphicSymbolInfo))
+    if (pItem->hasFlag(RuntimeFlag::eGraphicSymbolInfo))
         _node->set_symbolType(pItem->symbolType());
 }
 void SaveGraphicsData::visit(GePolyline* pItem)
 {
     visit(static_cast<IGePointSet*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eGraphicSymbolInfo))
+    if (pItem->hasFlag(RuntimeFlag::eGraphicSymbolInfo))
         _node->set_symbolType(pItem->symbolType());
 }
 
@@ -172,7 +172,7 @@ void SaveGraphicsData::visit(GePolygon* pItem)
 {
     visit(static_cast<IGeGraphic*>(pItem));
 
-    if (pItem->hasFlag(SaveFlags::eGePolygonInfo))
+    if (pItem->hasFlag(RuntimeFlag::eGePolygonInfo))
     {
         _kiwi.setPolygon(pItem);
     }

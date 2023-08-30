@@ -118,8 +118,12 @@ void ParseGraphicsData::decodeNode(GraphicsView* pView)
         if (!object)
             continue;
 
+        object->addFlag(RuntimeFlag::eDocumentParsing);
+
         object->visit(this);
         GeArchive().addCustomItem(object);
+
+        object->removeFlag(RuntimeFlag::eDocumentParsing);
     }
 }
 

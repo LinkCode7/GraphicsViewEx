@@ -23,7 +23,9 @@ void Document::addGraphic(IGeGraphic* pGraphic)
     if (!pGraphic)
         return;
 
-    pGraphic->id(++_maxId);
+    if (pGraphic->id() == 0 || !pGraphic->hasFlag(RuntimeFlag::eDocumentParsing))
+        pGraphic->id(++_maxId);
+
     pGraphic->notify();
     _geometries.emplace_back(pGraphic);
 }

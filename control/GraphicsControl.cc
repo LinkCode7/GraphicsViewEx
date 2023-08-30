@@ -217,7 +217,7 @@ void sindy::saveDocument(GraphicsView* view)
     if (files.size() != 1)
         return;
 
-    SaveFlags flag;
+    RuntimeFlag flag;
     flag.full(true);
 
     SaveGraphicsData data;

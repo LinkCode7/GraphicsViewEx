@@ -6,7 +6,7 @@
 
 #include "../data/DataParse.h"
 #include "../data/GraphicsMaker.h"
-#include "../data/SaveFlags.h"
+#include "../data/RuntimeFlag.h"
 
 class GraphicMaker;
 
@@ -33,12 +33,6 @@ public:
         eGeSymbolPointType  = 7, // 符号点
         eGeSquarePointsType = 8, // 点集
         eChipType           = 1001,
-    };
-
-    enum ObjectStatus : unsigned int
-    {
-        eUnknownStatus  = 0,
-        eNonSegmentEdge = 1, // 多边形中存在非线段边
     };
 
     virtual ~IGeGraphic() {}
@@ -78,13 +72,18 @@ public:
 
     ObjectType objectType() const { return _type; }
 
-    void addFlag(SaveFlags::Flag flag) { _runTimeFlags.add(flag); }
-    void removeFlag(SaveFlags::Flag flag) { _runTimeFlags.remove(flag); }
-    bool hasFlag(SaveFlags::Flag flag) const { return _runTimeFlags.has(flag); }
+    enum Flag : unsigned int
+    {
+        eUnknownFlag    = 0,
+        eNonSegmentEdge = 1, // 多边形中存在非线段边
+    };
+    void addSaveFlag(Flag flag) { _saveFlag |= flag; }
+    void removeSaveFlag(Flag flag) { _saveFlag &= (~flag); }
+    bool hasSaveFlag(Flag flag) const { return _saveFlag & flag; }
 
-    void addStatus(ObjectStatus state) { _saveFlag |= state; }
-    void removeStatus(ObjectStatus state) { _saveFlag &= (~state); }
-    bool hasStatus(ObjectStatus state) const { return _saveFlag & state; }
+    void addFlag(RuntimeFlag::Flag flag) { _runTimeFlag.add(flag); }
+    void removeFlag(RuntimeFlag::Flag flag) { _runTimeFlag.remove(flag); }
+    bool hasFlag(RuntimeFlag::Flag flag) const { return _runTimeFlag.has(flag); }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -94,11 +93,11 @@ protected:
 protected:
     ObjectType  _type;
     QColor      _color;
-    uint32_t    _id;
+    uint32_t    _id = 0;
     std::string _name;
     uint32_t    _saveFlag = 0;
 
-    SaveFlags _runTimeFlags;
+    RuntimeFlag _runTimeFlag;
 };
 
 #endif // !DB_GRAPHIC_H

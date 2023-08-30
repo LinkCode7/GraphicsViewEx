@@ -114,7 +114,7 @@ public:
     void addNewEdge(sindy::PolyGeometrySp element)
     {
         if (auto pLine = dynamic_cast<sindy::PolySegment *>(element.get()); !pLine)
-            this->addStatus(eNonSegmentEdge);
+            this->addSaveFlag(eNonSegmentEdge);
         _elements.emplace_back(element);
     }
 

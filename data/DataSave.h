@@ -1,7 +1,7 @@
 #ifndef DATA_PARSE_H
 #define DATA_PARSE_H
 
-#include "SaveFlags.h"
+#include "RuntimeFlag.h"
 #include "SindyKiwi.h"
 
 class GraphicsView;
@@ -16,10 +16,10 @@ class SaveGraphicsData : public VisitGraphics
 public:
     void test();
 
-    void        saveAsFile(GraphicsView* pView, SaveFlags const& flag, std::string const& filename);
-    std::string getHexString(GraphicsView* pView, SaveFlags const& flag);
+    void        saveAsFile(GraphicsView* pView, RuntimeFlag const& flag, std::string const& filename);
+    std::string getHexString(GraphicsView* pView, RuntimeFlag const& flag);
 
-    void encode(GraphicsView* pView, SaveFlags const& flag);
+    void encode(GraphicsView* pView, RuntimeFlag const& flag);
 
 public:
     void visit(IGeGraphic* pItem) override;

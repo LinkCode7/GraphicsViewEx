@@ -104,7 +104,7 @@ void GePolygon::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
 {
     painter->setPen(QPen(getDrawColor(option->state), getDrawWidth(option->state)));
 
-    if (hasStatus(eNonSegmentEdge))
+    if (hasSaveFlag(eNonSegmentEdge))
         return drawArcSegment(painter, option, widget);
 
     // 连续线段
@@ -112,7 +112,7 @@ void GePolygon::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
     {
         if (auto pLine = dynamic_cast<sindy::PolySegment*>(element.get()); pLine)
             continue;
-        addStatus(eNonSegmentEdge);
+        addSaveFlag(eNonSegmentEdge);
         drawArcSegment(painter, option, widget);
         return;
     }

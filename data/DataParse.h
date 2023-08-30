@@ -2,7 +2,7 @@
 #define DATA_SAVE_H
 #include <string>
 
-#include "SaveFlags.h"
+#include "RuntimeFlag.h"
 #include "SindyKiwi.h"
 
 class GraphicsView;

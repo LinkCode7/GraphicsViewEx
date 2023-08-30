@@ -1,17 +1,17 @@
-#ifndef SAVE_FLAGS_H
-#define SAVE_FLAGS_H
+#ifndef RUN_TIME_FLAG_H
+#define RUN_TIME_FLAG_H
 
 #define DOCUMENT_SAVE_FILE_NAME "sindy.txt"
 
 using uint = unsigned int;
 
 // 文档内容改变标志
-class SaveFlags
+class RuntimeFlag
 {
 public:
-    SaveFlags() {}
-    SaveFlags(SaveFlags const&) = delete;
-    SaveFlags& operator=(SaveFlags const&) = delete;
+    RuntimeFlag() {}
+    RuntimeFlag(RuntimeFlag const&)            = delete;
+    RuntimeFlag& operator=(RuntimeFlag const&) = delete;
 
     // 需要序列化的标志，可细分到每个字段
     enum Flag
@@ -35,6 +35,9 @@ public:
 
         // 其它共性的
         eGraphicSymbolInfo, // 符号点
+
+        // 过程
+        eDocumentParsing, // 文档解析中...
 
         eAllCount
     };
@@ -79,4 +82,4 @@ public:
     virtual void visit(GePolygon*)      = 0;
 };
 
-#endif // !SAVE_FLAGS_H
+#endif // !RUN_TIME_FLAG_H

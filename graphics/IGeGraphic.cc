@@ -9,7 +9,9 @@ IGeGraphic::IGeGraphic(ObjectType type) : _color{0, 255, 0}, _type(type)
     setFlags(ItemIsSelectable | ItemIsMovable);
     setAcceptHoverEvents(true);
 
-    _runTimeFlags.full(true); // 暂时不控制
+    // 暂时不控制
+    _runTimeFlag.full(true);
+    _runTimeFlag.remove(RuntimeFlag::eDocumentParsing);
 
     //// 颠倒y轴
     // QTransform matrix;
