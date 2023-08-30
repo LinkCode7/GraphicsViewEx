@@ -7,7 +7,7 @@
 PolylineDrag::PolylineDrag()
 {
     m_geo = new GePolyline();
-    GeArchive().scene()->addItem(m_geo);
+    GeArchive().addCustomItem(m_geo);
 }
 
 void PolylineDrag::onLeftClick(const QPointF& curClick)

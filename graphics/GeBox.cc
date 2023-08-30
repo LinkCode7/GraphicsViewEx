@@ -10,7 +10,6 @@ GeBox::GeBox(QRectF const &rect) : IGeGraphic(eGeBoxType), m_rect(rect)
 {
     _color = {172, 159, 4};
     // setPos(m_rect.center());
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 GeBox::GeBox(QPointF const &ptMin, QPointF const &ptMax) : IGeGraphic(eGeBoxType)
@@ -18,7 +17,6 @@ GeBox::GeBox(QPointF const &ptMin, QPointF const &ptMax) : IGeGraphic(eGeBoxType
     _color = {172, 159, 4};
     sindy::extent2Rect(ptMin, ptMax, m_rect);
     // setPos(m_rect.center());
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 QRectF GeBox::boundingRect() const

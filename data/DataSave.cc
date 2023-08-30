@@ -86,6 +86,8 @@ void SaveGraphicsData::encode(GraphicsView* pView, SaveFlags const& flag)
         _kiwi.message().set_last_open_version(_kiwi.fromString(CURRENT_VERSION));
     }
 
+    _kiwi.message().set_maxId(doc->maxId());
+
     if (flag.has(SaveFlags::eViewInfo))
     {
         _kiwi.message().set_matView(_kiwi.fromMatrix(pView->transform()));
@@ -114,7 +116,8 @@ void SaveGraphicsData::visit(IGeGraphic* pItem)
 
     if (pItem->hasFlag(SaveFlags::eIGeGraphicInfo))
     {
-        _node->set_id(_kiwi.fromString(pItem->id()));
+        _node->set_id(pItem->id());
+        _node->set_name(_kiwi.fromString(pItem->name()));
         _node->set_argb(pItem->getArgb32());
     }
     if (pItem->hasFlag(SaveFlags::eIGeGraphicMat))

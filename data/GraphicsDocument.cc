@@ -9,7 +9,7 @@
 void Document::reset()
 {
     auto pScene = GeArchive().scene();
-    for (auto& item : _geometries)
+    for (IGeGraphic* item : _geometries)
     {
         pScene->removeItem(item);
         delete item;
@@ -22,8 +22,12 @@ void Document::addGraphic(IGeGraphic* pGraphic)
 {
     if (!pGraphic)
         return;
+
+    pGraphic->id(++_maxId);
+    pGraphic->notify();
     _geometries.emplace_back(pGraphic);
 }
+
 bool Document::removeGraphic(IGeGraphic* pGraphic)
 {
     for (auto iter = _geometries.begin(); iter != _geometries.end();)

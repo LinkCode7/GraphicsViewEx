@@ -10,11 +10,12 @@
 
 class GraphicMaker;
 
-#define NOTIFY_MAKE_GRAPHIC() this->notify()
-
-#define VISIT_THIS_CLASS \
-public:                  \
-    void visit(VisitGraphics *visitor) override { visitor->visit(this); }
+#define VISIT_THIS_CLASS                        \
+public:                                         \
+    void visit(VisitGraphics *visitor) override \
+    {                                           \
+        visitor->visit(this);                   \
+    }
 
 class IGeGraphic : public QGraphicsItem
 {
@@ -66,11 +67,14 @@ public:
     QColor getDrawColor(QStyle::State state);
     double getDrawWidth(QStyle::State state);
 
-    void        id(std::string const &id) { _id = id; }
-    std::string id() const { return _id; }
+    uint32_t id() const { return _id; }
+    void     id(uint32_t id) { _id = id; }
 
-    uint32_t saveStatus() const { return _saveStatus; }
-    void     saveStatus(uint32_t value) { _saveStatus = value; }
+    std::string name() const { return _name; }
+    void        name(std::string const &value) { _name = value; }
+
+    uint32_t saveStatus() const { return _saveFlag; }
+    void     saveStatus(uint32_t value) { _saveFlag = value; }
 
     ObjectType objectType() const { return _type; }
 
@@ -78,9 +82,9 @@ public:
     void removeFlag(SaveFlags::Flag flag) { _runTimeFlags.remove(flag); }
     bool hasFlag(SaveFlags::Flag flag) const { return _runTimeFlags.has(flag); }
 
-    void addStatus(ObjectStatus state) { _saveStatus |= state; }
-    void removeStatus(ObjectStatus state) { _saveStatus &= (~state); }
-    bool hasStatus(ObjectStatus state) const { return _saveStatus & state; }
+    void addStatus(ObjectStatus state) { _saveFlag |= state; }
+    void removeStatus(ObjectStatus state) { _saveFlag &= (~state); }
+    bool hasStatus(ObjectStatus state) const { return _saveFlag & state; }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -88,11 +92,12 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 protected:
-    std::string _id;
-    QColor      _color;
     ObjectType  _type;
+    QColor      _color;
+    uint32_t    _id;
+    std::string _name;
+    uint32_t    _saveFlag = 0;
 
-    uint32_t  _saveStatus = 0;
     SaveFlags _runTimeFlags;
 };
 

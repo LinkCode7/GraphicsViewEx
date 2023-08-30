@@ -85,6 +85,9 @@ void ParseGraphicsData::decode(GraphicsView* pView)
     if (_kiwi.message().last_open_version())
         doc->lastOpenVersion(_kiwi.message().last_open_version()->c_str());
 
+    if (_kiwi.message().maxId())
+        doc->maxId(*_kiwi.message().maxId());
+
     if (_kiwi.message().matView())
     {
         pView->setTransform(_kiwi.toMatrix(_kiwi.message().matView()));
@@ -105,8 +108,6 @@ void ParseGraphicsData::decodeNode(GraphicsView* pView)
     if (!arrNode)
         return;
 
-    auto scene = pView->scene();
-
     auto size = arrNode->size();
     for (size_t i = 0; i < size; ++i)
     {
@@ -118,7 +119,7 @@ void ParseGraphicsData::decodeNode(GraphicsView* pView)
             continue;
 
         object->visit(this);
-        scene->addItem(object);
+        GeArchive().addCustomItem(object);
     }
 }
 
@@ -166,12 +167,13 @@ void ParseGraphicsData::visit(IGeGraphic* pItem)
     _node->set_type(static_cast<sindyk::NodeType>(pItem->objectType()));
 
     if (_node->id())
-        pItem->id(_node->id()->c_str());
+        pItem->id(*_node->id());
+
+    if (_node->name())
+        pItem->name(_node->name()->c_str());
 
     if (_node->flags())
-    {
         pItem->saveStatus(*_node->flags());
-    }
 
     if (_node->argb())
         pItem->setGeColor(*_node->argb());

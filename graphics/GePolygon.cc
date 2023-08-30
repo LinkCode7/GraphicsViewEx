@@ -44,13 +44,11 @@ std::string Polygon::json() const
 GePolygon::GePolygon() : IGeGraphic(eGePolygonType)
 {
     _color = {0, 255, 0};
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 GePolygon::GePolygon(std::vector<int> const& index) : IGeGraphic(eGePolygonType), _indexes(index)
 {
     _color = {0, 255, 0};
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 QRectF GePolygon::boundingRect() const

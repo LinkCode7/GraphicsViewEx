@@ -4,6 +4,7 @@
 #include "../data/GraphicsDocument.h"
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
+
 #define GeArchive GraphicsArchive::instance
 
 class GraphicsArchive
@@ -16,6 +17,9 @@ public:
         static GraphicsArchive archive;
         return archive;
     }
+
+    // 新增图形
+    void addCustomItem(IGeGraphic* pItem);
 
     Document* doc() { return &_doc; }
 

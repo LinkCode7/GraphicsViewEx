@@ -61,22 +61,23 @@ message GraphicNode {
 	// IGeGraphic
 	NodeType type = 1;
 	uint argb = 2;
-	string id = 3;
-	Matrix2d mat = 4;
-	uint flags = 5;
+	Matrix2d mat = 3;
+	uint id = 4;
+	string name = 5;
+	uint flags = 6;
 
 	// GePolygon，这两个数据要么同时存在，要么都为空
-	uint[] polyIndexes = 6; // 若存在边，则至少存在一个外轮廓
-	PolyElement[] polyElements = 7;
+	uint[] polyIndexes = 7; // 若存在边，则至少存在一个外轮廓
+	PolyElement[] polyElements = 8;
 
 	// GeBox
-	Rect rect = 8;
+	Rect rect = 9;
 
 	// IGePointSet
-    Point2dXY[] points = 9;
+    Point2dXY[] points = 10;
 
 	// GeSymbolPoint
-    uint symbolType = 10;
+    uint symbolType = 11;
 }
 
 message Document {
@@ -87,7 +88,8 @@ message Document {
 	// view
 	Matrix2d matView = 3; // 画布上的矩阵
 	uint background = 4; // 背景色
+	uint maxId = 5; // scene中的最大ID
 
 	// node
-	GraphicNode[] graphics = 5;
+	GraphicNode[] graphics = 6;
 }

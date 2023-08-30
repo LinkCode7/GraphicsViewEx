@@ -14,7 +14,6 @@ GeSymbolPoint::GeSymbolPoint(QPointF const &pt, GraphicsSymbol::Type type)
     : IGePoint(pt, eGeSymbolPointType), GraphicsSymbol(type)
 {
     _color = {255, 0, 0};
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 QRectF GeSymbolPoint::boundingRect() const

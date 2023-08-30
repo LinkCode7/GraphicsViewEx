@@ -30,38 +30,32 @@ void sindy::point2Rect(double x, double y, QRectF& rect, double halfLength)
 
 void sindy::addTestEntity()
 {
-    auto pScene = GeArchive().scene();
-    if (!pScene)
-        return;
+    GeArchive().addCustomItem(new GeBox({100, 100}, {300, 200}));
 
-    pScene->addItem(new GeBox({100, 100}, {300, 200}));
-
-    pScene->addItem(new GeSymbolPoint({200, -100}));
-
-    // pScene->addItem(new GeSegment({-100, -100}, {100, 100}));
+    GeArchive().addCustomItem(new GeSymbolPoint({200, -100}));
 
     std::initializer_list<QPointF> list = {{-186.41, 55.28},  {-115.21, 55.28}, {-93.21, 0},     {-71.21, 55.28},
                                            {0, 55.28},        {-57.6, 89.44},   {-35.6, 144.72}, {-93.21, 110.56},
                                            {-150.81, 144.72}, {-128.81, 89.44}, {-186.41, 55.28}};
 
-    pScene->addItem(new GePolyline(list));
-    pScene->addItem(new GePolyline(list, GraphicsSymbol::ePointsIndex));
-    pScene->addItem(new GeSquarePoints(list));
+    GeArchive().addCustomItem(new GePolyline(list));
+    GeArchive().addCustomItem(new GePolyline(list, GraphicsSymbol::ePointsIndex));
+    GeArchive().addCustomItem(new GeSquarePoints(list));
 
     auto polyEllipse = new GePolygon();
     polyEllipse->addNewEdge(std::make_shared<sindy::PolyArc>(sindy::Point(0, -100), 50, 30, 0, PI2));
-    pScene->addItem(polyEllipse);
+    GeArchive().addCustomItem(polyEllipse);
 
     auto polySegment = new GePolygon();
     polySegment->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{200, 0}, sindy::Point{300, -200}));
-    pScene->addItem(polySegment);
+    GeArchive().addCustomItem(polySegment);
 
     auto polygon = new GePolygon();
     polygon->addNewEdge(std::make_shared<sindy::PolyArc>(sindy::Point(50, 0), 50, 30, 0, PI));
     polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{0, 0}, sindy::Point{0, 50}));
     polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{0, 50}, sindy::Point{100, 50}));
     polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{100, 50}, sindy::Point{100, 0}));
-    pScene->addItem(polygon);
+    GeArchive().addCustomItem(polygon);
 }
 
 void sindy::addChipToScene()

@@ -8,12 +8,5 @@
 
 void GraphicMaker::receive(IGeGraphic *pNew)
 {
-    addToDocument(pNew);
-
     subCreate(pNew);
-}
-
-void GraphicMaker::addToDocument(IGeGraphic *pNew)
-{
-    GeArchive().doc()->addGraphic(pNew);
 }

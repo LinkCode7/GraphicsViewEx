@@ -34,7 +34,11 @@ public:
     void        lastOpenVersion(std::string const& str) { _lastOpenVersion = str; }
     std::string lastOpenVersion() const { return _lastOpenVersion; }
 
+    uint32_t maxId() const { return _maxId; }
+    void     maxId(uint32_t value) { _maxId = value; }
+
 private:
+    uint32_t    _maxId = 0;
     std::string _createVersion;
     std::string _lastOpenVersion;
 

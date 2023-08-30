@@ -13,9 +13,6 @@ public:
 
 protected:
     virtual void subCreate(IGeGraphic *pNew) = 0;
-
-private:
-    void addToDocument(IGeGraphic *pNew);
 };
 
 class BoxMaker : public GraphicMaker

@@ -11,14 +11,12 @@
 GePolyline::GePolyline() : IGePointSet(eGePolylineType), GraphicsSymbol(eUnknownSymbol)
 {
     _color = {255, 255, 255};
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 GePolyline::GePolyline(std::initializer_list<QPointF> const &list, GraphicsSymbol::Type type)
     : IGePointSet(list, eGePolylineType), GraphicsSymbol(type)
 {
     _color = {255, 255, 255};
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 void GePolyline::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

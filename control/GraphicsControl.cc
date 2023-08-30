@@ -134,10 +134,6 @@ void sindy::_importFromJson(std::string const& line)
     if (count != size - 1)
         return;
 
-    auto pScene = GeArchive().scene();
-    if (!pScene)
-        return;
-
     auto polygon = new GePolygon(numEdges);
 
     // 边
@@ -179,7 +175,7 @@ void sindy::_importFromJson(std::string const& line)
         }
     }
 
-    pScene->addItem(polygon);
+    GeArchive().addCustomItem(polygon);
 }
 
 void sindy::onOpenDocument()
@@ -243,7 +239,7 @@ void sindy::createSelectedBox()
 
         auto pItem = new GeBox(rectf);
         // pItem->setFlags(0);
-        pScene->addItem(pItem);
+        GeArchive().addCustomItem(pItem);
     }
 }
 

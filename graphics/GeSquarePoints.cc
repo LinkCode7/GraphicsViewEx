@@ -14,7 +14,6 @@ GeSquarePoints::GeSquarePoints() : IGePointSet(eGeSquarePointsType)
     _color = {0, 0, 255};
     // setFlags(0);
     setAcceptHoverEvents(false);
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 GeSquarePoints::GeSquarePoints(std::initializer_list<QPointF> const &list) : IGePointSet(list, eGeSquarePointsType)
@@ -22,7 +21,6 @@ GeSquarePoints::GeSquarePoints(std::initializer_list<QPointF> const &list) : IGe
     _color = {0, 0, 255};
     // setFlags(0);
     setAcceptHoverEvents(false);
-    NOTIFY_MAKE_GRAPHIC();
 }
 
 void GeSquarePoints::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
