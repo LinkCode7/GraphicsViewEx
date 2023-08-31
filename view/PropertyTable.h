@@ -2,6 +2,7 @@
 #define PROPERTY_TABLE_H
 #include "QTableWidget"
 
+class IGeGraphic;
 class GraphicsView;
 
 class PropertyTable : public QTableWidget
@@ -19,7 +20,7 @@ private:
 
     QString cellText(int row, int column);
 
-    QColor getSelectedBodyColor() const;
+    QColor getSelectedBodyColor(IGeGraphic* pFirst) const;
     void   setSelectedBodyColor(QColor const& color);
 };
 

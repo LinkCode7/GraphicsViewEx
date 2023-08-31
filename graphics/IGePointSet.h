@@ -10,7 +10,7 @@ class IGePointSet : public IGeGraphic
 {
 public:
     IGePointSet(IGeGraphic::ObjectType type);
-    IGePointSet(std::initializer_list<QPointF> const &list, ObjectType type);
+    IGePointSet(std::initializer_list<QPointF> const &pts, ObjectType type);
 
     QRectF       boundingRect() const override;
     QPainterPath shape() const override;
@@ -21,6 +21,8 @@ public:
     void                        setPoints(std::vector<QPointF> const &pts) { _points = pts; }
 
     void addPoint(const QPointF &ptNow) { _points.emplace_back(ptNow); }
+
+    void list(std::vector<std::pair<std::string, std::string>> &fields) const override;
 
 protected:
     std::vector<QPointF> _points;

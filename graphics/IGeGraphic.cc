@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
+#include "../utility/SindyMath.h"
+
 IGeGraphic::IGeGraphic(ObjectType type) : _color{0, 255, 0}, _type(type)
 {
     setFlags(ItemIsSelectable | ItemIsMovable);
@@ -59,4 +61,17 @@ QColor IGeGraphic::getDrawColor(QStyle::State state)
 double IGeGraphic::getDrawWidth(QStyle::State state)
 {
     return state & QStyle::State_Selected ? 2 : 1;
+}
+
+void IGeGraphic::list(std::vector<std::pair<std::string, std::string>> &fields) const
+{
+    fields.emplace_back(std::make_pair("type", std::to_string(int(_type))));
+    fields.emplace_back(std::make_pair("color", std::to_string(getArgb32())));
+    fields.emplace_back(std::make_pair("id", std::to_string(_id)));
+    fields.emplace_back(std::make_pair("name", _name));
+    fields.emplace_back(std::make_pair("saveFlag", std::to_string(_saveFlag)));
+
+    auto        mat = this->sceneMatrix();
+    std::string str = sindy::simplifyFloat(mat.dx(), 3) + ", " + sindy::simplifyFloat(mat.dy(), 3);
+    fields.emplace_back(std::make_pair("move", str));
 }

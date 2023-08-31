@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "../utility/JsonData.h"
+#include "../utility/SindyMath.h"
 #include "../utility/box2d.h"
 #include "../utility/utility.h"
 
@@ -17,11 +18,30 @@ void PolySegment::jsonObject(std::vector<std::string>& arr) const
     iguana::to_json(*this, str);
     arr.emplace_back(str);
 }
+void PolySegment::polyList(std::string const& prefix, std::vector<std::pair<std::string, std::string>>& fields) const
+{
+    fields.emplace_back(std::make_pair(prefix + "type", std::to_string(int(type))));
+    std::string str = sindy::simplifyFloat(begin.x, 3) + ", " + sindy::simplifyFloat(begin.y, 3);
+    fields.emplace_back(std::make_pair(prefix + "begin", str));
+    str = sindy::simplifyFloat(end.x, 3) + ", " + sindy::simplifyFloat(end.y, 3);
+    fields.emplace_back(std::make_pair(prefix + "end", str));
+}
+
 void PolyArc::jsonObject(std::vector<std::string>& arr) const
 {
     std::string str;
     iguana::to_json(*this, str);
     arr.emplace_back(str);
+}
+void PolyArc::polyList(std::string const& prefix, std::vector<std::pair<std::string, std::string>>& fields) const
+{
+    fields.emplace_back(std::make_pair(prefix + "type", std::to_string(int(type))));
+    std::string str = sindy::simplifyFloat(center.x, 3) + ", " + sindy::simplifyFloat(center.y, 3);
+    fields.emplace_back(std::make_pair(prefix + "center", str));
+    fields.emplace_back(std::make_pair(prefix + "radius", sindy::simplifyFloat(radius, 3)));
+    fields.emplace_back(std::make_pair(prefix + "radius2", sindy::simplifyFloat(radius2, 3)));
+    fields.emplace_back(std::make_pair(prefix + "beginAngle", sindy::simplifyFloat(sindy::radian2Degree(beginAngle), 3)));
+    fields.emplace_back(std::make_pair(prefix + "sweepAngle", sindy::simplifyFloat(sindy::radian2Degree(sweepAngle), 3)));
 }
 
 std::string Polygon::json() const
@@ -144,4 +164,33 @@ bool GePolygon::isLinestring() const
             return false;
     }
     return true;
+}
+
+void GePolygon::list(std::vector<std::pair<std::string, std::string>>& fields) const
+{
+    IGeGraphic::list(fields);
+
+    std::stringstream ss;
+
+    auto size = _indexes.size();
+    for (auto i = 0; i < size; ++i)
+    {
+        ss << std::to_string(_indexes[i]);
+        if (i < size - 1)
+            ss << ", ";
+    }
+    fields.emplace_back(std::make_pair("indexes", ss.str()));
+
+    size = _elements.size();
+
+    fields.emplace_back(std::make_pair("EdgeSize", std::to_string(size)));
+    for (auto i = 0; i < size; ++i)
+    {
+        std::string prefix("[");
+        prefix += std::to_string(i) + "].";
+        _elements[i]->polyList(prefix, fields);
+
+        if (i >= 16)
+            return;
+    }
 }

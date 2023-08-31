@@ -9,22 +9,77 @@
 
 PropertyTable::PropertyTable()
 {
-    setRowCount(5);
+    setRowCount(1);
     setColumnCount(2);
 
     initProperty();
 
-    setEditTriggers(QAbstractItemView::NoEditTriggers); // 设置单元格不可编辑
+    // setEditTriggers(QAbstractItemView::NoEditTriggers); // 设置单元格不可编辑
     connect(this, &QTableWidget::cellClicked, this, &PropertyTable::cellClicked);
+}
+
+void PropertyTable::doSelectionChanged()
+{
+    auto pItem = this->item(0, 1);
+    if (!pItem)
+        return;
+
+    auto count = rowCount();
+
+    const auto* list = GeArchive().doc()->selectedGraphics();
+    auto        size = list->size();
+
+    std::vector<std::pair<std::string, std::string>> fields;
+
+    IGeGraphic* pFirst = size == 0 ? nullptr : list->front();
+    if (pFirst)
+    {
+        pFirst->list(fields);
+        auto fieldSize = fields.size() + 1;
+        // if (count < fieldSize)
+        setRowCount(fieldSize);
+    }
+
+    auto old = getSelectedBodyColor(pFirst);
+    pItem->setBackgroundColor(old);
+
+    int index = 1;
+    for (auto const& keyValue : fields)
+    {
+        pItem = this->item(index, 0);
+        if (!pItem)
+        {
+            setItem(index, 0, new QTableWidgetItem);
+            pItem = this->item(index, 0);
+        }
+        pItem->setText(keyValue.first.c_str());
+
+        pItem = this->item(index, 1);
+        if (!pItem)
+        {
+            setItem(index, 1, new QTableWidgetItem);
+            pItem = this->item(index, 1);
+        }
+        pItem->setText(keyValue.second.c_str());
+        ++index;
+    }
+
+    this->viewport()->update();
 }
 
 void PropertyTable::cellClicked(int row, int column)
 {
+    if (row != 0)
+        return;
+
     auto pItem = this->item(row, 0);
     if (!pItem)
         return;
 
-    auto   old   = getSelectedBodyColor();
+    const auto* list = GeArchive().doc()->selectedGraphics();
+    auto        size = list->size();
+    auto        old  = getSelectedBodyColor(size == 0 ? nullptr : list->front());
+
     QColor color = QColorDialog::getColor(old, this, "Please select a color");
 
     if (old != color)
@@ -34,21 +89,10 @@ void PropertyTable::cellClicked(int row, int column)
     }
 }
 
-void PropertyTable::doSelectionChanged()
-{
-    auto pItem = this->item(0, 1);
-    if (!pItem)
-        return;
-
-    auto old = getSelectedBodyColor();
-    pItem->setBackgroundColor(old);
-    this->viewport()->update();
-}
-
 void PropertyTable::initProperty()
 {
     auto item = new QTableWidgetItem;
-    item->setText("color");
+    item->setText("COLOR");
     setItem(0, 0, item);
 
     auto count = rowCount();
@@ -66,15 +110,9 @@ QString PropertyTable::cellText(int row, int column)
     return pItem->text();
 }
 
-QColor PropertyTable::getSelectedBodyColor() const
+QColor PropertyTable::getSelectedBodyColor(IGeGraphic* pFirst) const
 {
-    const auto* list = GeArchive().doc()->selectedGraphics();
-    for (auto const& item : *list)
-    {
-        return item->getGeColor();
-    }
-
-    return GeArchive().curView()->backgroundBrush().color();
+    return pFirst ? pFirst->getGeColor() : GeArchive().curView()->backgroundBrush().color();
 }
 
 void PropertyTable::setSelectedBodyColor(QColor const& color)

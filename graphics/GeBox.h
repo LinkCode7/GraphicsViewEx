@@ -21,12 +21,14 @@ public:
     // 对象创建相关的业务
     std::unique_ptr<GraphicMaker> subMake() const override { return std::make_unique<BoxMaker>(); }
 
+    void list(std::vector<std::pair<std::string, std::string>> &fields) const override;
+
 public:
-    QRectF rect() const { return m_rect; }
-    void   rect(QRectF const &rect) { m_rect = rect; }
+    QRectF rect() const { return _rect; }
+    void   rect(QRectF const &rect) { _rect = rect; }
 
 private:
-    QRectF m_rect;
+    QRectF _rect;
 };
 
 #endif // !GE_BOX_H

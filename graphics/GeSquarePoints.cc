@@ -16,7 +16,7 @@ GeSquarePoints::GeSquarePoints() : IGePointSet(eGeSquarePointsType)
     setAcceptHoverEvents(false);
 }
 
-GeSquarePoints::GeSquarePoints(std::initializer_list<QPointF> const &list) : IGePointSet(list, eGeSquarePointsType)
+GeSquarePoints::GeSquarePoints(std::initializer_list<QPointF> const &pts) : IGePointSet(pts, eGeSquarePointsType)
 {
     _color = {0, 0, 255};
     // setFlags(0);

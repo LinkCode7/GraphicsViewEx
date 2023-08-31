@@ -12,7 +12,7 @@ class GeSquarePoints : public IGePointSet
     VISIT_THIS_CLASS
 public:
     GeSquarePoints();
-    GeSquarePoints(std::initializer_list<QPointF> const &list);
+    GeSquarePoints(std::initializer_list<QPointF> const &pts);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 

@@ -50,7 +50,8 @@ public:
     // 访问者模式
     virtual void visit(VisitGraphics *visitor) = 0;
 
-    virtual void list(std::vector<std::string> const &) {}
+    // virtual void save(std::stringstream &ss) const = 0;
+    virtual void list(std::vector<std::pair<std::string, std::string>> &fields) const = 0;
 
 public:
     uint   getArgb32() const { return _color.rgba64().toArgb32(); }

@@ -27,7 +27,8 @@ REFLECTION(Point, x, y);
 struct PolyGeometry
 {
     virtual ~PolyGeometry() {}
-    virtual void jsonObject(std::vector<std::string> &arr) const = 0;
+    virtual void jsonObject(std::vector<std::string> &arr) const                                                     = 0;
+    virtual void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const = 0;
 };
 using PolyGeometrySp = std::shared_ptr<PolyGeometry>;
 
@@ -41,6 +42,7 @@ public:
     PolySegment(Point const &begin1, Point const &end1) : begin(begin1), end(end1) {}
 
     void jsonObject(std::vector<std::string> &arr) const override;
+    void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const override;
 };
 REFLECTION(PolySegment, type, begin, end);
 
@@ -63,6 +65,7 @@ struct PolyArc : public PolyGeometry
     }
 
     void jsonObject(std::vector<std::string> &arr) const override;
+    void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const override;
 };
 REFLECTION(PolyArc, type, center, radius, radius2, beginAngle, sweepAngle);
 
@@ -103,6 +106,8 @@ public:
 
     // 对象创建相关的业务
     std::unique_ptr<GraphicMaker> subMake() const override { return std::make_unique<PolygonMaker>(); }
+
+    void list(std::vector<std::pair<std::string, std::string>> &fields) const override;
 
 public:
     std::vector<int> indexes() const { return _indexes; }

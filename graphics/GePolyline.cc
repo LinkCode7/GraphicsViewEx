@@ -13,8 +13,8 @@ GePolyline::GePolyline() : IGePointSet(eGePolylineType), GraphicsSymbol(eUnknown
     _color = {255, 255, 255};
 }
 
-GePolyline::GePolyline(std::initializer_list<QPointF> const &list, GraphicsSymbol::Type type)
-    : IGePointSet(list, eGePolylineType), GraphicsSymbol(type)
+GePolyline::GePolyline(std::initializer_list<QPointF> const &pts, GraphicsSymbol::Type type)
+    : IGePointSet(pts, eGePolylineType), GraphicsSymbol(type)
 {
     _color = {255, 255, 255};
 }
