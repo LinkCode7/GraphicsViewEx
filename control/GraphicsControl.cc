@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "..//utility/JsonData.h"
 #include "../data/DataParse.h"
@@ -9,6 +10,7 @@
 #include "../graphics/GeBox.h"
 #include "../graphics/GePolygon.h"
 #include "../iguana/iguana/json_reader.hpp"
+#include "../utility/BoostBoolean.h"
 #include "../utility/utility.h"
 #include "../view/GraphicsArchive.h"
 #include "../view/GraphicsView.h"
@@ -28,7 +30,7 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
     {
         if (drag->keyAction(static_cast<Qt::Key>(key)))
         {
-            view->setDrag(nullptr);
+            view->drag(nullptr);
             // view->removeState(GraphicsView::eDragging);
         }
     }
@@ -253,7 +255,7 @@ void sindy::createPolyline(GraphicsView* view)
         return;
 
     auto drag = std::make_shared<PolylineDrag>();
-    view->setDrag(drag);
+    view->drag(drag);
 
     view->setCommand("polyline");
     view->addState(GraphicsView::eDragInit);
@@ -264,4 +266,40 @@ void sindy::deleteSelectedItems()
 {
     auto doc = GeArchive().doc();
     doc->deleteSelectedItems();
+}
+
+void sindy::booleanIntersection()
+{
+    auto arr = GeArchive().doc()->selectedGraphics();
+    if (arr->size() < 2)
+    {
+        QMessageBox messageBox;
+        messageBox.setText("Please select two polygons first");
+        messageBox.exec();
+        return;
+    }
+
+    auto poly1 = dynamic_cast<GePolygon*>(arr->at(0));
+    auto poly2 = dynamic_cast<GePolygon*>(arr->at(1));
+    if (!poly1 || !poly2)
+        return;
+
+    std::vector<GePolygon*> result;
+    boolean::intersection(poly1, poly2, result);
+
+    QColor color;
+    color.setRed(255);
+    for (auto& item : result)
+    {
+        item->setGeColor(color);
+        GeArchive().addCustomItem(item);
+    }
+}
+
+void sindy::booleanUnion()
+{
+}
+
+void sindy::booleanDifference()
+{
 }

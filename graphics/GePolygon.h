@@ -21,6 +21,8 @@ struct Point
     double y = 0.0;
     Point() {}
     Point(double xx, double yy) : x(xx), y(yy) {}
+
+    Point translate(double xx, double yy) const { return Point(x + xx, y + yy); }
 };
 REFLECTION(Point, x, y);
 
@@ -29,45 +31,59 @@ struct PolyGeometry
     virtual ~PolyGeometry() {}
     virtual void jsonObject(std::vector<std::string> &arr) const                                                     = 0;
     virtual void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const = 0;
+
+    virtual Point begin() const = 0;
+    virtual Point end() const   = 0;
 };
 using PolyGeometrySp = std::shared_ptr<PolyGeometry>;
 
 struct PolySegment : public PolyGeometry
 {
 public:
-    IGeGraphic::ObjectType type = IGeGraphic::ObjectType::eGeSegmentType;
-    Point                  begin;
-    Point                  end;
+    IGeGraphic::ObjectType _type = IGeGraphic::ObjectType::eGeSegmentType;
+    Point                  _begin;
+    Point                  _end;
     PolySegment() {}
-    PolySegment(Point const &begin1, Point const &end1) : begin(begin1), end(end1) {}
+    PolySegment(Point const &begin1, Point const &end1) : _begin(begin1), _end(end1) {}
 
     void jsonObject(std::vector<std::string> &arr) const override;
     void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const override;
+
+    Point begin() const override { return _begin; }
+    Point end() const override { return _end; }
+
+    REFLECTION_ALIAS(PolySegment, "PolySegment", FLDALIAS(&PolySegment::_type, "type"),
+                     FLDALIAS(&PolySegment::_begin, "begin"), FLDALIAS(&PolySegment::_end, "end"));
 };
-REFLECTION(PolySegment, type, begin, end);
 
 struct PolyArc : public PolyGeometry
 {
-    IGeGraphic::ObjectType type = IGeGraphic::ObjectType::eGeArcType;
-    Point                  center;           // 中心点
-    double                 radius     = 0.0; // 半径w
-    double                 radius2    = 0.0; // 半径h
-    double                 beginAngle = 0.0;
-    double                 sweepAngle = 0.0;
+    IGeGraphic::ObjectType _type = IGeGraphic::ObjectType::eGeArcType;
+    Point                  _center;           // 中心点
+    double                 _radius     = 0.0; // 半径w
+    double                 _radius2    = 0.0; // 半径h
+    double                 _beginAngle = 0.0;
+    double                 _sweepAngle = 0.0;
     PolyArc() {}
     PolyArc(Point const &center1, double radius_, double beginAngle1, double sweepAngle1)
-        : center(center1), radius(radius_), beginAngle(beginAngle1), sweepAngle(sweepAngle1)
+        : _center(center1), _radius(radius_), _beginAngle(beginAngle1), _sweepAngle(sweepAngle1)
     {
     }
     PolyArc(Point const &center1, double radius_, double radius_2, double beginAngle1, double sweepAngle1)
-        : center(center1), radius(radius_), radius2(radius_2), beginAngle(beginAngle1), sweepAngle(sweepAngle1)
+        : _center(center1), _radius(radius_), _radius2(radius_2), _beginAngle(beginAngle1), _sweepAngle(sweepAngle1)
     {
     }
 
     void jsonObject(std::vector<std::string> &arr) const override;
     void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const override;
+
+    Point begin() const override { return {}; } // zh,todo
+    Point end() const override { return {}; }
+
+    REFLECTION_ALIAS(PolyArc, "PolyArc", FLDALIAS(&PolyArc::_type, "type"), FLDALIAS(&PolyArc::_center, "center"),
+                     FLDALIAS(&PolyArc::_radius, "radius"), FLDALIAS(&PolyArc::_radius2, "radius2"),
+                     FLDALIAS(&PolyArc::_beginAngle, "beginAngle"), FLDALIAS(&PolyArc::_sweepAngle, "sweepAngle"));
 };
-REFLECTION(PolyArc, type, center, radius, radius2, beginAngle, sweepAngle);
 
 struct Polygon
 {
@@ -84,6 +100,10 @@ REFLECTION(Polygon, type, index); // 边要自己添加
 
 using PolygonSp = std::shared_ptr<Polygon>;
 } // namespace sindy
+
+#define BOOLEAN_INTERSECTION_SYMBOL "∩"
+#define BOOLEAN_UNION_SYMBOL "∪"
+#define BOOLEAN_DIFFERENCE_SYMBOL "-"
 
 /*
  * @brief 多边形
@@ -110,8 +130,9 @@ public:
     void list(std::vector<std::pair<std::string, std::string>> &fields) const override;
 
 public:
-    std::vector<int> indexes() const { return _indexes; }
-    void             indexes(std::vector<int> const &value) { _indexes = value; }
+    std::vector<int>  indexes() const { return _indexes; }
+    std::vector<int> &indexesRef() { return _indexes; }
+    void              indexes(std::vector<int> const &value) { _indexes = value; }
 
     std::vector<sindy::PolyGeometrySp> elements() const { return _elements; }
     void                               setEdge(sindy::PolyGeometrySp element) { _elements.emplace_back(element); }
@@ -124,6 +145,15 @@ public:
     }
 
     bool isLinestring() const;
+
+    bool getPoints(std::vector<std::vector<sindy::Point>> &output) const;
+
+    static void makePolyClockwise(std::vector<sindy::Point> &pts);
+    static bool isPolyClockwise(std::vector<sindy::Point> const &pts);
+
+    static std::string booleanIntersectionName(GePolygon *poly1, GePolygon *poly2);
+    static std::string booleanUnionName(std::vector<GePolygon *> const &polys);
+    static std::string booleanDifferenceName(std::vector<GePolygon *> const &polys);
 };
 
 #endif // !GE_POLYGON_H

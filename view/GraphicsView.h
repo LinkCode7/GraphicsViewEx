@@ -29,14 +29,15 @@ public:
         eUnknownState     = 0,
         eDragInit         = 1,
         eDragging         = eDragInit << 1,
-        eChangeViewMatrix = eDragInit << 2,
+        eMovingView       = eDragInit << 2,
+        eChangeViewMatrix = eDragInit << 3,
     };
     void addState(ViewState state) { _state |= state; }
     void removeState(ViewState state) { _state &= (~state); }
     bool hasState(ViewState state) const { return _state & state; }
 
     std::shared_ptr<DragAction> drag() const { return _drag; }
-    void                        setDrag(std::shared_ptr<DragAction> drag) { _drag = drag; }
+    void                        drag(std::shared_ptr<DragAction> drag) { _drag = drag; }
 
     void setCommand(QString const &str) { _strCommand = str; }
 
@@ -56,10 +57,9 @@ protected:
 
 private:
     GraphicsFrame *_frame;
-    bool           _bMoveView        = false;
     QPoint         _ptRightMouseDown = {};
 
-    QMenu *  _menu            = nullptr;
+    QMenu   *_menu            = nullptr;
     QAction *_resetViewMatrix = nullptr;
 
     int                         _state = 0;
@@ -97,8 +97,8 @@ private slots:
 private:
     GraphicsView *_pGraphicsView;
 
-    QSlider *      _pZoomSlider;
-    QSlider *      _pRotateSlider;
+    QSlider       *_pZoomSlider;
+    QSlider       *_pRotateSlider;
     PropertyTable *_property;
 };
 

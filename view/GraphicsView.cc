@@ -50,7 +50,8 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         // QApplication::setOverrideCursor(m_handCursor);
         setDragMode(QGraphicsView::ScrollHandDrag);
         setInteractive(false);
-        this->_bMoveView        = true;
+
+        addState(eMovingView);
         this->_ptRightMouseDown = event->pos();
     }
     else if (event->button() == Qt::LeftButton)
@@ -85,7 +86,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     setStyleSheet("QGraphicsView::rubberBand {background-color::transparent;}");
     // QApplication::restoreOverrideCursor();
-    if (_bMoveView)
+    if (hasState(eMovingView))
     {
         // m_handCursor.setShape(Qt::ClosedHandCursor);
         // QApplication::setOverrideCursor(m_handCursor);
@@ -112,7 +113,8 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     // QApplication::restoreOverrideCursor();
     setDragMode(QGraphicsView::RubberBandDrag);
     setInteractive(true);
-    _bMoveView = false;
+
+    removeState(eMovingView);
 
     if (_drag && event->button() == Qt::RightButton)
     {
@@ -153,6 +155,24 @@ GraphicsView::GraphicsView(GraphicsFrame *v) : QGraphicsView(), _frame(v)
     QAction *separator = new QAction(this);
     separator->setSeparator(true);
     _menu->addAction(separator);
+
+#ifdef USING_BOOST_BOOLEAN
+    action = new QAction("boolean-intersection", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::booleanIntersection);
+
+    action = new QAction("boolean-union", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::booleanUnion);
+
+    action = new QAction("boolean-difference", this);
+    _menu->addAction(action);
+    QObject::connect(action, &QAction::triggered, this, &sindy::booleanDifference);
+
+    separator = new QAction(this);
+    separator->setSeparator(true);
+    _menu->addAction(separator);
+#endif // USING_BOOST_BOOLEAN
 
     action = new QAction("create selected box.(b)", this);
     _menu->addAction(action);

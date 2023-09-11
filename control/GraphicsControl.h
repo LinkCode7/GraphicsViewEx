@@ -28,6 +28,11 @@ void createPolyline(GraphicsView* view);
 
 void deleteSelectedItems();
 
+// 布尔运算：交、并、差
+void booleanIntersection();
+void booleanUnion();
+void booleanDifference();
+
 } // namespace sindy
 
 #endif // GRAPHICS_CONTROL_H

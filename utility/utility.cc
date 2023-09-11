@@ -56,6 +56,20 @@ void sindy::addTestEntity()
     polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{0, 50}, sindy::Point{100, 50}));
     polygon->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{100, 50}, sindy::Point{100, 0}));
     GeArchive().addCustomItem(polygon);
+
+    auto poly = new GePolygon();
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{500, 0}, sindy::Point{500, -100}));
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{500, -100}, sindy::Point{600, -100}));
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{600, -100}, sindy::Point{600, 0}));
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{600, 0}, sindy::Point{500, 0}));
+    GeArchive().addCustomItem(poly);
+
+    poly = new GePolygon();
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{550, 0}, sindy::Point{550, -100}));
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{550, -100}, sindy::Point{650, -100}));
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{650, -100}, sindy::Point{650, 0}));
+    poly->addNewEdge(std::make_shared<sindy::PolySegment>(sindy::Point{650, 0}, sindy::Point{550, 0}));
+    GeArchive().addCustomItem(poly);
 }
 
 void sindy::addChipToScene()

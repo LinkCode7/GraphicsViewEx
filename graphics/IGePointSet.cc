@@ -1,7 +1,7 @@
 #include "IGePointSet.h"
 
 #include "../utility/SindyMath.h"
-#include "../utility/box2d.h"
+#include "../utility/sindy_box2d.h"
 #include "../utility/utility.h"
 
 IGePointSet::IGePointSet(IGeGraphic::ObjectType type) : IGeGraphic(type)
@@ -16,12 +16,12 @@ IGePointSet::IGePointSet(std::initializer_list<QPointF> const& pts, ObjectType t
 
 QRectF IGePointSet::boundingRect() const
 {
-    Box2d ext;
+    sindy::Box2d ext;
     for (auto const& pt : _points)
-        ext.addPoint(pt);
+        ext.add(sindy::Point2d{pt.x(), pt.y()});
 
     QRectF rect;
-    sindy::extent2Rect(ext.min(), ext.max(), rect);
+    sindy::extent2Rect(QPoint(ext.min().x(), ext.min().y()), QPoint(ext.max().x(), ext.max().y()), rect);
     return rect;
 }
 
