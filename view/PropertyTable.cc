@@ -20,6 +20,9 @@ PropertyTable::PropertyTable()
 
 void PropertyTable::doSelectionChanged()
 {
+    if (!GeArchive().curView()->hasState(GraphicsView::eShowProperty))
+        return;
+
     auto pItem = this->item(0, 1);
     if (!pItem)
         return;

@@ -104,11 +104,15 @@ void sindy::addChipToScene()
 // 数据流转十六进制字符串
 std::string sindy::stream2HexString(uint8_t* data, size_t length)
 {
-    std::ostringstream ss;
-    ss << std::setfill('0') << std::hex;
-    for (auto i = 0; i < length; ++i)
-        ss << std::setw(2) << static_cast<unsigned int>(data[i]);
-    return ss.str();
+    constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    std::string str(length * 2, ' ');
+    for (int i = 0; i < length; ++i)
+    {
+        str[2 * i]     = hexmap[(data[i] & 0xF0) >> 4];
+        str[2 * i + 1] = hexmap[data[i] & 0x0F];
+    }
+    return str;
 }
 
 // 十六进制字符串转数据流

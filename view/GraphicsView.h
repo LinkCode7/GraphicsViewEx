@@ -31,6 +31,8 @@ public:
         eDragging         = eDragInit << 1,
         eMovingView       = eDragInit << 2,
         eChangeViewMatrix = eDragInit << 3,
+        eShowProperty     = eDragInit << 4,
+        eShowBooleanMenu  = eDragInit << 5,
     };
     void addState(ViewState state) { _state |= state; }
     void removeState(ViewState state) { _state &= (~state); }
@@ -59,7 +61,7 @@ private:
     GraphicsFrame *_frame;
     QPoint         _ptRightMouseDown = {};
 
-    QMenu   *_menu            = nullptr;
+    QMenu *  _menu            = nullptr;
     QAction *_resetViewMatrix = nullptr;
 
     int                         _state = 0;
@@ -97,8 +99,8 @@ private slots:
 private:
     GraphicsView *_pGraphicsView;
 
-    QSlider       *_pZoomSlider;
-    QSlider       *_pRotateSlider;
+    QSlider *      _pZoomSlider;
+    QSlider *      _pRotateSlider;
     PropertyTable *_property;
 };
 

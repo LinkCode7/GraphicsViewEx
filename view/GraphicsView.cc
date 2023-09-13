@@ -237,13 +237,27 @@ GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget 
     QHBoxLayout *rotateSliderLayout = new QHBoxLayout;
     rotateSliderLayout->addWidget(_pRotateSlider);
 
+    // 属性设置
+    auto checkBox1 = new QCheckBox;
+    checkBox1->setText("property");
+    auto checkBox2 = new QCheckBox;
+    checkBox2->setText("boolean");
+
+    auto leftH = new QHBoxLayout;
+    leftH->addWidget(checkBox1);
+    leftH->addWidget(checkBox2);
     // 表格
     _property = new PropertyTable();
     scene->setPropertyTable(_property);
+    _property->setShowGrid(false);
+
+    auto leftV = new QVBoxLayout;
+    leftV->addLayout(leftH);
+    leftV->addWidget(_property);
 
     QGridLayout *topLayout = new QGridLayout;
-    topLayout->addWidget(_property, 0, 0);
     topLayout->addWidget(_pGraphicsView, 0, 1);
+    topLayout->addLayout(leftV, 0, 0);
     topLayout->addLayout(zoomSliderLayout, 0, 2);
     topLayout->addLayout(rotateSliderLayout, 1, 1);
     topLayout->setColumnStretch(0, 15);
@@ -258,6 +272,28 @@ GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget 
             &GraphicsFrame::setResetButtonEnabled);
     connect(_pGraphicsView->horizontalScrollBar(), &QAbstractSlider::valueChanged, this,
             &GraphicsFrame::setResetButtonEnabled);
+
+    QObject::connect(checkBox1, &QCheckBox::stateChanged, [&](int arg1) {
+        if (arg1 == Qt::Checked)
+        {
+            _pGraphicsView->addState(GraphicsView::eShowProperty);
+        }
+        else
+        {
+            _pGraphicsView->removeState(GraphicsView::eShowProperty);
+        }
+    });
+
+    QObject::connect(checkBox2, &QCheckBox::stateChanged, [&](int arg1) {
+        if (arg1 == Qt::Checked)
+        {
+            _pGraphicsView->addState(GraphicsView::eShowBooleanMenu);
+        }
+        else
+        {
+            _pGraphicsView->removeState(GraphicsView::eShowBooleanMenu);
+        }
+    });
 
     setupMatrix();
 
