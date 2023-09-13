@@ -256,18 +256,18 @@ void ParseGraphicsData::visit(GePolygon* pItem)
         {
             if (auto pSeg = (*pElements)[i].segment(); pSeg)
             {
-                auto segment      = std::make_shared<sindy::PolySegment>();
-                segment->_begin.x = *pSeg->begin()->x();
-                segment->_begin.y = *pSeg->begin()->y();
-                segment->_end.x   = *pSeg->end()->x();
-                segment->_end.y   = *pSeg->end()->y();
+                auto segment = std::make_shared<sindy::PolySegment>();
+                segment->_begin.x(*pSeg->begin()->x());
+                segment->_begin.y(*pSeg->begin()->y());
+                segment->_end.x(*pSeg->end()->x());
+                segment->_end.y(*pSeg->end()->y());
                 pItem->setEdge(segment);
             }
             else if (auto pArc = (*pElements)[i].arc(); pArc)
             {
-                auto arc         = std::make_shared<sindy::PolyArc>();
-                arc->_center.x   = *pArc->center()->x();
-                arc->_center.y   = *pArc->center()->y();
+                auto arc = std::make_shared<sindy::PolyArc>();
+                arc->_center.x(*pArc->center()->x());
+                arc->_center.y(*pArc->center()->y());
                 arc->_radius     = *pArc->radius();
                 arc->_radius2    = *pArc->radius2();
                 arc->_beginAngle = *pArc->beginAngle();

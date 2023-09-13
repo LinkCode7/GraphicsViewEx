@@ -114,12 +114,12 @@ void SindyKiwi::setPolygon(GePolygon* polygon)
             auto seg = _pool->allocate<sindyk::PolySegment>();
 
             auto begin = _pool->allocate<sindyk::Point2dXY>();
-            begin->set_x(pLine->_begin.x);
-            begin->set_y(pLine->_begin.y);
+            begin->set_x(pLine->_begin.x());
+            begin->set_y(pLine->_begin.y());
             seg->set_begin(begin);
             auto end = _pool->allocate<sindyk::Point2dXY>();
-            end->set_x(pLine->_end.x);
-            end->set_y(pLine->_end.y);
+            end->set_x(pLine->_end.x());
+            end->set_y(pLine->_end.y());
             seg->set_end(end);
             elements[i].set_segment(seg);
         }
@@ -128,8 +128,8 @@ void SindyKiwi::setPolygon(GePolygon* polygon)
             auto arc = _pool->allocate<sindyk::PolyArc>();
 
             auto center = _pool->allocate<sindyk::Point2dXY>();
-            center->set_x(pArc->_center.x);
-            center->set_y(pArc->_center.y);
+            center->set_x(pArc->_center.x());
+            center->set_y(pArc->_center.y());
             arc->set_center(center);
             arc->set_radius(pArc->_radius);
             arc->set_radius2(pArc->_radius2);

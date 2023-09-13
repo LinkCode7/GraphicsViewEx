@@ -38,7 +38,7 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
         return;
 
 #ifdef USING_BOOST_BOOLEAN
-    // false:GraphicsView的Y轴和笛卡尔坐标系相反
+    // y轴颠倒...false:GraphicsView的Y轴和笛卡尔坐标系相反
     typedef boost::geometry::model::d2::point_xy<double>       point_type;
     typedef boost::geometry::model::polygon<point_type, false> polygon;
 
@@ -48,7 +48,7 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
             return;
 
         for (auto const& pt : pts[0])
-            bg::append(poly.outer(), point_type(pt.x, pt.y));
+            bg::append(poly.outer(), point_type(pt.x(), pt.y()));
 
         if (size == 1)
             return;
@@ -57,7 +57,7 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
         for (auto i = 1; i < size; ++i)
         {
             for (auto const& pt : pts[i])
-                bg::append(poly.inners()[i - 1], point_type(pt.x, pt.y));
+                bg::append(poly.inners()[i - 1], point_type(pt.x(), pt.y()));
         }
     };
 
@@ -68,6 +68,7 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
     std::deque<polygon> output;
     boost::geometry::intersection(p1, p2, output);
 
+    // y轴颠倒...
     auto name = GePolygon::booleanIntersectionName(poly1, poly2);
     for (auto const& item : output)
     {

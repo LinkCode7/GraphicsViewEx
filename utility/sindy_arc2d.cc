@@ -35,7 +35,7 @@ Arc2d::Arc2d(Point2d const& begin, Point2d const& end, double radian)
 }
 
 Arc2d::Arc2d(Point2d const& center, double beginAngle, double endAngle, ClockDirection dir, double radius, double radius2)
-    : _center(center), _radius(radius2)
+    : _center(center), _radius(radius), _radius2(radius2)
 {
     calculateAngle(beginAngle, endAngle, dir);
     _begin = getPoint(beginAngle);
@@ -51,6 +51,8 @@ Arc2d::Arc2d(Point2d const& center, Point2d const& begin, Point2d const& end, Cl
 
 Point2d Arc2d::getPoint(double radian) const
 {
+    return Point2d(_center.x() + _radius * cos(radian), _center.y() + _radius2 * sin(radian));
+
     radian = Arc2d::normalize(radian);
 
     auto const& rx = _radius;
@@ -71,13 +73,13 @@ Point2d Arc2d::getPoint(double radian) const
     // 椭圆公式
     double tg  = tan(radian);
     double tg2 = tg * tg;
-    double x   = sqrt((rx2 * ry2) / (rx2 + ry2 / tg2));
-    double y   = sqrt((rx2 * ry2) / (ry2 + rx2 / tg2));
+    double y   = sqrt((rx2 * ry2) / (rx2 + ry2 / tg2));
+    double x   = sqrt((rx2 * ry2) / (ry2 + rx2 / tg2));
 
     if (radian > RADIAN_90 && radian < RADIAN_270)
-        x *= -1;
+        x = -x;
     if (radian > RADIAN_180 && radian < RADIAN_360)
-        y *= -1;
+        y = -y;
 
     if (isnan(x))
         x = 0.0;

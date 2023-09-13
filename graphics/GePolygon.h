@@ -2,29 +2,34 @@
 #define GE_POLYGON_H
 
 #include "../iguana/iguana/json_writer.hpp"
+#include "../utility/sindy_point2d.h"
 #include "IGeGraphic.h"
 
 #define MAKE_POINT_TYPE(pt) \
     {                       \
-        pt.x, pt.y          \
-    }
-#define MAKE_POINT_TYPE2(pt) \
-    {                        \
-        pt.x(), pt.y()       \
+        (pt).x(), (pt).y()  \
     }
 
 namespace sindy
 {
-struct Point
+class Point
 {
-    double x = 0.0;
-    double y = 0.0;
-    Point() {}
-    Point(double xx, double yy) : x(xx), y(yy) {}
+    double _x = 0.0;
+    double _y = 0.0;
 
-    Point translate(double xx, double yy) const { return Point(x + xx, y + yy); }
+public:
+    Point() {}
+    Point(double xx, double yy) : _x(xx), _y(yy) {}
+
+    inline double x() const { return _x; }
+    inline void   x(double value) { _x = value; }
+    inline double y() const { return _y; }
+    inline void   y(double value) { _y = value; }
+
+    Point translate(double xx, double yy) const { return Point(_x + xx, _y + yy); }
+
+    REFLECTION_ALIAS(Point, "Point", FLDALIAS(&Point::_x, "x"), FLDALIAS(&Point::_y, "y"));
 };
-REFLECTION(Point, x, y);
 
 struct PolyGeometry
 {
@@ -32,8 +37,9 @@ struct PolyGeometry
     virtual void jsonObject(std::vector<std::string> &arr) const                                                     = 0;
     virtual void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const = 0;
 
-    virtual Point begin() const = 0;
-    virtual Point end() const   = 0;
+    virtual Point begin() const                                                        = 0;
+    virtual Point end() const                                                          = 0;
+    virtual void  ends(int segmentCount, std::function<void(Point const &)> fun) const = 0;
 };
 using PolyGeometrySp = std::shared_ptr<PolyGeometry>;
 
@@ -51,6 +57,7 @@ public:
 
     Point begin() const override { return _begin; }
     Point end() const override { return _end; }
+    void  ends(int segmentCount, std::function<void(Point const &)> fun) const override { fun(_end); }
 
     REFLECTION_ALIAS(PolySegment, "PolySegment", FLDALIAS(&PolySegment::_type, "type"),
                      FLDALIAS(&PolySegment::_begin, "begin"), FLDALIAS(&PolySegment::_end, "end"));
@@ -77,8 +84,9 @@ struct PolyArc : public PolyGeometry
     void jsonObject(std::vector<std::string> &arr) const override;
     void polyList(std::string const &prefix, std::vector<std::pair<std::string, std::string>> &fields) const override;
 
-    Point begin() const override { return {}; } // zh,todo
-    Point end() const override { return {}; }
+    Point begin() const override;
+    Point end() const override;
+    void  ends(int segmentCount, std::function<void(Point const &)> fun) const override;
 
     REFLECTION_ALIAS(PolyArc, "PolyArc", FLDALIAS(&PolyArc::_type, "type"), FLDALIAS(&PolyArc::_center, "center"),
                      FLDALIAS(&PolyArc::_radius, "radius"), FLDALIAS(&PolyArc::_radius2, "radius2"),

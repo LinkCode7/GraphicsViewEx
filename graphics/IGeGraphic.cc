@@ -15,7 +15,7 @@ IGeGraphic::IGeGraphic(ObjectType type) : _color{0, 255, 0}, _type(type)
     _runTimeFlag.full(true);
     _runTimeFlag.remove(RuntimeFlag::eDocumentParsing);
 
-    //// 颠倒y轴
+    //// y轴颠倒
     // QTransform matrix;
     // matrix.scale(1, -1);
     // setTransform(matrix, true);
