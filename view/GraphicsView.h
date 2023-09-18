@@ -15,6 +15,7 @@ QT_END_NAMESPACE
 class GraphicsFrame;
 class DragAction;
 class PropertyTable;
+class CommandLineEdit;
 
 class GraphicsView : public QGraphicsView
 {
@@ -61,7 +62,7 @@ private:
     GraphicsFrame *_frame;
     QPoint         _ptRightMouseDown = {};
 
-    QMenu *  _menu            = nullptr;
+    QMenu   *_menu            = nullptr;
     QAction *_resetViewMatrix = nullptr;
 
     int                         _state = 0;
@@ -99,9 +100,10 @@ private slots:
 private:
     GraphicsView *_pGraphicsView;
 
-    QSlider *      _pZoomSlider;
-    QSlider *      _pRotateSlider;
-    PropertyTable *_property;
+    QSlider         *_pZoomSlider;
+    QSlider         *_pRotateSlider;
+    PropertyTable   *_property;
+    CommandLineEdit *_command;
 };
 
 #endif // GRAPHICS_VIEW_H

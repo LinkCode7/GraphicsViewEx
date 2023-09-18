@@ -2,9 +2,11 @@
 
 #include <QColorDialog>
 
+#include "../control/GraphicsControl.h"
 #include "../graphics/IGeGraphic.h"
 #include "GraphicsArchive.h"
 #include "GraphicsView.h"
+#include "qevent.h"
 #include "qgraphicsscene.h"
 
 PropertyTable::PropertyTable()
@@ -130,5 +132,22 @@ void PropertyTable::setSelectedBodyColor(QColor const& color)
     for (auto const& item : *list)
     {
         item->setGeColor(color);
+    }
+}
+
+void CommandLineEdit::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
+    {
+        auto str = this->toPlainText().toStdString();
+        sindy::onCommandline(str);
+
+        // 阻止默认行为
+        event->ignore();
+    }
+    else
+    {
+        // 调用父类的keyPressEvent函数以处理其他键盘事件
+        QTextEdit::keyPressEvent(event);
     }
 }

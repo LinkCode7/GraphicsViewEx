@@ -32,11 +32,15 @@ void Document::addGraphic(IGeGraphic* pGraphic)
 
 bool Document::removeGraphic(IGeGraphic* pGraphic)
 {
+    auto pScene = GeArchive().scene();
+
     for (auto iter = _geometries.begin(); iter != _geometries.end();)
     {
         if (*iter == pGraphic)
         {
             iter = _geometries.erase(iter);
+            pScene->removeItem(pGraphic);
+            delete pGraphic;
             return true;
         }
         else

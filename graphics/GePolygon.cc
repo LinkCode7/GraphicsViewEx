@@ -6,9 +6,9 @@
 #include <iostream>
 
 #include "../utility/JsonData.h"
-#include "../utility/SindyMath.h"
 #include "../utility/sindy_arc2d.h"
 #include "../utility/sindy_box2d.h"
+#include "../utility/sindy_math.h"
 #include "../utility/utility.h"
 
 GePolygon::GePolygon() : IGeGraphic(eGePolygonType)
@@ -105,6 +105,53 @@ void GePolygon::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
     painter->drawPolyline(points);
 }
 
+void GePolygon::addEdgeByPoint(sindy::Point const& pt, bool bSegment)
+{
+    auto size = _elements.size();
+    if (size == 0)
+    {
+        _elements.emplace_back(std::make_shared<sindy::PolySegment>(pt, pt));
+        return;
+    }
+
+    auto begin = _elements[size - 1]->end();
+    _elements.emplace_back(std::make_shared<sindy::PolySegment>(begin, pt));
+}
+
+void GePolygon::setLastEdgeEndPoint(sindy::Point const& pt, bool bSegment)
+{
+    auto size = _elements.size();
+    if (size == 0)
+        return;
+
+    _elements[size - 1]->end(pt);
+}
+
+bool GePolygon::setClose()
+{
+    auto size = _elements.size();
+    if (size == 0)
+        return false;
+
+    if (size == 1)
+    {
+        // 正圆
+        return false;
+    }
+
+    if (size == 2)
+    {
+        auto line0 = std::dynamic_pointer_cast<sindy::PolySegment>(_elements[0]);
+        auto line1 = std::dynamic_pointer_cast<sindy::PolySegment>(_elements[1]);
+        if (line0 && line1)
+            return false;
+    }
+
+    auto end = _elements[size - 1]->end();
+    _elements[size - 1]->end(_elements[0]->begin());
+    return true;
+}
+
 bool GePolygon::isLinestring() const
 {
     for (auto const& element : _elements)
@@ -145,6 +192,7 @@ void GePolygon::list(std::vector<std::pair<std::string, std::string>>& fields) c
     }
 }
 
+// 弧线仍有bug
 bool GePolygon::getPoints(std::vector<std::vector<sindy::Point>>& output) const
 {
     auto size = _elements.size();
@@ -272,6 +320,34 @@ std::string GePolygon::booleanDifferenceName(std::vector<GePolygon*> const& poly
     return name;
 }
 
+bool GePolygon::selfIntersection(sindy::Point const& pt) const
+{
+    auto size = _elements.size();
+    if (size < 2)
+        return false;
+
+    using namespace sindy;
+    auto pLast = _elements.back();
+    auto begin = pLast->begin();
+    auto end   = pLast->end();
+
+    for (auto i = 0; i < size - 1; ++i)
+    {
+        if (auto line = std::dynamic_pointer_cast<PolySegment>(_elements[i]); line)
+        {
+            auto bCross = sindy::isIntersect(MAKE_POINT_TYPE(line->begin()), MAKE_POINT_TYPE(line->end()),
+                                             MAKE_POINT_TYPE(begin), MAKE_POINT_TYPE(end));
+            if (bCross)
+                return true;
+        }
+        else if (auto arc = std::dynamic_pointer_cast<PolyArc>(_elements[i]); arc)
+        {
+        }
+    }
+
+    return false;
+}
+
 // edge
 namespace sindy
 {
@@ -322,6 +398,14 @@ Point PolyArc::end() const
     Arc2d arc(MAKE_POINT_TYPE(_center), _beginAngle, _beginAngle + _sweepAngle, dir, _radius, _radius2);
 
     return MAKE_POINT_TYPE(arc.end());
+}
+void PolyArc::end(Point const& value)
+{
+    ClockDirection dir = _sweepAngle >= 0.0 ? ClockDirection::eCounterClockwise : ClockDirection::eClockwise;
+
+    Arc2d arc(MAKE_POINT_TYPE(_center), _beginAngle, _beginAngle + _sweepAngle, dir, _radius, _radius2);
+    arc.resetEnd(MAKE_POINT_TYPE(value));
+    _sweepAngle = arc.sweepAngle();
 }
 void PolyArc::ends(int segmentCount, std::function<void(Point const&)> fun) const
 {

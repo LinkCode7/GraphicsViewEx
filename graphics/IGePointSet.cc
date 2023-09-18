@@ -1,7 +1,7 @@
 #include "IGePointSet.h"
 
-#include "../utility/SindyMath.h"
 #include "../utility/sindy_box2d.h"
+#include "../utility/sindy_math.h"
 #include "../utility/utility.h"
 
 IGePointSet::IGePointSet(IGeGraphic::ObjectType type) : IGeGraphic(type)

@@ -1,17 +1,23 @@
 #include "PolylineDrag.h"
 
+#include "../graphics/GePolygon.h"
 #include "../graphics/GePolyline.h"
 #include "../utility/utility.h"
 #include "../view/GraphicsArchive.h"
 
-PolylineDrag::PolylineDrag()
+IGeGraphic* PolylineDrag::makeGeometry()
 {
-    m_geo = new GePolyline();
-    GeArchive().addCustomItem(m_geo);
+    return new GePolyline();
 }
 
 void PolylineDrag::onLeftClick(const QPointF& curClick)
 {
+    if (!m_geo)
+    {
+        m_geo = this->makeGeometry();
+        GeArchive().addCustomItem(m_geo);
+    }
+
     auto poly = static_cast<GePolyline*>(m_geo);
     if (poly->checkCross(curClick))
         return;
@@ -19,23 +25,26 @@ void PolylineDrag::onLeftClick(const QPointF& curClick)
     poly->addPoint(curClick);
 }
 
-bool PolylineDrag::isEndDrag(const QPointF& curClick)
+void PolylineDrag::onRightClick(const QPointF& curClick)
 {
-    auto poly = static_cast<GePolyline*>(m_geo);
-    return !poly->checkCross(curClick);
+    if (!m_geo)
+        return;
+
+    addFlag(DragAction::eEndDragAction);
 }
 
-void PolylineDrag::onMove(const QPointF& curMove)
+void PolylineDrag::onMouseMove(const QPointF& curMove)
 {
-    static_cast<GePolyline*>(m_geo)->setLastPt(curMove);
+    if (m_geo)
+        static_cast<GePolyline*>(m_geo)->setLastPt(curMove);
 }
 
-bool PolylineDrag::keyAction(Qt::Key key)
+void PolylineDrag::onKeyDown(Qt::Key key)
 {
     if (key == Qt::Key_Escape)
     {
-        GeArchive().scene()->removeItem(m_geo);
-        return true;
+        GeArchive().doc()->removeGraphic(m_geo);
+        addFlag(DragAction::eEndDragAction);
     }
     else if (key == Qt::Key_C)
     {
@@ -44,8 +53,56 @@ bool PolylineDrag::keyAction(Qt::Key key)
         if (poly->getFirstPt(pt))
         {
             poly->closePolyline(pt);
-            return true;
+            addFlag(DragAction::eEndDragAction);
         }
     }
-    return false;
+}
+
+IGeGraphic* PolygonDrag::makeGeometry()
+{
+    return new GePolygon();
+}
+
+void PolygonDrag::onLeftClick(const QPointF& curClick)
+{
+    if (!m_geo)
+    {
+        m_geo = this->makeGeometry();
+        GeArchive().addCustomItem(m_geo);
+    }
+
+    auto poly = static_cast<GePolygon*>(m_geo);
+    if (poly->selfIntersection(MAKE_POINT_TYPE(curClick)))
+        return;
+
+    poly->addEdgeByPoint(MAKE_POINT_TYPE(curClick), true);
+}
+
+void PolygonDrag::onRightClick(const QPointF& curClick)
+{
+    if (!m_geo)
+        return;
+
+    addFlag(DragAction::eEndDragAction);
+}
+
+void PolygonDrag::onMouseMove(const QPointF& curMove)
+{
+    if (auto geo = static_cast<GePolygon*>(m_geo); geo)
+        geo->setLastEdgeEndPoint(MAKE_POINT_TYPE(curMove), true);
+}
+
+void PolygonDrag::onKeyDown(Qt::Key key)
+{
+    if (key == Qt::Key_Escape)
+    {
+        GeArchive().doc()->removeGraphic(m_geo);
+        addFlag(DragAction::eEndDragAction);
+    }
+    else if (key == Qt::Key_C)
+    {
+        auto poly = static_cast<GePolygon*>(m_geo);
+        if (poly->setClose())
+            addFlag(DragAction::eEndDragAction);
+    }
 }

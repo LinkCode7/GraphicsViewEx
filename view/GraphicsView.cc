@@ -102,7 +102,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 #endif
 
     if (_drag)
-        _drag->onMove(mapToScene(event->pos()));
+        _drag->onMouseMove(mapToScene(event->pos()));
 
     QGraphicsView::mouseMoveEvent(event);
 }
@@ -118,7 +118,8 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
     if (_drag && event->button() == Qt::RightButton)
     {
-        if (_drag->isEndDrag(mapToScene(event->pos())))
+        _drag->onRightClick(mapToScene(event->pos()));
+        if (_drag->hasFlag(DragAction::eEndDragAction))
             _drag = nullptr;
     }
 
@@ -251,9 +252,14 @@ GraphicsFrame::GraphicsFrame(GraphicsScene *scene, const QString &name, QWidget 
     scene->setPropertyTable(_property);
     _property->setShowGrid(false);
 
+    // 命令行
+    _command = new CommandLineEdit();
+    _command->setFixedHeight(20);
+
     auto leftV = new QVBoxLayout;
     leftV->addLayout(leftH);
     leftV->addWidget(_property);
+    leftV->addWidget(_command);
 
     QGridLayout *topLayout = new QGridLayout;
     topLayout->addWidget(_pGraphicsView, 0, 1);

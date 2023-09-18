@@ -16,17 +16,6 @@ class QPointF;
 
 namespace sindy
 {
-// 弧度转角度
-inline constexpr double radian2Degree(double radian)
-{
-    return (radian * 180) / PI;
-}
-// 角度转弧度
-inline constexpr double degree2Radian(double degree)
-{
-    return (degree / 180) * PI;
-}
-
 void extent2Rect(QPointF const& ptMin, QPointF const& ptMax, QRectF& rect);
 void extent2Rect(double minX, double minY, double maxX, double maxY, QRectF& rect);
 void point2Rect(double x, double y, QRectF& rect, double halfLength);

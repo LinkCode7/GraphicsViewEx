@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-#include "../utility/SindyMath.h"
+#include "../utility/sindy_math.h"
 
 IGeGraphic::IGeGraphic(ObjectType type) : _color{0, 255, 0}, _type(type)
 {
@@ -60,7 +60,7 @@ QColor IGeGraphic::getDrawColor(QStyle::State state)
 
 double IGeGraphic::getDrawWidth(QStyle::State state)
 {
-    return state & QStyle::State_Selected ? 2 : 1;
+    return state & QStyle::State_Selected ? 2.0 : 0.5;
 }
 
 void IGeGraphic::list(std::vector<std::pair<std::string, std::string>> &fields) const

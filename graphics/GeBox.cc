@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-#include "../utility/SindyMath.h"
+#include "../utility/sindy_math.h"
 #include "../utility/utility.h"
 
 GeBox::GeBox(QRectF const &rect) : IGeGraphic(eGeBoxType), _rect(rect)

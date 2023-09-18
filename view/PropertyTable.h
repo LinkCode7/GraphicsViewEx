@@ -1,5 +1,7 @@
 #ifndef PROPERTY_TABLE_H
 #define PROPERTY_TABLE_H
+#include <QTextEdit>
+
 #include "QTableWidget"
 
 class IGeGraphic;
@@ -22,6 +24,12 @@ private:
 
     QColor getSelectedBodyColor(IGeGraphic* pFirst) const;
     void   setSelectedBodyColor(QColor const& color);
+};
+
+class CommandLineEdit : public QTextEdit
+{
+protected:
+    void keyPressEvent(QKeyEvent* event) override;
 };
 
 #endif // !PROPERTY_TABLE_H

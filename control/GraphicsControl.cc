@@ -25,10 +25,10 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
 
     const auto& key = event->key();
 
-    auto drag = view->drag();
-    if (drag)
+    if (auto drag = view->drag(); drag)
     {
-        if (drag->keyAction(static_cast<Qt::Key>(key)))
+        drag->onKeyDown(static_cast<Qt::Key>(key));
+        if (drag->hasFlag(DragAction::eEndDragAction))
         {
             view->drag(nullptr);
             // view->removeState(GraphicsView::eDragging);
@@ -60,6 +60,17 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
         }
         default:
             break;
+    }
+}
+
+void sindy::onCommandline(std::string const& strCommand)
+{
+    if (strCommand == "poly")
+    {
+        auto view = GeArchive().curView();
+        view->drag(std::make_shared<PolygonDrag>());
+        view->setCommand("polygon");
+        view->addState(GraphicsView::eDragInit);
     }
 }
 
@@ -268,7 +279,7 @@ void sindy::deleteSelectedItems()
     doc->deleteSelectedItems();
 }
 
-void sindy::booleanIntersection()
+void _boolean(std::function<void(GePolygon*, GePolygon*, std::vector<GePolygon*>&)> fun)
 {
     auto arr = GeArchive().doc()->selectedGraphics();
     if (arr->size() < 2)
@@ -285,7 +296,7 @@ void sindy::booleanIntersection()
         return;
 
     std::vector<GePolygon*> result;
-    boolean::intersection(poly1, poly2, result);
+    fun(poly1, poly2, result);
 
     QColor color;
     color.setRed(255);
@@ -296,10 +307,22 @@ void sindy::booleanIntersection()
     }
 }
 
+void sindy::booleanIntersection()
+{
+    _boolean([](GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result) {
+        boolean::intersection(poly1, poly2, result);
+    });
+}
+
 void sindy::booleanUnion()
 {
+    _boolean(
+        [](GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result) { boolean::union_(poly1, poly2, result); });
 }
 
 void sindy::booleanDifference()
 {
+    _boolean([](GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result) {
+        boolean::difference(poly1, poly2, result);
+    });
 }

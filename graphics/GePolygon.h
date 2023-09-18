@@ -39,6 +39,7 @@ struct PolyGeometry
 
     virtual Point begin() const                                                        = 0;
     virtual Point end() const                                                          = 0;
+    virtual void  end(Point const &)                                                   = 0;
     virtual void  ends(int segmentCount, std::function<void(Point const &)> fun) const = 0;
 };
 using PolyGeometrySp = std::shared_ptr<PolyGeometry>;
@@ -57,6 +58,7 @@ public:
 
     Point begin() const override { return _begin; }
     Point end() const override { return _end; }
+    void  end(Point const &value) override { _end = value; }
     void  ends(int segmentCount, std::function<void(Point const &)> fun) const override { fun(_end); }
 
     REFLECTION_ALIAS(PolySegment, "PolySegment", FLDALIAS(&PolySegment::_type, "type"),
@@ -86,6 +88,7 @@ struct PolyArc : public PolyGeometry
 
     Point begin() const override;
     Point end() const override;
+    void  end(Point const &value) override;
     void  ends(int segmentCount, std::function<void(Point const &)> fun) const override;
 
     REFLECTION_ALIAS(PolyArc, "PolyArc", FLDALIAS(&PolyArc::_type, "type"), FLDALIAS(&PolyArc::_center, "center"),
@@ -137,6 +140,8 @@ public:
 
     void list(std::vector<std::pair<std::string, std::string>> &fields) const override;
 
+    bool selfIntersection(sindy::Point const &pt) const;
+
 public:
     std::vector<int>  indexes() const { return _indexes; }
     std::vector<int> &indexesRef() { return _indexes; }
@@ -151,6 +156,10 @@ public:
             this->addSaveFlag(eNonSegmentEdge);
         _elements.emplace_back(element);
     }
+
+    void addEdgeByPoint(sindy::Point const &pt, bool bSegment);
+    void setLastEdgeEndPoint(sindy::Point const &pt, bool bSegment);
+    bool setClose();
 
     bool isLinestring() const;
 

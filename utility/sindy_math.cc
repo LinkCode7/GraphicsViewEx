@@ -2,6 +2,149 @@
 
 #include "sindy_box2d.h"
 
+double sindy::roundFloat(double value, uint8_t num)
+{
+    if (num == 0)
+        return value;
+
+    double srcZS    = floor(value);
+    double lngMulti = pow((double)10, num);
+
+    value -= srcZS;
+    value *= lngMulti;
+    double src = floor(value);
+    if (value - src >= 0.5)
+    {
+        double dblXS = (src + 1) / lngMulti;
+        return srcZS + dblXS;
+    }
+
+    double dblXS = src / lngMulti;
+    return srcZS + dblXS;
+}
+
+std::string sindy::simplifyFloat(double value, uint8_t num)
+{
+    if (value < 0.0)
+    {
+        auto result = simplifyFloat(-value, num);
+        if (result != "0")
+            result = '-' + result;
+        return result;
+    }
+
+    // 分离整数、小数
+    uint64_t iFloor = floor(value);
+    double   dec    = value - iFloor;
+
+    uint64_t pow = powTen(num);
+
+    // 四舍五入
+    double decNew = dec * pow;
+
+    // 通过float精度转换实现四舍五入
+    uint64_t floorNew = (double)(decNew + 0.5);
+
+    // 可能出现进位至整数部分
+    if (floorNew == pow)
+    {
+        floorNew = 0;
+        ++iFloor;
+    }
+
+    // 整数部分
+    std::string strFloor = std::to_string(iFloor);
+    if (floorNew <= 0)
+        return strFloor;
+
+    std::string& ret = strFloor;
+    // 小数部分，需要处理前置位补0和后置位去0操作。如保留三位小数时，小数部分是60，但显示为0.06
+    std::string strDec = std::to_string(floorNew);
+
+    int lenDec = strDec.size();
+    if (lenDec == num)
+    {
+        ret.push_back('.');
+        ret += strDec;
+        trimInvalid0(ret);
+    }
+    else
+    {
+        ret.push_back('.');
+        lenDec = num - lenDec;
+        while (--lenDec >= 0)
+        {
+            ret.push_back('0');
+        }
+        trimInvalid0(strDec);
+        ret += strDec;
+    }
+
+    return ret;
+}
+
+void sindy::trimInvalid0(std::string& strFloat)
+{
+    int end = strFloat.size();
+    for (int i = end - 1; i >= 0; --i)
+    {
+        if (strFloat[i] != '0')
+            break;
+        --end;
+    }
+    if (end == strFloat.size())
+        return;
+
+    strFloat = std::string(strFloat.begin(), strFloat.begin() + end);
+}
+
+uint64_t sindy::powTen(uint8_t num)
+{
+    uint64_t multiplier = 1;
+    switch (num)
+    {
+        case 0:
+            break;
+        case 1:
+            multiplier = 10;
+            break;
+        case 2:
+            multiplier = 100;
+            break;
+        case 3:
+            multiplier = 1000;
+            break;
+        case 4:
+            multiplier = 10000;
+            break;
+        case 5:
+            multiplier = 100000;
+            break;
+        case 6:
+            multiplier = 1000000;
+            break;
+        case 7:
+            multiplier = 10000000;
+            break;
+        case 8:
+            multiplier = 100000000;
+            break;
+        case 9:
+            multiplier = 1000000000;
+            break;
+        case 10:
+            multiplier = 10000000000;
+            break;
+        default:
+            for (auto i = 0; i < num; ++i)
+            {
+                multiplier *= 10;
+            }
+            break;
+    }
+    return multiplier;
+}
+
 bool sindy::isPtInLine(Point2d const& a, Point2d const& b, Point2d const& c)
 {
     Point2d pt1(c - a);
@@ -20,44 +163,14 @@ bool sindy::isPtInLine(Point2d const& a, Point2d const& b, Point2d const& c)
 
 bool sindy::isIntersect(Point2d const& a, Point2d const& b, Point2d const& c, Point2d const& d)
 {
-    // 1. 碰撞检测
     if (Box2d{a, b}.outBox(Box2d{c, d}))
         return false;
 
-    // 2. 跨立检测
-    // 点a、b在线段cd的两侧，则有：
-    auto dc = c - d;
-    if ((a - d).crossProduct(dc) * (b - d).crossProduct(dc) <= 0.0) // ad、bd位于cd两侧
-    {
-        // 点c、d在线段ab的两侧，则有：
-        auto ba = a - b;
-        if ((c - b).crossProduct(ba) * (d - b).crossProduct(ba) <= 0.0) // cb、db位于ab两侧
-            return true;
-    }
-
-    return false;
-}
-
-// 判断两条线段是否相交
-// 如果两线段相交，则两线段必然相互跨立对方,通过叉积来做判断即可。但需要先使用快速排斥试验处理可能的共线等问题。
-// x1,y1,x2,y2为第一个线段的两个点；x3,y3,x4,y4为第二个线段的两个点。
-bool is_segment_cross(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
-{
-    // 先使用快速排斥试验进行判断，同时排除两条线段共线的情况
-    if (std::max(x1, x2) < std::min(x3, x4) || std::max(y1, y2) < std::min(y3, y4) || std::min(x1, x2) > std::max(x3, x4) ||
-        std::min(y1, y2) > std::max(y3, y4))
-        return false;
-
-    // 使用跨立试验进行相交判断
-    if (((x3 - x1) * (y3 - y4) - (y3 - y1) * (x3 - x4)) * ((x3 - x2) * (y3 - y4) - (y3 - y2) * (x3 - x4)) <= 0 &&
-        ((x1 - x3) * (y1 - y2) - (y1 - y3) * (x1 - x2)) * ((x1 - x4) * (y1 - y2) - (y1 - y4) * (x1 - x2)) <= 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    double s1 = Point2d::crossProduct(a, b, c);
+    double s2 = Point2d::crossProduct(a, b, d);
+    double s3 = Point2d::crossProduct(c, d, a);
+    double s4 = Point2d::crossProduct(c, d, b);
+    return (s1 * s2 < 0) && (s3 * s4 < 0);
 }
 
 std::vector<sindy::Point2d> sindy::intersection(Point2d const& a, Point2d const& b, Point2d const& c, Point2d const& d)
@@ -191,16 +304,12 @@ bool sindy::isPolyClockwise(std::vector<sindy::Point2d> const& pts)
     if (size < 3)
         return true; // error
 
-    double sum = 0.0;
-    for (auto i = 1; i < size; ++i)
+    double cross_product = 0;
+    for (int i = 0; i < size; i++)
     {
-        auto p  = pts[i - 1];
-        auto p1 = pts[i];
-        sum += (p1.x() + p.x()) * (p1.y(), p.y());
+        auto& p1 = pts[i];
+        auto& p2 = pts[(i + 1) % size];
+        cross_product += (p2.y() - p1.y()) * (p2.x() + p1.x());
     }
-
-    auto p0 = pts[0];
-    auto pn = pts[size - 1];
-    sum += (p0.x() + pn.x()) * (p0.y() - pn.y());
-    return sum <= 0;
+    return cross_product >= 0;
 }

@@ -44,9 +44,15 @@ Arc2d::Arc2d(Point2d const& center, double beginAngle, double endAngle, ClockDir
 
 Arc2d::Arc2d(Point2d const& center, Point2d const& begin, Point2d const& end, ClockDirection dir, double radius,
              double radius2)
-    : _center(center), _radius(radius), _radius2(radius2)
+    : _center(center), _begin(begin), _end(end), _radius(radius), _radius2(radius2)
 {
     calculateAngle(begin.angle(center), end.angle(center), dir);
+}
+
+void Arc2d::resetEnd(Point2d const& value)
+{
+    _end = value;
+    calculateAngle(_beginAngle, _end.angle(_center), direction());
 }
 
 Point2d Arc2d::getPoint(double radian) const
@@ -143,7 +149,7 @@ int Arc2d::intersection(Arc2d const& arc, std::vector<Point2d>& result) const
 std::vector<Point2d> Arc2d::segment(double unitLength) const
 {
     double len   = length();
-    double count = ceil(len / unitLength);
+    double count = unitLength == 0 ? 16 : ceil(len / unitLength);
 
     double angle = _beginAngle;
     double step  = _sweepAngle / count;

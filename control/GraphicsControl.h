@@ -12,6 +12,8 @@ namespace sindy
 {
 void viewKeyDown(QKeyEvent* event, GraphicsView* view);
 
+void onCommandline(std::string const& strCommand);
+
 void onImportFromJson();
 void _importFromJson(std::string const& line);
 

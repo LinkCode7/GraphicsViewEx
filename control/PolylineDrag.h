@@ -6,14 +6,25 @@
 class PolylineDrag : public DragAction
 {
 public:
-    PolylineDrag();
+    IGeGraphic* makeGeometry() override;
+    void        onLeftClick(const QPointF& curClick) override;
+    void        onMouseMove(const QPointF& curMove) override;
 
-    void onLeftClick(const QPointF& curClick) override;
-    void onMove(const QPointF& curMove) override;
+    void onRightClick(const QPointF& curClick) override;
 
-    bool isEndDrag(const QPointF& curClick) override;
+    void onKeyDown(Qt::Key key);
+};
 
-    bool keyAction(Qt::Key key);
+class PolygonDrag : public DragAction
+{
+public:
+    IGeGraphic* makeGeometry() override;
+    void        onLeftClick(const QPointF& curClick) override;
+    void        onMouseMove(const QPointF& curMove) override;
+
+    void onRightClick(const QPointF& curClick) override;
+
+    void onKeyDown(Qt::Key key);
 };
 
 #endif

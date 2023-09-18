@@ -25,9 +25,11 @@ typedef bg::model::d2::point_xy<double> point_2d;
 typedef bg::model::segment<point_2d>    segment_2d;
 typedef bg::model::polygon<point_2d>    polygon_2d;
 
-#endif
+// y轴颠倒...false:GraphicsView的Y轴和笛卡尔坐标系相反
+typedef boost::geometry::model::d2::point_xy<double>       point_type;
+typedef boost::geometry::model::polygon<point_type, false> polygon;
 
-void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result)
+void boostPolygon(GePolygon* poly1, GePolygon* poly2, polygon& p1, polygon& p2)
 {
     std::vector<std::vector<sindy::Point>> pts1;
     if (!poly1->getPoints(pts1))
@@ -36,11 +38,6 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
     std::vector<std::vector<sindy::Point>> pts2;
     if (!poly2->getPoints(pts2))
         return;
-
-#ifdef USING_BOOST_BOOLEAN
-    // y轴颠倒...false:GraphicsView的Y轴和笛卡尔坐标系相反
-    typedef boost::geometry::model::d2::point_xy<double>       point_type;
-    typedef boost::geometry::model::polygon<point_type, false> polygon;
 
     auto assign = [&](std::vector<std::vector<sindy::Point>> const& pts, polygon& poly) {
         auto size = pts.size();
@@ -61,15 +58,13 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
         }
     };
 
-    polygon p1, p2;
     assign(pts1, p1);
     assign(pts2, p2);
+}
 
-    std::deque<polygon> output;
-    boost::geometry::intersection(p1, p2, output);
-
+void createResult(std::string const& name, std::vector<polygon>& output, std::vector<GePolygon*>& result)
+{
     // y轴颠倒...
-    auto name = GePolygon::booleanIntersectionName(poly1, poly2);
     for (auto const& item : output)
     {
         auto pNew = new GePolygon();
@@ -109,6 +104,48 @@ void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePol
 
         result.emplace_back(pNew);
     }
+}
 
+#endif
+
+void boolean::intersection(GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result)
+{
+#ifdef USING_BOOST_BOOLEAN
+    polygon p1, p2;
+    boostPolygon(poly1, poly2, p1, p2);
+
+    std::vector<polygon> output;
+    boost::geometry::intersection(p1, p2, output);
+
+    auto name = GePolygon::booleanIntersectionName(poly1, poly2);
+    createResult(name, output, result);
+#endif
+}
+
+void boolean::union_(GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result)
+{
+#ifdef USING_BOOST_BOOLEAN
+    polygon p1, p2;
+    boostPolygon(poly1, poly2, p1, p2);
+
+    std::vector<polygon> output;
+    boost::geometry::union_(p1, p2, output);
+
+    auto name = GePolygon::booleanIntersectionName(poly1, poly2);
+    createResult(name, output, result);
+#endif
+}
+
+void boolean::difference(GePolygon* poly1, GePolygon* poly2, std::vector<GePolygon*>& result)
+{
+#ifdef USING_BOOST_BOOLEAN
+    polygon p1, p2;
+    boostPolygon(poly1, poly2, p1, p2);
+
+    std::vector<polygon> output;
+    boost::geometry::difference(p1, p2, output);
+
+    auto name = GePolygon::booleanIntersectionName(poly1, poly2);
+    createResult(name, output, result);
 #endif
 }
