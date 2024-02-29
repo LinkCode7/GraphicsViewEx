@@ -27,6 +27,7 @@ void createSelectedBox();
 
 void onCreatePolyline();
 void createPolyline(GraphicsView* view);
+void createPolygon(GraphicsView* view);
 
 void deleteSelectedItems();
 

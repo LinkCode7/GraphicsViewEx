@@ -39,7 +39,7 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
     {
         case Qt::Key_P:
         {
-            createPolyline(view);
+            createPolygon(view);
             break;
         }
         case Qt::Key_B:
@@ -66,12 +66,7 @@ void sindy::viewKeyDown(QKeyEvent* event, GraphicsView* view)
 void sindy::onCommandline(std::string const& strCommand)
 {
     if (strCommand == "poly")
-    {
-        auto view = GeArchive().curView();
-        view->drag(std::make_shared<PolygonDrag>());
-        view->setCommand("polygon");
-        view->addState(GraphicsView::eDragInit);
-    }
+        createPolygon(GeArchive().curView());
 }
 
 void sindy::onImportFromJson()
@@ -271,6 +266,15 @@ void sindy::createPolyline(GraphicsView* view)
     view->setCommand("polyline");
     view->addState(GraphicsView::eDragInit);
     // view->addState(GraphicsView::eDragging);
+}
+
+void sindy::createPolygon(GraphicsView* view)
+{
+    if (!view)
+        return;
+    view->drag(std::make_shared<PolygonDrag>());
+    view->setCommand("polygon");
+    view->addState(GraphicsView::eDragInit);
 }
 
 void sindy::deleteSelectedItems()
